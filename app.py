@@ -314,7 +314,7 @@ def init_mock_data():
         st.session_state.mock_berkas = data
 
 
-def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei):
+def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_surat="340"):
     from fpdf import FPDF
     import datetime
     
@@ -364,7 +364,7 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei):
     pdf.set_font("helvetica", "BU", 14)
     pdf.cell(0, 6, "SURAT PERINTAH", ln=True, align="C")
     pdf.set_font("helvetica", "", 10)
-    pdf.cell(0, 5, "Nomor: 800.1.11.1/340/PENDANIL/2026", ln=True, align="C")
+    pdf.cell(0, 5, f"Nomor: 800.1.11.1/{nomor_surat}/PENDANIL/2026", ln=True, align="C")
     pdf.ln(10)
     
     # Dari / Issuer
@@ -1245,6 +1245,7 @@ with tab2:
             )
             
             tgl_survei = st.date_input("Rencana Tanggal Survei", datetime.date.today())
+            nomor_surat = st.text_input("Nomor Surat (3 digit)", value="340", max_chars=3)
             
             submit_btn = st.form_submit_button("Tugaskan & Jadwalkan")
             
@@ -1301,7 +1302,7 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                 cols = st.columns(2)
                 for i, b in enumerate(berkas_list_pdf):
                     single_b = [b]
-                    pdf_bytes = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei)
+                    pdf_bytes = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, nomor_surat)
                     
                     with cols[i % 2]:
                         st.download_button(
