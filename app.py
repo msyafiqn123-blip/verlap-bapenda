@@ -536,7 +536,14 @@ def fetch_berkas(kecamatan=None, status=None, only_urgent=False):
 
 @st.cache_data(ttl=60)
 def fetch_pegawai():
-    if USE_MOCK_DATA:
+    try:
+        response = supabase.table('tabel_pegawai').select('*').execute()
+        df = pd.DataFrame(response.data)
+        if df.empty:
+            raise Exception("Tabel kosong")
+        return df
+    except Exception as e:
+        # Fallback to hardcoded list if table doesn't exist or permission denied
         names = [
             "PEVI AZIASTUTI.SE, M.Tr.A.P",
             "YUDHANTARA",
@@ -557,24 +564,24 @@ def fetch_pegawai():
             "19811204 200801 1 002",
             "19811201 200901 1 003",
             "20020120 202302 1 001",
-            "199807172025212062",
-            "20010207 202302 1 003",
-            "199106052025212101",
+            "199508212022032014",
+            "19931215 202421 1 006",
+            "19920119 202421 1 001",
             "19850617 200901 1 001",
-            "19820812 200902 1 003"
+            "19740510 200801 1 007"
         ]
         jabatans = [
-            "KASUBID PENDATAAN, PENILAIAN PBB P2 DAN BPHTB",
-            "PENGOLAH DATA INFORMASI DAN PENILAIAN",
-            "PENATA LAYANAN OPERASIONAL",
-            "PENGOLAH DATA DAN INFORMASI PERPAJAKAN",
+            "Kepala Sub Bidang Pajak Bumi dan Bangunan Perdesaan dan Perkotaan, dan Bea Perolehan Hak Atas Tanah dan Bangunan",
+            "Analis Keuangan Pusat dan Daerah Ahli Muda",
+            "PENGELOLA PAJAK DAERAH",
+            "PENGELOLA PAJAK DAERAH",
+            "PENGELOLA PAJAK DAERAH",
             "PENGOLAH DATA DAN INFORMASI",
-            "PENGOLAH DATA DAN INFORMASI",
-            "PENATA LAYANAN OPERASIONAL",
-            "PENGOLAH DATA DAN INFORMASI",
-            "PENATA LAYANAN OPERASIONAL",
             "PENELAAH TEKNIS KEBIJAKAN",
-            "JF ANALIS KEUANGAN PUSAT DAN DAERAH AHLI MUDA"
+            "PENELAAH TEKNIS KEBIJAKAN",
+            "PENELAAH TEKNIS KEBIJAKAN",
+            "PENELAAH TEKNIS KEBIJAKAN",
+            "PENGELOLA PAJAK DAERAH"
         ]
         data = {
             'id': [f'peg-{i+1}' for i in range(len(names))],
@@ -583,9 +590,6 @@ def fetch_pegawai():
             'jabatan': jabatans
         }
         return pd.DataFrame(data)
-    else:
-        response = supabase.table('tabel_pegawai').select('*').execute()
-        return pd.DataFrame(response.data)
 
 def optimize_multiple_routes(df):
     """
