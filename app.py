@@ -339,7 +339,7 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei):
     pdf.add_page()
     
     import os
-    logo_path = r"C:\Users\msyaf\Downloads\bapenda.png"
+    logo_path = "logo_pwk.png"
     if os.path.exists(logo_path):
         try:
             pdf.image(logo_path, 15, 10, 25)
