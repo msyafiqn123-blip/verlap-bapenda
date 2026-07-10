@@ -1,8 +1,8 @@
-streamlit==1.31.0
-pandas==2.1.4
-folium==0.15.1
-streamlit-folium==0.17.0
-supabase==2.3.4
+streamlit
+pandas
+folium
+streamlit-folium
+supabase
 fpdf2
 streamlit-keyup
 streamlit-geolocation
