@@ -696,7 +696,7 @@ with tab0:
     st.header("📝 Input Antrean Berkas Baru")
     st.write("Tambahkan data berkas yang akan disurvei lapangan. Berkas akan masuk ke Daftar Tunggu (Belum Disurvei).")
     
-    @st.cache_data(ttl=300, show_spinner="🔄 Sinkronisasi data dari Google Sheets...")
+    @st.cache_data(ttl=300, show_spinner="🔃 Proses sinkronisasi data...")
     def fetch_spreadsheet_data():
         import pandas as pd
         url = "https://docs.google.com/spreadsheets/d/1mrbqAXbRDK7MR-rjlMsVxFzzo6jlhxHpbtHAT5W55RQ/export?format=xlsx"
@@ -710,7 +710,7 @@ with tab0:
     
     col_nopel, col_btn = st.columns([4, 1])
     with col_nopel:
-        nopel_baru = st.text_input("Nomor Pelayanan", placeholder="Contoh: 2026.0001.134", help="Ketik Nomor Pelayanan, data akan ditarik otomatis dari Spreadsheet publik jika cocok.")
+        nopel_baru = st.text_input("Nomor Pelayanan", placeholder="Contoh: 2026.0001.134", help="Ketik Nomor Pelayanan, data akan disinkronisasikan secara otomatis jika cocok.")
     with col_btn:
         st.write("")
         st.write("")
@@ -723,7 +723,7 @@ with tab0:
         match = df_sheet[df_sheet[2] == nopel_baru.strip()]
         if not match.empty:
             matched_row = match.iloc[0]
-            st.success("✅ Data Nomor Pelayanan ditemukan di Spreadsheet")
+            st.success("✅ Data Nomor Pelayanan ditemukan (Sinkronisasi sukses)")
         elif nopel_baru.strip().startswith("0"):
             st.info("ℹ️ Berkas BPHTB terdeteksi. Silakan input NOP & Nama Pemohon secara manual (Kecamatan/Kelurahan otomatis dari NOP).")
         elif cek_btn:
