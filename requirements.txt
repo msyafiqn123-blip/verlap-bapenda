@@ -9,3 +9,5 @@ streamlit-geolocation
 geopy
 shapely
 openpyxl
+plotly
+requests
