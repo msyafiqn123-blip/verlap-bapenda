@@ -1647,7 +1647,7 @@ with tab5:
             
             if not df_to_delete.empty:
                 b_del = df_to_delete.iloc[0]
-                st.info(f"**Berkas Ditemukan!**\n\n- **Nama Pemohon:** {b_del['nama_pemohon']}\n- **NOP:** {b_del['nomor_nop']}\n- **Kelurahan/Desa:** {b_del.get('desa', '-')}\n- **Kategori:** {b_del.get('keterangan_berkas', '-')}\n- **Status Survei:** {b_del['status_survey']}")
+                st.info(f"**Berkas Ditemukan!**\n\n- **Nama Pemohon:** {b_del['nama_pemohon']}\n- **NOP:** {format_nop_string(b_del['nomor_nop'])}\n- **Kelurahan/Desa:** {b_del.get('desa', '-')}\n- **Kategori:** {b_del.get('keterangan_berkas', '-')}\n- **Status Survei:** {b_del['status_survey']}")
                 
                 if st.button("⚠️ Ya, Hapus Berkas Ini Secara Permanen", type="primary", use_container_width=True):
                     if USE_MOCK_DATA:
