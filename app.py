@@ -1363,10 +1363,21 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                 st.write("---")
                 st.write("Silakan download Surat Perintah untuk masing-masing berkas di bawah ini:")
                 
+                try:
+                    base_nomor_surat = int(nomor_surat)
+                except ValueError:
+                    base_nomor_surat = nomor_surat
+                
                 cols = st.columns(2)
                 for i, b in enumerate(berkas_list_pdf):
                     single_b = [b]
-                    pdf_bytes = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, nomor_surat)
+                    
+                    if isinstance(base_nomor_surat, int):
+                        current_nomor_surat = str(base_nomor_surat + i).zfill(len(str(nomor_surat)))
+                    else:
+                        current_nomor_surat = f"{nomor_surat}-{i+1}"
+                        
+                    pdf_bytes = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, current_nomor_surat)
                     
                     with cols[i % 2]:
                         st.download_button(
