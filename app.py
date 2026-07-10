@@ -512,6 +512,7 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     return bytes(pdf.output(dest='S'))
 
 
+@st.cache_data(ttl=15)
 def fetch_berkas(kecamatan=None, status=None, only_urgent=False):
     global USE_MOCK_DATA
     df = pd.DataFrame()
@@ -1053,6 +1054,7 @@ with tab0:
                         'status_survey': 'Belum'
                     }
                     supabase.table('berkas').insert(db_berkas).execute()
+                    st.cache_data.clear()
                     st.success(f"Berhasil! Berkas {nopel_baru} (Kel. {kelurahan_baru}) berhasil disimpan ke Database.")
                 except Exception as e:
                     st.error(f"Gagal menyimpan ke database (Pastikan tabel 'berkas' sudah dibuat di SQL Editor). Error: {e}")
@@ -1500,6 +1502,7 @@ with tab4:
                             update_data['lon_petugas'] = location['longitude']
                             
                         supabase.table('berkas').update(update_data).eq('id', selected_lapangan).execute()
+                        st.cache_data.clear()
                         st.success("✅ Laporan lapangan berhasil disubmit dan tersimpan di database!")
                         import time
                         time.sleep(1.5)
@@ -1665,6 +1668,7 @@ with tab5:
                         except:
                             res = type('obj', (object,), {'data': []})
                         if hasattr(res, 'data') and len(res.data) > 0:
+                            st.cache_data.clear()
                             st.success(f"✅ Berkas dengan Nomor Pelayanan {del_nopel} berhasil dihapus.")
                             import time
                             time.sleep(1.5)
