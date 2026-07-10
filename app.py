@@ -511,7 +511,7 @@ def fetch_berkas(kecamatan=None, status=None, only_urgent=False):
             if not df.empty:
                 df = df.rename(columns={'latitude': 'lat', 'longitude': 'lon'})
         except Exception as e:
-            USE_MOCK_DATA = True
+            st.error(f"Gagal mengambil data dari Supabase: {e}")
             
     if USE_MOCK_DATA:
         init_mock_data()
@@ -973,7 +973,7 @@ with tab0:
                 try:
                     db_berkas = {
                         'no_pelayanan': nopel_baru,
-                        'kategori_berkas': kat_baru,
+                        'kategori_berkas': kategori_baru,
                         'nomor_nop': nop_clean,
                         'nama_pemohon': pemohon_baru,
                         'mendesak': urgensi_baru,
