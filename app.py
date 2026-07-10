@@ -33,7 +33,7 @@ except:
 # 2. KONFIGURASI HALAMAN STREAMLIT
 st.set_page_config(
     page_title="Sistem Verifikasi Lapangan",
-    page_icon="📋",
+    page_icon="bapenda.png",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -1098,8 +1098,11 @@ with tab1:
         min_lat, max_lat = df_berkas['lat'].min(), df_berkas['lat'].max()
         min_lon, max_lon = df_berkas['lon'].min(), df_berkas['lon'].max()
         if pd.notnull(min_lat) and pd.notnull(min_lon):
-            if min_lat == max_lat and min_lon == max_lon:
-                m.fit_bounds([[min_lat - 0.01, min_lon - 0.01], [max_lat + 0.01, max_lon + 0.01]])
+            # Check if points are too close or just 1 point (prevents Leaflet zoom-out bug)
+            if (max_lat - min_lat) < 0.02 or (max_lon - min_lon) < 0.02:
+                mid_lat = (max_lat + min_lat) / 2
+                mid_lon = (max_lon + min_lon) / 2
+                m.fit_bounds([[mid_lat - 0.02, mid_lon - 0.02], [mid_lat + 0.02, mid_lon + 0.02]])
             else:
                 m.fit_bounds([[min_lat, min_lon], [max_lat, max_lon]])
 
@@ -1412,7 +1415,7 @@ with tab5:
     
     col1, col2, col3 = st.columns(3)
     with col1:
-        search_query = st.text_input("Cari Nomor (Pelayanan/NOP):", placeholder="Ketik spesifik...")
+        search_query = st.text_input("Cari Nomor (Pelayanan/NOP) / Nama:", placeholder="Ketik spesifik...")
     with col2:
         kec_list = ["Semua"] + sorted([k for k in df_all['kecamatan'].unique() if pd.notna(k)])
         filter_kec = st.selectbox("Filter Kecamatan:", kec_list)
@@ -1427,7 +1430,7 @@ with tab5:
         
     result = df_all.copy()
     if search_query:
-        mask = result['nomor_pelayanan'].str.contains(search_query, case=False, na=False) | result['nomor_nop'].str.contains(search_query, case=False, na=False)
+        mask = result['nomor_pelayanan'].astype(str).str.contains(search_query, case=False, na=False) | result['nomor_nop'].astype(str).str.contains(search_query, case=False, na=False) | result['nama_pemohon'].astype(str).str.contains(search_query, case=False, na=False)
         result = result[mask]
     if filter_kec != "Semua":
         result = result[result['kecamatan'] == filter_kec]
