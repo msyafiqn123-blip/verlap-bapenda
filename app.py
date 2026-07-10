@@ -410,17 +410,17 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
             pdf.cell(40, 5, "", 0, 0)
             
         pdf.cell(5, 5, f"{i+1}.", 0, 0)
-        pdf.cell(15, 5, "NAMA", 0, 0)
+        pdf.cell(22, 5, "NAMA", 0, 0)
         pdf.cell(5, 5, ":", 0, 0)
         pdf.cell(0, 5, p['nama_pegawai'].upper().split(" (")[0], ln=True)
         
         pdf.cell(45, 5, "", 0, 0)
-        pdf.cell(15, 5, "NIP", 0, 0)
+        pdf.cell(22, 5, "NIP", 0, 0)
         pdf.cell(5, 5, ":", 0, 0)
         pdf.cell(0, 5, p['nip'], ln=True)
         
         pdf.cell(45, 5, "", 0, 0)
-        pdf.cell(15, 5, "JABATAN", 0, 0)
+        pdf.cell(22, 5, "JABATAN", 0, 0)
         pdf.cell(5, 5, ":", 0, 0)
         pdf.cell(0, 5, p.get('jabatan', "PENGOLAH DATA DAN INFORMASI"), ln=True)
         pdf.ln(3)
