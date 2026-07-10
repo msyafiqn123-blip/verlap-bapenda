@@ -782,7 +782,7 @@ with tab0:
             if kode_prev in ref_nop:
                 st.success(f"📍 {ref_nop[kode_prev]['kecamatan']} - {ref_nop[kode_prev]['kelurahan']}")
             elif len(nop_clean_preview) >= 18:
-                st.warning("⚠️ NOP tidak ditemukan di DHKP")
+                st.warning("⚠️ Kode Kecamatan/Kelurahan pada NOP tidak valid (Bukan wilayah Purwakarta)")
     with col2:
         pemohon_baru = st.text_input("Nama Pemohon", value=default_nama, placeholder="Nama Wajib Pajak")
         urgensi_baru = st.checkbox("🔥 Tandai sebagai MENDESAK (Prioritas Utama)")
@@ -889,7 +889,7 @@ with tab0:
                     kelurahan_baru = ref_nop[kode]['kelurahan']
                     st.success(f"Lokasi otomatis terdeteksi: Kecamatan {kecamatan_baru}, Kelurahan {kelurahan_baru}.")
                 else:
-                    st.warning("Peringatan: NOP tidak ditemukan di database DHKP. Lokasi diset sebagai 'TIDAK DIKETAHUI'.")
+                    st.warning("Peringatan: Kode Kecamatan/Kelurahan pada NOP tidak dikenali. Lokasi diset sebagai 'TIDAK DIKETAHUI'.")
             else:
                 st.warning("Format NOP tidak valid (kurang dari 18 digit) atau salah. Lokasi tidak bisa dideteksi.")
             
