@@ -167,17 +167,22 @@ st.markdown('''
     
     /* Mobile Responsiveness / Optimization */
     @media (max-width: 768px) {
-        /* Make Tabs stack vertically like buttons on mobile */
+        /* Make Tabs wrap instead of scroll on mobile */
         .stTabs [data-baseweb="tab-list"] {
-            flex-direction: column;
+            display: flex !important;
+            flex-wrap: wrap !important;
+            flex-direction: row !important;
+            overflow-x: hidden !important;
             gap: 6px;
             padding: 8px;
         }
         .stTabs [data-baseweb="tab"] {
-            width: 100%;
-            justify-content: center;
-            padding: 12px 16px;
-            font-size: 1rem; /* Larger touch target */
+            flex-grow: 1 !important;
+            justify-content: center !important;
+            width: auto !important;
+            padding: 10px 14px;
+            font-size: 0.95rem; /* Medium touch target */
+            white-space: normal !important;
         }
         /* Reduce overall page margins to maximize screen estate */
         .block-container {
@@ -1470,34 +1475,40 @@ with tab4:
             selected_lapangan = st.selectbox(
                 "Pilih Berkas", 
                 options=lapangan_options,
-                format_func=lambda x: lapangan_labels[x]
+                format_func=lambda x: lapangan_labels[x],
+                index=None,
+                placeholder="🔍 Ketik NOP, No. Pelayanan, atau Nama untuk mencari..."
             )
-            catatan = st.text_area("Catatan Kondisi Riil Lapangan")
             
-            st.markdown("**Titik Koordinat (GPS)**")
-            st.write("Silakan klik tombol di bawah untuk merekam koordinat lokasi survei Anda.")
-            location = streamlit_geolocation()
-            
-            if location and location.get('latitude'):
-                st.success(f"📍 Tersimpan: {location['latitude']}, {location['longitude']}")
-            
-            submit_lapangan = st.form_submit_button("Selesaikan Survei")
-            if submit_lapangan and selected_lapangan:
-                try:
-                    update_data = {'status_survey': 'Sudah'}
-                    if catatan:
-                        update_data['catatan_petugas'] = catatan
-                    if location and location.get('latitude'):
-                        update_data['lat_petugas'] = location['latitude']
-                        update_data['lon_petugas'] = location['longitude']
-                        
-                    supabase.table('berkas').update(update_data).eq('id', selected_lapangan).execute()
-                    st.success("✅ Laporan lapangan berhasil disubmit dan tersimpan di database!")
-                    import time
-                    time.sleep(1.5)
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"Gagal menyimpan laporan: {e}")
+            if selected_lapangan:
+                catatan = st.text_area("Catatan Kondisi Riil Lapangan")
+                st.markdown("**Titik Koordinat (GPS)**")
+                st.write("Silakan klik tombol di bawah untuk merekam koordinat lokasi survei Anda.")
+                location = streamlit_geolocation()
+                
+                if location and location.get('latitude'):
+                    st.success(f"📍 Tersimpan: {location['latitude']}, {location['longitude']}")
+                
+                submit_lapangan = st.form_submit_button("Selesaikan Survei")
+                if submit_lapangan:
+                    try:
+                        update_data = {'status_survey': 'Sudah'}
+                        if catatan:
+                            update_data['catatan_petugas'] = catatan
+                        if location and location.get('latitude'):
+                            update_data['lat_petugas'] = location['latitude']
+                            update_data['lon_petugas'] = location['longitude']
+                            
+                        supabase.table('berkas').update(update_data).eq('id', selected_lapangan).execute()
+                        st.success("✅ Laporan lapangan berhasil disubmit dan tersimpan di database!")
+                        import time
+                        time.sleep(1.5)
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Gagal menyimpan laporan: {e}")
+            else:
+                st.info("Pilih berkas dari kotak pencarian di atas untuk mulai mengisi laporan.")
+                st.form_submit_button("Selesaikan Survei", disabled=True)
     else:
         st.info("Tidak ada berkas yang berstatus 'Dijadwalkan'.")
 
@@ -1596,7 +1607,9 @@ with tab5:
         selected_detail = st.selectbox(
             "Pilih Berkas yang sudah selesai:", 
             options=detail_options,
-            format_func=lambda x: detail_labels[x]
+            format_func=lambda x: detail_labels[x],
+            index=None,
+            placeholder="🔍 Ketik NOP atau Nama untuk mencari..."
         )
         
         if selected_detail:
