@@ -1441,7 +1441,9 @@ with tab4:
                         update_data['lon_petugas'] = location['longitude']
                         
                     supabase.table('berkas').update(update_data).eq('id', selected_lapangan).execute()
-                    st.success("Laporan lapangan berhasil disubmit dan tersimpan di database!")
+                    st.success("✅ Laporan lapangan berhasil disubmit dan tersimpan di database!")
+                    import time
+                    time.sleep(1.5)
                     st.rerun()
                 except Exception as e:
                     st.error(f"Gagal menyimpan laporan: {e}")
