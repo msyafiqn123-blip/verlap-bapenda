@@ -525,6 +525,13 @@ def fetch_berkas(kecamatan=None, status=None, only_urgent=False):
         df = df[df['status_survey'] == status]
     if not df.empty and only_urgent:
         df = df[df['is_urgent'] == True]
+        
+    if df.empty:
+        df = pd.DataFrame(columns=[
+            'id', 'nomor_pelayanan', 'nomor_nop', 'nama_pemohon', 'tanggal_input', 
+            'mendesak', 'is_urgent', 'kategori_berkas', 'keterangan_berkas', 
+            'kecamatan', 'kelurahan', 'desa', 'status_survey', 'lat', 'lon'
+        ])
     return df
 
 @st.cache_data(ttl=60)
