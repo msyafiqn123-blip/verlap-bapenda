@@ -1372,8 +1372,19 @@ with tab3:
         ongoing = 0
         selesai = 0
         
-        if not df_berkas_all.empty and 'petugas_1' in df_berkas_all.columns:
-            mask_peg = (df_berkas_all['petugas_1'] == peg_id) | (df_berkas_all['petugas_2'] == peg_id)
+        if not df_berkas_all.empty:
+            mask_peg = pd.Series(False, index=df_berkas_all.index)
+            
+            if 'petugas_survey' in df_berkas_all.columns:
+                df_berkas_all['petugas_survey'] = df_berkas_all['petugas_survey'].fillna('')
+                # Use regex \b to match exact peg-1 and not peg-10
+                import re
+                escaped_peg_id = re.escape(str(peg_id))
+                mask_peg = mask_peg | df_berkas_all['petugas_survey'].str.contains(rf'\b{escaped_peg_id}\b', regex=True, na=False)
+                
+            if 'petugas_1' in df_berkas_all.columns:
+                mask_peg = mask_peg | (df_berkas_all['petugas_1'] == peg_id) | (df_berkas_all['petugas_2'] == peg_id)
+                
             berkas_peg = df_berkas_all[mask_peg]
             ongoing = len(berkas_peg[berkas_peg['status_survey'] == 'Dijadwalkan'])
             selesai = len(berkas_peg[berkas_peg['status_survey'] == 'Sudah'])
