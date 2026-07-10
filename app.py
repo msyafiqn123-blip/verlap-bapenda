@@ -804,6 +804,28 @@ with tab0:
                     }
                 });
             }
+            
+            const inputsPel = doc.querySelectorAll('input[aria-label="Nomor Pelayanan"]');
+            if (inputsPel.length > 0) {
+                let inpPel = inputsPel[0];
+                inpPel.addEventListener('input', function(e) {
+                    let val = e.target.value;
+                    if (val.startsWith("2")) {
+                        let digits = val.replace(/\D/g, '');
+                        let res = '';
+                        if (digits.length > 0) res = digits.substring(0, 4);
+                        if (digits.length > 4) res += '.' + digits.substring(4, 8);
+                        if (digits.length > 8) res += '.' + digits.substring(8, 11);
+                        
+                        if (e.target.value !== res) {
+                            e.target.value = res;
+                            let tracker = e.target._valueTracker;
+                            if (tracker) tracker.setValue(res);
+                            e.target.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
+                    }
+                });
+            }
             </script>
             """,
             height=0,
@@ -1129,10 +1151,14 @@ with tab1:
     if bounds_to_fit:
         m.fit_bounds(bounds_to_fit)
     elif not df_berkas.empty:
-        # Fallback to points bounds
-        min_lat, max_lat = df_berkas['lat'].min(), df_berkas['lat'].max()
-        min_lon, max_lon = df_berkas['lon'].min(), df_berkas['lon'].max()
-        if pd.notnull(min_lat) and pd.notnull(min_lon):
+        # Filter out invalid coordinates (e.g., 0.0) which cause zooming out to the whole world
+        valid_coords = df_berkas.dropna(subset=['lat', 'lon'])
+        valid_coords = valid_coords[(valid_coords['lat'] != 0) & (valid_coords['lon'] != 0)]
+        
+        if not valid_coords.empty:
+            min_lat, max_lat = valid_coords['lat'].min(), valid_coords['lat'].max()
+            min_lon, max_lon = valid_coords['lon'].min(), valid_coords['lon'].max()
+            
             # Check if points are too close or just 1 point (prevents Leaflet zoom-out bug)
             if (max_lat - min_lat) < 0.02 or (max_lon - min_lon) < 0.02:
                 mid_lat = (max_lat + min_lat) / 2
