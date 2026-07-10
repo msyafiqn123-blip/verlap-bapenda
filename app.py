@@ -492,19 +492,29 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei):
 
 
 def fetch_berkas(kecamatan=None, status=None, only_urgent=False):
+    global USE_MOCK_DATA
+    df = pd.DataFrame()
+    if not USE_MOCK_DATA:
+        try:
+            query = supabase.table('berkas').select('*')
+            if kecamatan and kecamatan != "Semua":
+                query = query.eq('kecamatan', kecamatan)
+            if status and status != "Semua":
+                query = query.eq('status_survey', status)
+            if only_urgent:
+                query = query.eq('mendesak', True)
+            response = query.execute()
+            df = pd.DataFrame(response.data)
+            if not df.empty:
+                df = df.rename(columns={'latitude': 'lat', 'longitude': 'lon'})
+        except Exception as e:
+            USE_MOCK_DATA = True
+            
     if USE_MOCK_DATA:
         init_mock_data()
         df = pd.DataFrame(st.session_state.mock_berkas)
-    else:
-        query = supabase.table('tabel_berkas').select('id, nomor_pelayanan, nomor_nop, nama_pemohon, keterangan_berkas, kecamatan, desa, status_survey, st_x(koordinat_lokasi) as lon, st_y(koordinat_lokasi) as lat, tanggal_input, is_urgent, petugas_1, petugas_2')
-        if kecamatan and kecamatan != "Semua":
-            query = query.eq('kecamatan', kecamatan)
-        if status and status != "Semua":
-            query = query.eq('status_survey', status)
-        if only_urgent:
-            query = query.eq('is_urgent', True)
-        response = query.execute()
-        df = pd.DataFrame(response.data)
+        if not df.empty:
+            df = df.rename(columns={'latitude': 'lat', 'longitude': 'lon'})
         
     if not df.empty and kecamatan and kecamatan != "Semua":
         df = df[df['kecamatan'] == kecamatan]
@@ -953,7 +963,24 @@ with tab0:
                 st.session_state.mock_berkas.append(new_berkas)
                 st.success(f"Berhasil! Berkas {nopel_baru} (Kel. {kelurahan_baru}) masuk ke Daftar Tunggu.")
             else:
-                st.success("Berkas berhasil disimpan ke Database.")
+                try:
+                    db_berkas = {
+                        'no_pelayanan': nopel_baru,
+                        'kategori_berkas': kat_baru,
+                        'nomor_nop': nop_clean,
+                        'nama_pemohon': pemohon_baru,
+                        'mendesak': urgensi_baru,
+                        'kecamatan': kecamatan_baru,
+                        'kelurahan': kelurahan_baru,
+                        'lokasi_map': gmaps_link,
+                        'latitude': lat_val,
+                        'longitude': lon_val,
+                        'status_survey': 'Belum'
+                    }
+                    supabase.table('berkas').insert(db_berkas).execute()
+                    st.success(f"Berhasil! Berkas {nopel_baru} (Kel. {kelurahan_baru}) berhasil disimpan ke Database.")
+                except Exception as e:
+                    st.error(f"Gagal menyimpan ke database (Pastikan tabel 'berkas' sudah dibuat di SQL Editor). Error: {e}")
 
 
 # --- TAB 1: PETA INTERAKTIF ---
@@ -1234,10 +1261,12 @@ with tab2:
                     for b_id in selected_berkas:
                         update_data = {
                             "status_survey": "Dijadwalkan",
-                            "petugas_1": selected_pegawai[0] if len(selected_pegawai) > 0 else None,
-                            "petugas_2": selected_pegawai[1] if len(selected_pegawai) > 1 else None
+                            "petugas_survey": " & ".join(selected_pegawai)
                         }
-                        supabase.table("tabel_berkas").update(update_data).eq("id", b_id).execute()
+                        try:
+                            supabase.table("berkas").update(update_data).eq("id", b_id).execute()
+                        except Exception as e:
+                            st.error(f"Gagal update database: {e}")
                     st.success("Penugasan berhasil disimpan! Status berkas telah diperbarui menjadi 'Dijadwalkan'.")
                 
                 nama_petugas = " & ".join([pegawai_dict[p] for p in selected_pegawai])
@@ -1467,7 +1496,10 @@ with tab5:
                     else:
                         st.error("❌ Nomor Pelayanan tidak ditemukan.")
                 else:
-                    res = supabase.table('tabel_berkas').delete().eq('nomor_pelayanan', str(del_nopel).strip()).execute()
+                    try:
+                        res = supabase.table('berkas').delete().eq('no_pelayanan', str(del_nopel).strip()).execute()
+                    except:
+                        res = type('obj', (object,), {'data': []})
                     if len(res.data) > 0:
                         st.success(f"✅ Berkas dengan Nomor Pelayanan {del_nopel} berhasil dihapus.")
                     else:
