@@ -1397,7 +1397,21 @@ with tab3:
         })
         
     df_workload = pd.DataFrame(pegawai_workload)
-    df_workload = df_workload.sort_values(by='Total', ascending=False)
+    df_workload = df_workload.sort_values(by='Total', ascending=False).reset_index(drop=True)
+    
+    # Tambahkan Medali untuk Top 3
+    for idx in range(min(3, len(df_workload))):
+        if df_workload.loc[idx, 'Total'] > 0:
+            medal = "🥇" if idx == 0 else "🥈" if idx == 1 else "🥉"
+            df_workload.loc[idx, 'Nama Pegawai'] = f"{medal} {df_workload.loc[idx, 'Nama Pegawai']}"
+            
+    # Tampilkan Saran Penugasan
+    lowest_workload_df = df_workload.sort_values(by='Total', ascending=True).head(3)
+    if not lowest_workload_df.empty:
+        lowest_names = lowest_workload_df['Nama Pegawai'].tolist()
+        # Clean up medals if they accidentally got ones (e.g., if everyone has 0 or 1)
+        clean_names = [n.replace("🥇 ", "").replace("🥈 ", "").replace("🥉 ", "") for n in lowest_names]
+        st.info(f"💡 **Saran Penugasan:** Pertimbangkan menugaskan **{', '.join(clean_names)}** karena beban survei mereka paling sedikit saat ini.")
     
     import plotly.express as px
     df_melt = df_workload.melt(id_vars='Nama Pegawai', value_vars=['Dijadwalkan (Proses)', 'Selesai (Selesai)'], var_name='Status', value_name='Jumlah Berkas')
@@ -1585,23 +1599,38 @@ with tab5:
     with st.expander("Klik untuk menghapus berkas dari sistem"):
         st.warning("Peringatan: Berkas yang dihapus tidak dapat dikembalikan.")
         del_nopel = st.text_input("Masukkan Nomor Pelayanan yang ingin dihapus:")
-        if st.button("Hapus Berkas", type="primary", use_container_width=True):
-            if not del_nopel:
-                st.error("Masukkan Nomor Pelayanan terlebih dahulu.")
+        
+        if del_nopel:
+            # Cari data berdasarkan nomor pelayanan di dataframe yang sudah ada (df_all)
+            df_to_delete = df_all[df_all['nomor_pelayanan'].astype(str).str.strip() == str(del_nopel).strip()]
+            
+            if not df_to_delete.empty:
+                b_del = df_to_delete.iloc[0]
+                st.info(f"**Berkas Ditemukan!**\n\n- **Nama Pemohon:** {b_del['nama_pemohon']}\n- **NOP:** {b_del['nomor_nop']}\n- **Kelurahan/Desa:** {b_del.get('desa', '-')}\n- **Kategori:** {b_del.get('keterangan_berkas', '-')}\n- **Status Survei:** {b_del['status_survey']}")
+                
+                if st.button("⚠️ Ya, Hapus Berkas Ini Secara Permanen", type="primary", use_container_width=True):
+                    if USE_MOCK_DATA:
+                        original_len = len(st.session_state.mock_berkas)
+                        st.session_state.mock_berkas = [b for b in st.session_state.mock_berkas if str(b['nomor_pelayanan']).strip() != str(del_nopel).strip()]
+                        if len(st.session_state.mock_berkas) < original_len:
+                            st.success(f"✅ Berkas dengan Nomor Pelayanan {del_nopel} berhasil dihapus.")
+                            import time
+                            time.sleep(1.5)
+                            st.rerun()
+                        else:
+                            st.error("❌ Nomor Pelayanan tidak ditemukan.")
+                    else:
+                        try:
+                            # Ingat: kolom di Supabase namanya no_pelayanan
+                            res = supabase.table('berkas').delete().eq('no_pelayanan', str(del_nopel).strip()).execute()
+                        except:
+                            res = type('obj', (object,), {'data': []})
+                        if hasattr(res, 'data') and len(res.data) > 0:
+                            st.success(f"✅ Berkas dengan Nomor Pelayanan {del_nopel} berhasil dihapus.")
+                            import time
+                            time.sleep(1.5)
+                            st.rerun()
+                        else:
+                            st.error("❌ Berkas gagal dihapus atau tidak ditemukan di database.")
             else:
-                if USE_MOCK_DATA:
-                    original_len = len(st.session_state.mock_berkas)
-                    st.session_state.mock_berkas = [b for b in st.session_state.mock_berkas if str(b['nomor_pelayanan']).strip() != str(del_nopel).strip()]
-                    if len(st.session_state.mock_berkas) < original_len:
-                        st.success(f"✅ Berkas dengan Nomor Pelayanan {del_nopel} berhasil dihapus.")
-                    else:
-                        st.error("❌ Nomor Pelayanan tidak ditemukan.")
-                else:
-                    try:
-                        res = supabase.table('berkas').delete().eq('no_pelayanan', str(del_nopel).strip()).execute()
-                    except:
-                        res = type('obj', (object,), {'data': []})
-                    if len(res.data) > 0:
-                        st.success(f"✅ Berkas dengan Nomor Pelayanan {del_nopel} berhasil dihapus.")
-                    else:
-                        st.error("❌ Nomor Pelayanan tidak ditemukan di database.")
+                st.warning("Nomor Pelayanan tidak ditemukan di sistem. Pastikan diketik dengan benar.")
