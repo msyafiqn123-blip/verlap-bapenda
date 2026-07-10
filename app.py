@@ -234,7 +234,7 @@ def get_compass_direction(bearing):
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-@st.cache_data
+@st.cache_data(show_spinner="🗺️ Memuat data wilayah...")
 def load_referensi():
     # cache bust v2
     filepath = os.path.join(BASE_DIR, "referensi_wilayah.json")
@@ -243,7 +243,7 @@ def load_referensi():
             return json.load(f)
     return {}
 
-@st.cache_data
+@st.cache_data(show_spinner="🗺️ Memuat peta batas desa...")
 def load_geojson(filename):
     # cache bust v2
     filepath = os.path.join(BASE_DIR, filename)
@@ -252,7 +252,7 @@ def load_geojson(filename):
             return json.load(f)
     return None
 
-@st.cache_data
+@st.cache_data(show_spinner="🔍 Memuat kamus NOP...")
 def load_referensi_nop():
     # cache bust v2
     filepath = os.path.join(BASE_DIR, "referensi_nop.json")
@@ -685,7 +685,7 @@ with tab0:
     st.header("📝 Input Antrean Berkas Baru")
     st.write("Tambahkan data berkas yang akan disurvei lapangan. Berkas akan masuk ke Daftar Tunggu (Belum Disurvei).")
     
-    @st.cache_data(ttl=300)
+    @st.cache_data(ttl=300, show_spinner="🔄 Sinkronisasi data dari Google Sheets...")
     def fetch_spreadsheet_data():
         import pandas as pd
         url = "https://docs.google.com/spreadsheets/d/1mrbqAXbRDK7MR-rjlMsVxFzzo6jlhxHpbtHAT5W55RQ/export?format=xlsx"
@@ -1098,7 +1098,10 @@ with tab1:
         min_lat, max_lat = df_berkas['lat'].min(), df_berkas['lat'].max()
         min_lon, max_lon = df_berkas['lon'].min(), df_berkas['lon'].max()
         if pd.notnull(min_lat) and pd.notnull(min_lon):
-            m.fit_bounds([[min_lat, min_lon], [max_lat, max_lon]])
+            if min_lat == max_lat and min_lon == max_lon:
+                m.fit_bounds([[min_lat - 0.01, min_lon - 0.01], [max_lat + 0.01, max_lon + 0.01]])
+            else:
+                m.fit_bounds([[min_lat, min_lon], [max_lat, max_lon]])
 
     # 4. Marker for Bapenda Purwakarta
     folium.Marker(
