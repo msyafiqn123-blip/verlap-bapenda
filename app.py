@@ -321,7 +321,7 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     class PDF(FPDF):
         def footer(self):
             self.set_y(272)
-            self.set_font("calibri", "", 8)
+            self.set_font("calibri", "", 10)
             self.line(15, 275, 195, 275)
             # Add BSrE logo if exists
             import os
@@ -349,11 +349,11 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
             pass
     
     # Header
-    pdf.set_font("calibri", "B", 14)
+    pdf.set_font("calibri", "B", 16)
     pdf.cell(0, 6, "PEMERINTAH KABUPATEN PURWAKARTA", ln=True, align="C")
-    pdf.set_font("calibri", "B", 18)
+    pdf.set_font("calibri", "B", 22)
     pdf.cell(0, 8, "BADAN PENDAPATAN DAERAH", ln=True, align="C")
-    pdf.set_font("calibri", "", 10)
+    pdf.set_font("calibri", "", 12)
     pdf.cell(0, 5, "Jalan Surawinata No. 30. A Purwakarta Kode Pos 41114", ln=True, align="C")
     pdf.cell(0, 4, "e-mail: bapenda@purwakartakab.go.id", ln=True, align="C")
     
@@ -363,14 +363,15 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     pdf.ln(8)
     
     # Title
-    pdf.set_font("calibri", "BU", 14)
+    pdf.set_font("calibri", "BU", 16)
+    pdf.set_font("calibri", "BU", 18)
     pdf.cell(0, 6, "SURAT PERINTAH", ln=True, align="C")
-    pdf.set_font("calibri", "", 10)
+    pdf.set_font("calibri", "", 14)
     pdf.cell(0, 5, f"Nomor: 800.1.11.1/{nomor_surat}/PENDANIL/2026", ln=True, align="C")
     pdf.ln(10)
     
     # Dari / Issuer
-    pdf.set_font("calibri", "", 9)
+    pdf.set_font("calibri", "", 12)
     pdf.cell(15, 5, "", 0, 0)
     pdf.cell(20, 5, "Nama", 0, 0)
     pdf.cell(5, 5, ":", 0, 0)
@@ -390,12 +391,12 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     pdf.ln(10)
     
     # Memerintahkan
-    pdf.set_font("calibri", "B", 11)
+    pdf.set_font("calibri", "B", 14)
     pdf.cell(0, 5, "MEMERINTAHKAN", ln=True, align="C")
     pdf.ln(5)
     
     # Kepada
-    pdf.set_font("calibri", "", 9)
+    pdf.set_font("calibri", "", 12)
     pdf.cell(15, 5, "", 0, 0)
     pdf.cell(20, 5, "Kepada", 0, 0)
     pdf.cell(5, 5, ":", 0, 1)
