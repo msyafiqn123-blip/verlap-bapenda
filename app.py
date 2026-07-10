@@ -236,6 +236,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @st.cache_data
 def load_referensi():
+    # cache bust v2
     filepath = os.path.join(BASE_DIR, "referensi_wilayah.json")
     if os.path.exists(filepath):
         with open(filepath, "r", encoding="utf-8") as f:
@@ -244,6 +245,7 @@ def load_referensi():
 
 @st.cache_data
 def load_geojson(filename):
+    # cache bust v2
     filepath = os.path.join(BASE_DIR, filename)
     if os.path.exists(filepath):
         with open(filepath, "r", encoding="utf-8") as f:
@@ -252,6 +254,7 @@ def load_geojson(filename):
 
 @st.cache_data
 def load_referensi_nop():
+    # cache bust v2
     filepath = os.path.join(BASE_DIR, "referensi_nop.json")
     if os.path.exists(filepath):
         import json
