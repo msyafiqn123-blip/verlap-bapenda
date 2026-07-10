@@ -509,7 +509,24 @@ def fetch_berkas(kecamatan=None, status=None, only_urgent=False):
             response = query.execute()
             df = pd.DataFrame(response.data)
             if not df.empty:
-                df = df.rename(columns={'latitude': 'lat', 'longitude': 'lon'})
+                rename_map = {
+                    'latitude': 'lat',
+                    'longitude': 'lon',
+                    'no_pelayanan': 'nomor_pelayanan',
+                    'kategori_berkas': 'keterangan_berkas',
+                    'kelurahan': 'desa',
+                    'mendesak': 'is_urgent'
+                }
+                if 'created_at' in df.columns:
+                    rename_map['created_at'] = 'tanggal_input'
+                
+                df = df.rename(columns=rename_map)
+                
+                import datetime
+                if 'tanggal_input' not in df.columns:
+                    df['tanggal_input'] = datetime.date.today().strftime('%Y-%m-%d')
+                else:
+                    df['tanggal_input'] = pd.to_datetime(df['tanggal_input']).dt.strftime('%Y-%m-%d')
         except Exception as e:
             st.error(f"Gagal mengambil data dari Supabase: {e}")
             
