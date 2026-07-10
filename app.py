@@ -1431,13 +1431,19 @@ with tab4:
             
             submit_lapangan = st.form_submit_button("Selesaikan Survei")
             if submit_lapangan and selected_lapangan:
-                if USE_MOCK_DATA:
-                    for b in st.session_state.mock_berkas:
-                        if b['id'] == selected_lapangan:
-                            b['status_survey'] = 'Sudah'
-                    st.success("Laporan survei tersimpan! Berkas kini berstatus Selesai Disurvei.")
-                else:
-                    st.success("Laporan lapangan berhasil disubmit!")
+                try:
+                    update_data = {'status_survey': 'Sudah'}
+                    if catatan:
+                        update_data['catatan_petugas'] = catatan
+                    if location and location.get('latitude'):
+                        update_data['lat_petugas'] = location['latitude']
+                        update_data['lon_petugas'] = location['longitude']
+                        
+                    supabase.table('berkas').update(update_data).eq('id', selected_lapangan).execute()
+                    st.success("Laporan lapangan berhasil disubmit dan tersimpan di database!")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Gagal menyimpan laporan: {e}")
     else:
         st.info("Tidak ada berkas yang berstatus 'Dijadwalkan'.")
 
@@ -1522,6 +1528,43 @@ with tab5:
         st.dataframe(styled_df, use_container_width=True, hide_index=True)
     else:
         st.info("Pencarian tidak ditemukan. Pastikan Nomor Pelayanan atau NOP sudah diketik dengan benar.")
+
+    # === DETAIL SECTION ===
+    st.write("---")
+    st.subheader("🔍 Detail Laporan Petugas (Untuk Berkas Selesai)")
+    
+    # We use df_all instead of result_page because result_page only has a few columns
+    df_sudah = df_all[df_all['status_survey'] == 'Sudah']
+    if not df_sudah.empty:
+        detail_options = df_sudah['id'].tolist()
+        detail_labels = {row['id']: f"{row.get('nomor_pelayanan', '-')} / {row['nomor_nop']} - {row['nama_pemohon']}" for _, row in df_sudah.iterrows()}
+        
+        selected_detail = st.selectbox(
+            "Pilih Berkas yang sudah selesai:", 
+            options=detail_options,
+            format_func=lambda x: detail_labels[x]
+        )
+        
+        if selected_detail:
+            row_detail = df_sudah[df_sudah['id'] == selected_detail].iloc[0]
+            
+            col_det1, col_det2 = st.columns(2)
+            with col_det1:
+                st.info(f"**📝 Catatan Lapangan:**\n\n{row_detail.get('catatan_petugas', 'Tidak ada catatan.')}")
+            
+            with col_det2:
+                lat_p = row_detail.get('lat_petugas')
+                lon_p = row_detail.get('lon_petugas')
+                if pd.notnull(lat_p) and pd.notnull(lon_p):
+                    st.success(f"**📍 Koordinat Petugas:**\n\n{lat_p}, {lon_p}")
+                    # Show mini map
+                    df_map = pd.DataFrame({'lat': [float(lat_p)], 'lon': [float(lon_p)]})
+                    st.map(df_map, zoom=15)
+                else:
+                    st.warning("Petugas tidak melampirkan titik koordinat GPS.")
+    else:
+        st.info("Belum ada berkas yang selesai disurvei untuk ditampilkan detailnya.")
+
 
     st.write("---")
     st.subheader("🗑️ Hapus Berkas")
