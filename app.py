@@ -50,7 +50,17 @@ footer {visibility: hidden;}
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
+
+def format_nop_string(val):
+    if not val:
+        return ""
+    v = str(val).replace(".", "").replace("-", "").strip()
+    if len(v) == 18:
+        return f"{v[0:2]}.{v[2:4]}.{v[4:7]}.{v[7:10]}.{v[10:13]}.{v[13:17]}.{v[17:]}"
+    return val
+
 BAPENDA_COORD = [-6.5459027, 107.445524]
+
 
 # --- CUSTOM CSS FOR MODERN UI (VERCEL/REACT STYLE) ---
 st.markdown('''
@@ -1084,8 +1094,6 @@ with tab1:
     else:
         df_berkas = df_berkas_raw.copy()
     
-    m = folium.Map(location=BAPENDA_COORD, zoom_start=11)
-    
     # Menentukan area mana yang "menyala" (fokus)
     geom_to_highlight = None
     bounds_to_fit = None
@@ -1097,75 +1105,55 @@ with tab1:
         feature = get_feature_by_name(desa_geojson, selected_desa)
         if feature:
             geom_to_highlight = shape(feature['geometry'])
+            bounds_to_fit = get_bounds_from_geom(geom_to_highlight)
     elif selected_kec != "Semua" and kec_geojson and HAS_SHAPELY:
         feature = get_feature_by_name(kec_geojson, selected_kec)
         if feature:
             geom_to_highlight = shape(feature['geometry'])
-    elif kab_geojson and HAS_SHAPELY:
-        feature = kab_geojson['features'][0]
-        geom_to_highlight = shape(feature['geometry'])
+            bounds_to_fit = get_bounds_from_geom(geom_to_highlight)
 
-    # 1. Terapkan Masking Dinamis
+    # Calculate center and zoom BEFORE creating map
+    center_loc = BAPENDA_COORD
+    zoom_level = 11
+    
+    valid_coords = pd.DataFrame()
+    if not df_berkas.empty:
+        valid_coords = df_berkas.copy()
+        valid_coords['lat'] = pd.to_numeric(valid_coords['lat'], errors='coerce')
+        valid_coords['lon'] = pd.to_numeric(valid_coords['lon'], errors='coerce')
+        valid_coords = valid_coords.dropna(subset=['lat', 'lon'])
+        valid_coords = valid_coords[(valid_coords['lat'] != 0) & (valid_coords['lon'] != 0)]
+    
+    if bounds_to_fit:
+        center_loc = [(bounds_to_fit[0][0] + bounds_to_fit[1][0])/2, (bounds_to_fit[0][1] + bounds_to_fit[1][1])/2]
+        zoom_level = 13
+    elif not valid_coords.empty:
+        min_lat, max_lat = valid_coords['lat'].min(), valid_coords['lat'].max()
+        min_lon, max_lon = valid_coords['lon'].min(), valid_coords['lon'].max()
+        center_loc = [(min_lat + max_lat)/2, (min_lon + max_lon)/2]
+        
+        if (max_lat - min_lat) < 0.02 and (max_lon - min_lon) < 0.02:
+            zoom_level = 14
+        else:
+            zoom_level = 11
+
+    # Inisialisasi Peta
+    m = folium.Map(location=center_loc, zoom_start=zoom_level)
+
+    # Highlight
     if geom_to_highlight:
-        mask_geojson_data = create_dynamic_mask(geom_to_highlight)
-        if mask_geojson_data:
-            folium.GeoJson(
-                mask_geojson_data,
-                name="Area Luar (Redup)",
-                style_function=lambda feature: {
-                    'fillColor': '#000000',
-                    'fillOpacity': 0.65,
-                    'color': 'none',
-                    'weight': 0
-                }
-            ).add_to(m)
-            minx, miny, maxx, maxy = geom_to_highlight.bounds
-            bounds_to_fit = [[miny, minx], [maxy, maxx]] # [lat, lon]
-
-    # 2. Overlay Garis Batas
-    if kab_geojson:
         folium.GeoJson(
-            kab_geojson,
-            name="Batas Kabupaten",
-            style_function=lambda feature: {'fillColor': 'transparent', 'color': '#2b3452', 'weight': 3, 'dashArray': '5, 5'}
+            geom_to_highlight.__geo_interface__,
+            style_function=lambda x: {'fillColor': 'blue', 'color': 'blue', 'weight': 2, 'fillOpacity': 0.1}
         ).add_to(m)
-        
-    if kec_geojson:
-        folium.GeoJson(
-            kec_geojson,
-            name="Batas Kecamatan",
-            style_function=lambda feature: {'fillColor': 'transparent', 'color': '#f47820', 'weight': 1.5, 'opacity': 0.8},
-            tooltip=folium.GeoJsonTooltip(fields=['name'], aliases=['Kecamatan:'])
-        ).add_to(m)
-        
-    if selected_desa != "Semua" and desa_geojson:
-        feature = get_feature_by_name(desa_geojson, selected_desa)
-        if feature:
-            folium.GeoJson(
-                feature,
-                name=f"Batas {selected_desa}",
-                style_function=lambda feature: {'fillColor': '#00ff00', 'fillOpacity': 0.1, 'color': '#00ff00', 'weight': 3}
-            ).add_to(m)
 
-    # 3. Paskan Kamera
+    # Paskan Kamera jika punya bounds to fit
     if bounds_to_fit:
         m.fit_bounds(bounds_to_fit)
-    elif not df_berkas.empty:
-        # Filter out invalid coordinates (e.g., 0.0) which cause zooming out to the whole world
-        valid_coords = df_berkas.dropna(subset=['lat', 'lon'])
-        valid_coords = valid_coords[(valid_coords['lat'] != 0) & (valid_coords['lon'] != 0)]
-        
-        if not valid_coords.empty:
-            min_lat, max_lat = valid_coords['lat'].min(), valid_coords['lat'].max()
-            min_lon, max_lon = valid_coords['lon'].min(), valid_coords['lon'].max()
-            
-            # Check if points are too close or just 1 point (prevents Leaflet zoom-out bug)
-            if (max_lat - min_lat) < 0.02 or (max_lon - min_lon) < 0.02:
-                mid_lat = (max_lat + min_lat) / 2
-                mid_lon = (max_lon + min_lon) / 2
-                m.fit_bounds([[mid_lat - 0.02, mid_lon - 0.02], [mid_lat + 0.02, mid_lon + 0.02]])
-            else:
-                m.fit_bounds([[min_lat, min_lon], [max_lat, max_lon]])
+    elif not valid_coords.empty and zoom_level != 14:
+        min_lat, max_lat = valid_coords['lat'].min(), valid_coords['lat'].max()
+        min_lon, max_lon = valid_coords['lon'].min(), valid_coords['lon'].max()
+        m.fit_bounds([[min_lat, min_lon], [max_lat, max_lon]])
 
     # 4. Marker for Bapenda Purwakarta
     folium.Marker(
@@ -1222,8 +1210,9 @@ with tab1:
                     
                 folium.Marker(
                     [row['lat'], row['lon']],
-                    popup=f"No. Pel: {row.get('nomor_pelayanan', '-')}<br>Tgl Input: {row.get('tanggal_input', '-')}<br>Urgensi: <b>{urgensi}</b><br>Kategori: {row.get('keterangan_berkas', '-')}<br>Status: {row['status_survey']}",
-                    tooltip=row.get('nomor_pelayanan', row['nomor_nop']),
+                    popup=f"No. Pel: {row.get('nomor_pelayanan', '-')}<br>NOP: {format_nop_string(row['nomor_nop'])}<br>Tgl Input: {row.get('tanggal_input', '-')}<br>Urgensi: <b>{urgensi}</b><br>Kategori: {row.get('keterangan_berkas', '-')}<br>Status: {row['status_survey']}",
+
+                    tooltip=row.get('nomor_pelayanan', format_nop_string(row['nomor_nop'])),
                     icon=folium.Icon(color=color, icon=icon_tipe)
                 ).add_to(m)
             
@@ -1290,7 +1279,7 @@ with tab2:
             
         # Pemetaan ID ke Label Display
         berkas_options = df_berkas_belum['id'].tolist()
-        berkas_labels = {row['id']: f"{row.get('nomor_pelayanan', '-')} / {row['nomor_nop']} - {row['nama_pemohon']} ({row.get('keterangan_berkas', '-')})" for _, row in df_berkas_belum.iterrows()}
+        berkas_labels = {row['id']: f"{row.get('nomor_pelayanan', '-')} / {format_nop_string(row['nomor_nop'])} - {row['nama_pemohon']} ({row.get('keterangan_berkas', '-')})" for _, row in df_berkas_belum.iterrows()}
         pegawai_dict = {row['id']: f"{row['nama_pegawai'].split(',')[0]} - {row.get('nip', '-')} ({row.get('jabatan', '-')})" for _, row in df_pegawai.iterrows()}
         
         with st.form("form_penugasan"):
@@ -1476,7 +1465,7 @@ with tab4:
     if not df_berkas_jadwal.empty:
         with st.form("form_lapangan"):
             lapangan_options = df_berkas_jadwal['id'].tolist()
-            lapangan_labels = {row['id']: f"{row.get('nomor_pelayanan', '-')} / {row['nomor_nop']} - {row['nama_pemohon']} ({row.get('keterangan_berkas', '-')})" for _, row in df_berkas_jadwal.iterrows()}
+            lapangan_labels = {row['id']: f"{row.get('nomor_pelayanan', '-')} / {format_nop_string(row['nomor_nop'])} - {row['nama_pemohon']} ({row.get('keterangan_berkas', '-')})" for _, row in df_berkas_jadwal.iterrows()}
             
             selected_lapangan = st.selectbox(
                 "Pilih Berkas", 
@@ -1602,7 +1591,7 @@ with tab5:
     df_sudah = df_all[df_all['status_survey'] == 'Sudah']
     if not df_sudah.empty:
         detail_options = df_sudah['id'].tolist()
-        detail_labels = {row['id']: f"{row.get('nomor_pelayanan', '-')} / {row['nomor_nop']} - {row['nama_pemohon']}" for _, row in df_sudah.iterrows()}
+        detail_labels = {row['id']: f"{row.get('nomor_pelayanan', '-')} / {format_nop_string(row['nomor_nop'])} - {row['nama_pemohon']}" for _, row in df_sudah.iterrows()}
         
         selected_detail = st.selectbox(
             "Pilih Berkas yang sudah selesai:", 
