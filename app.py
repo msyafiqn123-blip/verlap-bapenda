@@ -1482,17 +1482,19 @@ with tab4:
                 placeholder="🔍 Ketik NOP, No. Pelayanan, atau Nama untuk mencari..."
             )
             
-            if selected_lapangan:
-                catatan = st.text_area("Catatan Kondisi Riil Lapangan")
-                st.markdown("**Titik Koordinat (GPS)**")
-                st.write("Silakan klik tombol di bawah untuk merekam koordinat lokasi survei Anda.")
-                location = streamlit_geolocation()
-                
-                if location and location.get('latitude'):
-                    st.success(f"📍 Tersimpan: {location['latitude']}, {location['longitude']}")
-                
-                submit_lapangan = st.form_submit_button("Selesaikan Survei")
-                if submit_lapangan:
+            catatan = st.text_area("Catatan Kondisi Riil Lapangan")
+            st.markdown("**Titik Koordinat (GPS)**")
+            st.write("Silakan klik tombol di bawah untuk merekam koordinat lokasi survei Anda.")
+            location = streamlit_geolocation()
+            
+            if location and location.get('latitude'):
+                st.success(f"📍 Tersimpan: {location['latitude']}, {location['longitude']}")
+            
+            submit_lapangan = st.form_submit_button("Selesaikan Survei")
+            if submit_lapangan:
+                if not selected_lapangan:
+                    st.error("Mohon pilih berkas terlebih dahulu!")
+                else:
                     try:
                         update_data = {'status_survey': 'Sudah'}
                         if catatan:
@@ -1509,9 +1511,6 @@ with tab4:
                         st.rerun()
                     except Exception as e:
                         st.error(f"Gagal menyimpan laporan: {e}")
-            else:
-                st.info("Pilih berkas dari kotak pencarian di atas untuk mulai mengisi laporan.")
-                st.form_submit_button("Selesaikan Survei", disabled=True)
     else:
         st.info("Tidak ada berkas yang berstatus 'Dijadwalkan'.")
 
