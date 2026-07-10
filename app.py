@@ -712,7 +712,9 @@ with tab0:
         match = df_sheet[df_sheet[2] == nopel_baru.strip()]
         if not match.empty:
             matched_row = match.iloc[0]
-            st.success("✅ Data Nomor Pelayanan ditemukan")
+            st.success("✅ Data Nomor Pelayanan ditemukan di Spreadsheet")
+        elif nopel_baru.strip().startswith("0"):
+            st.info("ℹ️ Berkas BPHTB terdeteksi. Silakan input NOP & Nama Pemohon secara manual (Kecamatan/Kelurahan otomatis dari NOP).")
         elif cek_btn:
             st.error("❌ Data Nomor Pelayanan tidak ditemukan")
             
@@ -722,7 +724,9 @@ with tab0:
     jenis_permohonan = str(matched_row[5]).strip().upper() if matched_row is not None and not pd.isna(matched_row[5]) else ""
     
     cat_index = 0
-    if "OBJEK BARU" in jenis_permohonan:
+    if nopel_baru and nopel_baru.strip().startswith("0"):
+        cat_index = 1
+    elif "OBJEK BARU" in jenis_permohonan:
         cat_index = 2
     elif "BPHTB" in jenis_permohonan:
         cat_index = 1
