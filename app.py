@@ -320,8 +320,8 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     
     class PDF(FPDF):
         def footer(self):
-            self.set_y(-25)
-            self.set_font("helvetica", "", 8)
+            self.set_y(272)
+            self.set_font("calibri", "", 8)
             self.line(15, 275, 195, 275)
             # Add BSrE logo if exists
             import os
@@ -331,27 +331,29 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
                 except:
                     pass
             
-            self.set_y(-20)
+            self.set_y(280)
             self.cell(0, 4, "Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik yang diterbitkan oleh", ln=True, align="R")
             self.cell(0, 4, "Balai Sertifikat Elektronik (BSrE) Badan Siber dan Sandi Negara", ln=True, align="R")
 
-    pdf = PDF()
+    pdf = PDF(format='legal')
+    pdf.add_font("calibri", "", "calibri.ttf", uni=True)
+    pdf.add_font("calibri", "B", "calibrib.ttf", uni=True)
     pdf.add_page()
     
     import os
     logo_path = "logo_pwk.png"
     if os.path.exists(logo_path):
         try:
-            pdf.image(logo_path, 15, 10, 25)
+            pdf.image(logo_path, 15, 8, w=21)
         except:
             pass
     
     # Header
-    pdf.set_font("helvetica", "B", 14)
+    pdf.set_font("calibri", "B", 14)
     pdf.cell(0, 6, "PEMERINTAH KABUPATEN PURWAKARTA", ln=True, align="C")
-    pdf.set_font("helvetica", "B", 18)
+    pdf.set_font("calibri", "B", 18)
     pdf.cell(0, 8, "BADAN PENDAPATAN DAERAH", ln=True, align="C")
-    pdf.set_font("helvetica", "", 10)
+    pdf.set_font("calibri", "", 10)
     pdf.cell(0, 5, "Jalan Surawinata No. 30. A Purwakarta Kode Pos 41114", ln=True, align="C")
     pdf.cell(0, 4, "e-mail: bapenda@purwakartakab.go.id", ln=True, align="C")
     
@@ -361,14 +363,14 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     pdf.ln(8)
     
     # Title
-    pdf.set_font("helvetica", "BU", 14)
+    pdf.set_font("calibri", "BU", 14)
     pdf.cell(0, 6, "SURAT PERINTAH", ln=True, align="C")
-    pdf.set_font("helvetica", "", 10)
+    pdf.set_font("calibri", "", 10)
     pdf.cell(0, 5, f"Nomor: 800.1.11.1/{nomor_surat}/PENDANIL/2026", ln=True, align="C")
     pdf.ln(10)
     
     # Dari / Issuer
-    pdf.set_font("helvetica", "", 9)
+    pdf.set_font("calibri", "", 9)
     pdf.cell(15, 5, "", 0, 0)
     pdf.cell(20, 5, "Nama", 0, 0)
     pdf.cell(5, 5, ":", 0, 0)
@@ -388,12 +390,12 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     pdf.ln(10)
     
     # Memerintahkan
-    pdf.set_font("helvetica", "B", 11)
+    pdf.set_font("calibri", "B", 11)
     pdf.cell(0, 5, "MEMERINTAHKAN", ln=True, align="C")
     pdf.ln(5)
     
     # Kepada
-    pdf.set_font("helvetica", "", 9)
+    pdf.set_font("calibri", "", 9)
     pdf.cell(15, 5, "", 0, 0)
     pdf.cell(20, 5, "Kepada", 0, 0)
     pdf.cell(5, 5, ":", 0, 1)
