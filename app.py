@@ -29,7 +29,27 @@ try:
     page_icon = Image.open(logo_path)
 except:
     page_icon = "🏛️"
-st.set_page_config(page_title="Sistem Verifikasi Lapangan | Bapenda Purwakarta", page_icon=page_icon, layout="wide", initial_sidebar_state="expanded")
+
+# 2. KONFIGURASI HALAMAN STREAMLIT
+st.set_page_config(
+    page_title="Sistem Verifikasi Lapangan",
+    page_icon="📋",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# Sembunyikan menu Streamlit dan tombol Deploy
+hide_streamlit_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+.stDeployButton {display:none;}
+.viewerBadge_container__1QSob {display: none;}
+[data-testid="stAppViewBlockContainer"] {padding-top: 2rem;}
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 BAPENDA_COORD = [-6.5459027, 107.445524]
 
 # --- CUSTOM CSS FOR MODERN UI (VERCEL/REACT STYLE) ---

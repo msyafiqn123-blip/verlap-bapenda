@@ -1,0 +1,774 @@
+{
+    "000000": {
+        "kecamatan": "OBJEK KHUSUS",
+        "kelurahan": "OBJEK KHUSUS"
+    },
+    "010006": {
+        "kecamatan": "JATILUHUR",
+        "kelurahan": "JATIMEKAR"
+    },
+    "010007": {
+        "kecamatan": "JATILUHUR",
+        "kelurahan": "CIKAO BANDUNG"
+    },
+    "010008": {
+        "kecamatan": "JATILUHUR",
+        "kelurahan": "JATILUHUR"
+    },
+    "010009": {
+        "kecamatan": "JATILUHUR",
+        "kelurahan": "CILEGONG"
+    },
+    "010010": {
+        "kecamatan": "JATILUHUR",
+        "kelurahan": "KEMBANG KUNING"
+    },
+    "010011": {
+        "kecamatan": "JATILUHUR",
+        "kelurahan": "CIBINONG"
+    },
+    "010015": {
+        "kecamatan": "JATILUHUR",
+        "kelurahan": "BUNDER"
+    },
+    "010016": {
+        "kecamatan": "JATILUHUR",
+        "kelurahan": "MEKARGALIH"
+    },
+    "010017": {
+        "kecamatan": "JATILUHUR",
+        "kelurahan": "CISALADA"
+    },
+    "010018": {
+        "kecamatan": "JATILUHUR",
+        "kelurahan": "PARAKANLIMA"
+    },
+    "011001": {
+        "kecamatan": "SUKASARI",
+        "kelurahan": "SUKASARI"
+    },
+    "011002": {
+        "kecamatan": "SUKASARI",
+        "kelurahan": "KERTAMANAH"
+    },
+    "011003": {
+        "kecamatan": "SUKASARI",
+        "kelurahan": "CIRIRIP"
+    },
+    "011004": {
+        "kecamatan": "SUKASARI",
+        "kelurahan": "KUTAMANAH"
+    },
+    "011005": {
+        "kecamatan": "SUKASARI",
+        "kelurahan": "PARUNGBANTENG"
+    },
+    "020001": {
+        "kecamatan": "TEGALWARU",
+        "kelurahan": "SUKAHAJI"
+    },
+    "020002": {
+        "kecamatan": "TEGALWARU",
+        "kelurahan": "KAROYA"
+    },
+    "020003": {
+        "kecamatan": "TEGALWARU",
+        "kelurahan": "CADASSARI"
+    },
+    "020004": {
+        "kecamatan": "TEGALWARU",
+        "kelurahan": "CADASMEKAR"
+    },
+    "020005": {
+        "kecamatan": "TEGALWARU",
+        "kelurahan": "CITALANG"
+    },
+    "020006": {
+        "kecamatan": "TEGALWARU",
+        "kelurahan": "BATUTUMPANG"
+    },
+    "020007": {
+        "kecamatan": "TEGALWARU",
+        "kelurahan": "TEGALWARU"
+    },
+    "020008": {
+        "kecamatan": "TEGALWARU",
+        "kelurahan": "TEGALSARI"
+    },
+    "020009": {
+        "kecamatan": "TEGALWARU",
+        "kelurahan": "WARUNGJERUK"
+    },
+    "020010": {
+        "kecamatan": "TEGALWARU",
+        "kelurahan": "GALUMPIT"
+    },
+    "020011": {
+        "kecamatan": "TEGALWARU",
+        "kelurahan": "CISARUA"
+    },
+    "020012": {
+        "kecamatan": "TEGALWARU",
+        "kelurahan": "SUKAMULYA"
+    },
+    "020013": {
+        "kecamatan": "TEGALWARU",
+        "kelurahan": "PASANGGRAHAN"
+    },
+    "030009": {
+        "kecamatan": "PLERED",
+        "kelurahan": "RAWASARI"
+    },
+    "030010": {
+        "kecamatan": "PLERED",
+        "kelurahan": "GANDASOLI"
+    },
+    "030011": {
+        "kecamatan": "PLERED",
+        "kelurahan": "GANDAMEKAR"
+    },
+    "030012": {
+        "kecamatan": "PLERED",
+        "kelurahan": "CIBOGO HILIR"
+    },
+    "030014": {
+        "kecamatan": "PLERED",
+        "kelurahan": "PALINGGIHAN"
+    },
+    "030015": {
+        "kecamatan": "PLERED",
+        "kelurahan": "BABAKAN SARI"
+    },
+    "030016": {
+        "kecamatan": "PLERED",
+        "kelurahan": "PLERED"
+    },
+    "030017": {
+        "kecamatan": "PLERED",
+        "kelurahan": "SINDANGSARI"
+    },
+    "030018": {
+        "kecamatan": "PLERED",
+        "kelurahan": "CITEKO"
+    },
+    "030019": {
+        "kecamatan": "PLERED",
+        "kelurahan": "CITEKO KALER"
+    },
+    "030020": {
+        "kecamatan": "PLERED",
+        "kelurahan": "LINGGARSARI"
+    },
+    "030021": {
+        "kecamatan": "PLERED",
+        "kelurahan": "PAMOYANAN"
+    },
+    "030025": {
+        "kecamatan": "PLERED",
+        "kelurahan": "LIUNG GUNUNG"
+    },
+    "030026": {
+        "kecamatan": "PLERED",
+        "kelurahan": "ANJUN"
+    },
+    "030035": {
+        "kecamatan": "PLERED",
+        "kelurahan": "CIBOGO GIRANG"
+    },
+    "030036": {
+        "kecamatan": "PLERED",
+        "kelurahan": "SEMPUR"
+    },
+    "031001": {
+        "kecamatan": "MANIIS",
+        "kelurahan": "TEGALDATAR"
+    },
+    "031002": {
+        "kecamatan": "MANIIS",
+        "kelurahan": "SINARGALIH"
+    },
+    "031003": {
+        "kecamatan": "MANIIS",
+        "kelurahan": "CITAMIANG"
+    },
+    "031004": {
+        "kecamatan": "MANIIS",
+        "kelurahan": "CIJATI"
+    },
+    "031005": {
+        "kecamatan": "MANIIS",
+        "kelurahan": "GUNUNGKARUNG"
+    },
+    "031006": {
+        "kecamatan": "MANIIS",
+        "kelurahan": "PASIRJAMBU"
+    },
+    "031007": {
+        "kecamatan": "MANIIS",
+        "kelurahan": "CIRAMAHILIR"
+    },
+    "031008": {
+        "kecamatan": "MANIIS",
+        "kelurahan": "SUKAMUKTI"
+    },
+    "032022": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "CIPICUNG"
+    },
+    "032023": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "SUKAMAJU"
+    },
+    "032024": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "CILALAWI"
+    },
+    "032027": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "CIANTING UTARA"
+    },
+    "032028": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "CIBODAS"
+    },
+    "032029": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "CIANTING"
+    },
+    "032030": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "PASIR MUNJUL"
+    },
+    "032031": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "SUKATANI"
+    },
+    "032032": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "MALANGNENGAH"
+    },
+    "032033": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "SUKAJAYA"
+    },
+    "032034": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "CIJANTUNG"
+    },
+    "032035": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "TAJURSINDANG"
+    },
+    "032036": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "PANYINDANGAN"
+    },
+    "032037": {
+        "kecamatan": "SUKATANI",
+        "kelurahan": "SINDANGLAYA"
+    },
+    "040001": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "MEKARSARI"
+    },
+    "040002": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "LEGOK SARI"
+    },
+    "040003": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "DEPOK"
+    },
+    "040004": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "SIRNAMANAH"
+    },
+    "040005": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "SAWIT"
+    },
+    "040006": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "LINGGA SARI"
+    },
+    "040007": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "NANGEWER"
+    },
+    "040008": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "PASIR ANGIN"
+    },
+    "040009": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "NEGLA SARI"
+    },
+    "040010": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "CILINGGA"
+    },
+    "040011": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "LINGGAMUKTI"
+    },
+    "040012": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "SADARKARYA"
+    },
+    "040013": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "DARANGDAN"
+    },
+    "040014": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "GUNUNGHEJO"
+    },
+    "040017": {
+        "kecamatan": "DARANGDAN",
+        "kelurahan": "NAGRAK"
+    },
+    "050001": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "CIBINBIN"
+    },
+    "050002": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "BOJONG TIMUR"
+    },
+    "050003": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "PASANGGRAHAN"
+    },
+    "050004": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "CIHANJAWAR"
+    },
+    "050005": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "CIKERIS"
+    },
+    "050006": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "BOJONG BARAT"
+    },
+    "050007": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "PANGKALAN"
+    },
+    "050008": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "SUKAMANAH"
+    },
+    "050009": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "PAWENANG"
+    },
+    "050010": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "SINDANGSARI"
+    },
+    "050011": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "SINDANGPANON"
+    },
+    "050012": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "CIPEUNDEUY"
+    },
+    "050013": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "CILEUNCA"
+    },
+    "050014": {
+        "kecamatan": "BOJONG",
+        "kelurahan": "KERTASARI"
+    },
+    "060001": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "NANGERANG"
+    },
+    "060002": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "SIMPANG"
+    },
+    "060003": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "SAKAMBANG"
+    },
+    "060004": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "NAGROG"
+    },
+    "060005": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "CIBUNTU"
+    },
+    "060006": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "SUMUR UGUL"
+    },
+    "060007": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "RAHARJA"
+    },
+    "060008": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "WANAYASA"
+    },
+    "060009": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "BABAKAN"
+    },
+    "060013": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "WANASARI"
+    },
+    "060015": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "LEGOK HUNI"
+    },
+    "060016": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "CIAWI"
+    },
+    "060017": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "SUKADAMI"
+    },
+    "060018": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "TARINGGUL TONGGOH"
+    },
+    "060019": {
+        "kecamatan": "WANAYASA",
+        "kelurahan": "TARINGGUL TENGAH"
+    },
+    "061001": {
+        "kecamatan": "KIARA PEDES",
+        "kelurahan": "KIARAPEDES"
+    },
+    "061002": {
+        "kecamatan": "KIARA PEDES",
+        "kelurahan": "PUSAKAMULYA"
+    },
+    "061003": {
+        "kecamatan": "KIARA PEDES",
+        "kelurahan": "CIRACAS"
+    },
+    "061004": {
+        "kecamatan": "KIARA PEDES",
+        "kelurahan": "MARGALUYU"
+    },
+    "061005": {
+        "kecamatan": "KIARA PEDES",
+        "kelurahan": "MEKARJAYA"
+    },
+    "061006": {
+        "kecamatan": "KIARA PEDES",
+        "kelurahan": "TARINGGULLANDEUH"
+    },
+    "061007": {
+        "kecamatan": "KIARA PEDES",
+        "kelurahan": "GARDU"
+    },
+    "061008": {
+        "kecamatan": "KIARA PEDES",
+        "kelurahan": "PARAKAN GAROKGEK"
+    },
+    "061009": {
+        "kecamatan": "KIARA PEDES",
+        "kelurahan": "SUMBERSARI"
+    },
+    "061010": {
+        "kecamatan": "KIARA PEDES",
+        "kelurahan": "CIBEBER"
+    },
+    "070011": {
+        "kecamatan": "PASAWAHAN",
+        "kelurahan": "PASAWAHAN KIDUL"
+    },
+    "070012": {
+        "kecamatan": "PASAWAHAN",
+        "kelurahan": "PASAWAHAN"
+    },
+    "070013": {
+        "kecamatan": "PASAWAHAN",
+        "kelurahan": "PASAWAHAN ANYAR"
+    },
+    "070014": {
+        "kecamatan": "PASAWAHAN",
+        "kelurahan": "CIHERANG"
+    },
+    "070015": {
+        "kecamatan": "PASAWAHAN",
+        "kelurahan": "CIDAHU"
+    },
+    "070016": {
+        "kecamatan": "PASAWAHAN",
+        "kelurahan": "SAWAHKULON"
+    },
+    "070017": {
+        "kecamatan": "PASAWAHAN",
+        "kelurahan": "KERTAJAYA"
+    },
+    "070018": {
+        "kecamatan": "PASAWAHAN",
+        "kelurahan": "LEBAK ANYAR"
+    },
+    "070019": {
+        "kecamatan": "PASAWAHAN",
+        "kelurahan": "CIHUNI"
+    },
+    "070020": {
+        "kecamatan": "PASAWAHAN",
+        "kelurahan": "WARUNGKADU"
+    },
+    "070021": {
+        "kecamatan": "PASAWAHAN",
+        "kelurahan": "MARGASARI"
+    },
+    "070022": {
+        "kecamatan": "PASAWAHAN",
+        "kelurahan": "SELAAWI"
+    },
+    "071001": {
+        "kecamatan": "PONDOK SALAM",
+        "kelurahan": "PARAKANSALAM"
+    },
+    "071002": {
+        "kecamatan": "PONDOK SALAM",
+        "kelurahan": "PONDOK BUNGUR"
+    },
+    "071003": {
+        "kecamatan": "PONDOK SALAM",
+        "kelurahan": "SALEM"
+    },
+    "071004": {
+        "kecamatan": "PONDOK SALAM",
+        "kelurahan": "SALAMJAYA"
+    },
+    "071005": {
+        "kecamatan": "PONDOK SALAM",
+        "kelurahan": "SALAMMULYA"
+    },
+    "071006": {
+        "kecamatan": "PONDOK SALAM",
+        "kelurahan": "GALUDRA"
+    },
+    "071007": {
+        "kecamatan": "PONDOK SALAM",
+        "kelurahan": "BUNGURJAYA"
+    },
+    "071008": {
+        "kecamatan": "PONDOK SALAM",
+        "kelurahan": "TANJUNGSARI"
+    },
+    "071009": {
+        "kecamatan": "PONDOK SALAM",
+        "kelurahan": "SITU"
+    },
+    "071010": {
+        "kecamatan": "PONDOK SALAM",
+        "kelurahan": "SUKAJADI"
+    },
+    "071011": {
+        "kecamatan": "PONDOK SALAM",
+        "kelurahan": "GURUDUG"
+    },
+    "080005": {
+        "kecamatan": "PURWAKARTA",
+        "kelurahan": "SINDANG KASIH"
+    },
+    "080006": {
+        "kecamatan": "PURWAKARTA",
+        "kelurahan": "NAGRI KIDUL"
+    },
+    "080007": {
+        "kecamatan": "PURWAKARTA",
+        "kelurahan": "CIPAISAN"
+    },
+    "080008": {
+        "kecamatan": "PURWAKARTA",
+        "kelurahan": "NAGRI TENGAH"
+    },
+    "080009": {
+        "kecamatan": "PURWAKARTA",
+        "kelurahan": "PURWAMEKAR"
+    },
+    "080010": {
+        "kecamatan": "PURWAKARTA",
+        "kelurahan": "NAGRI KALER"
+    },
+    "080011": {
+        "kecamatan": "PURWAKARTA",
+        "kelurahan": "TEGAL MUNJUL"
+    },
+    "080012": {
+        "kecamatan": "PURWAKARTA",
+        "kelurahan": "CITALANG"
+    },
+    "080013": {
+        "kecamatan": "PURWAKARTA",
+        "kelurahan": "MUNJULJAYA"
+    },
+    "080014": {
+        "kecamatan": "PURWAKARTA",
+        "kelurahan": "CISEUREUH"
+    },
+    "081001": {
+        "kecamatan": "BABAKAN CIKAO",
+        "kelurahan": "BABAKANCIKAO"
+    },
+    "081002": {
+        "kecamatan": "BABAKAN CIKAO",
+        "kelurahan": "CIWARENG"
+    },
+    "081003": {
+        "kecamatan": "BABAKAN CIKAO",
+        "kelurahan": "CIGELAM"
+    },
+    "081004": {
+        "kecamatan": "BABAKAN CIKAO",
+        "kelurahan": "CILANGKAP"
+    },
+    "081005": {
+        "kecamatan": "BABAKAN CIKAO",
+        "kelurahan": "MARACANG"
+    },
+    "081006": {
+        "kecamatan": "BABAKAN CIKAO",
+        "kelurahan": "MULYAMEKAR"
+    },
+    "081007": {
+        "kecamatan": "BABAKAN CIKAO",
+        "kelurahan": "KADUMEKAR"
+    },
+    "081008": {
+        "kecamatan": "BABAKAN CIKAO",
+        "kelurahan": "CICADAS"
+    },
+    "081009": {
+        "kecamatan": "BABAKAN CIKAO",
+        "kelurahan": "HEGARMANAH"
+    },
+    "090001": {
+        "kecamatan": "CAMPAKA",
+        "kelurahan": "CIRENDE"
+    },
+    "090010": {
+        "kecamatan": "CAMPAKA",
+        "kelurahan": "BENTENG"
+    },
+    "090011": {
+        "kecamatan": "CAMPAKA",
+        "kelurahan": "CAMPAKA"
+    },
+    "090012": {
+        "kecamatan": "CAMPAKA",
+        "kelurahan": "CAMPAKASARI"
+    },
+    "090023": {
+        "kecamatan": "CAMPAKA",
+        "kelurahan": "CIJUNTI"
+    },
+    "090024": {
+        "kecamatan": "CAMPAKA",
+        "kelurahan": "CISAAT"
+    },
+    "090025": {
+        "kecamatan": "CAMPAKA",
+        "kelurahan": "CIMAHI"
+    },
+    "090026": {
+        "kecamatan": "CAMPAKA",
+        "kelurahan": "CIKUMPAY"
+    },
+    "090027": {
+        "kecamatan": "CAMPAKA",
+        "kelurahan": "CIJAYA"
+    },
+    "090028": {
+        "kecamatan": "CAMPAKA",
+        "kelurahan": "KERTAMUKTI"
+    },
+    "091001": {
+        "kecamatan": "BUNGUR SARI",
+        "kelurahan": "CIBUNGUR"
+    },
+    "091002": {
+        "kecamatan": "BUNGUR SARI",
+        "kelurahan": "CIBENING"
+    },
+    "091003": {
+        "kecamatan": "BUNGUR SARI",
+        "kelurahan": "BUNGURSARI"
+    },
+    "091004": {
+        "kecamatan": "BUNGUR SARI",
+        "kelurahan": "KARANGMUKTI"
+    },
+    "091005": {
+        "kecamatan": "BUNGUR SARI",
+        "kelurahan": "DANGDEUR"
+    },
+    "091006": {
+        "kecamatan": "BUNGUR SARI",
+        "kelurahan": "CIWANGI"
+    },
+    "091007": {
+        "kecamatan": "BUNGUR SARI",
+        "kelurahan": "WANAKERTA"
+    },
+    "091008": {
+        "kecamatan": "BUNGUR SARI",
+        "kelurahan": "CINANGKA"
+    },
+    "091009": {
+        "kecamatan": "BUNGUR SARI",
+        "kelurahan": "CIKOPO"
+    },
+    "091010": {
+        "kecamatan": "BUNGUR SARI",
+        "kelurahan": "CIBODAS"
+    },
+    "092001": {
+        "kecamatan": "CIBATU",
+        "kelurahan": "CIBATU"
+    },
+    "092002": {
+        "kecamatan": "CIBATU",
+        "kelurahan": "CILANDAK"
+    },
+    "092003": {
+        "kecamatan": "CIBATU",
+        "kelurahan": "CIRANGKONG"
+    },
+    "092004": {
+        "kecamatan": "CIBATU",
+        "kelurahan": "CIBUKAMANAH"
+    },
+    "092005": {
+        "kecamatan": "CIBATU",
+        "kelurahan": "WANAWALI"
+    },
+    "092006": {
+        "kecamatan": "CIBATU",
+        "kelurahan": "CIKADU"
+    },
+    "092007": {
+        "kecamatan": "CIBATU",
+        "kelurahan": "CIPINANG"
+    },
+    "092008": {
+        "kecamatan": "CIBATU",
+        "kelurahan": "CIPARUNGSARI"
+    },
+    "092009": {
+        "kecamatan": "CIBATU",
+        "kelurahan": "KARYAMEKAR"
+    },
+    "092010": {
+        "kecamatan": "CIBATU",
+        "kelurahan": "CIPANCUR"
+    }
+}
