@@ -1134,15 +1134,10 @@ with tab1:
     if bounds_to_fit:
         center_loc = [(bounds_to_fit[0][0] + bounds_to_fit[1][0])/2, (bounds_to_fit[0][1] + bounds_to_fit[1][1])/2]
         zoom_level = 13
-    elif not valid_coords.empty:
-        min_lat, max_lat = valid_coords['lat'].min(), valid_coords['lat'].max()
-        min_lon, max_lon = valid_coords['lon'].min(), valid_coords['lon'].max()
-        center_loc = [(min_lat + max_lat)/2, (min_lon + max_lon)/2]
-        
-        if (max_lat - min_lat) < 0.02 and (max_lon - min_lon) < 0.02:
-            zoom_level = 14
-        else:
-            zoom_level = 11
+    else:
+        # Default zoom to Purwakarta
+        center_loc = BAPENDA_COORD
+        zoom_level = 12
 
     # Inisialisasi Peta
     m = folium.Map(location=center_loc, zoom_start=zoom_level)
@@ -1157,10 +1152,6 @@ with tab1:
     # Paskan Kamera jika punya bounds to fit
     if bounds_to_fit:
         m.fit_bounds(bounds_to_fit)
-    elif not valid_coords.empty and zoom_level != 14:
-        min_lat, max_lat = valid_coords['lat'].min(), valid_coords['lat'].max()
-        min_lon, max_lon = valid_coords['lon'].min(), valid_coords['lon'].max()
-        m.fit_bounds([[min_lat, min_lon], [max_lat, max_lon]])
 
     # 4. Marker for Bapenda Purwakarta
     folium.Marker(
