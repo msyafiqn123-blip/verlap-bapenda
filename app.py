@@ -449,7 +449,14 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     
     x = pdf.get_x()
     y = pdf.get_y()
-    pdf.multi_cell(0, 5, "Melakukan Verifikasi Lapangan sehubungan dengan permohonan Formulir Penelitian SSPD-BPHTB yang diragukan sesuai dengan permohonan atas:")
+    
+    teks_untuk = "Melakukan Verifikasi Lapangan sehubungan dengan permohonan pelayanan Pajak Bumi dan Bangunan sesuai dengan permohonan atas:"
+    if berkas_list:
+        kategori = str(berkas_list[0].get('keterangan_berkas', '')).upper()
+        if 'BPHTB' in kategori:
+            teks_untuk = "Melakukan Verifikasi Lapangan sehubungan dengan permohonan Formulir Penelitian SSPD-BPHTB yang diragukan sesuai dengan permohonan atas:"
+            
+    pdf.multi_cell(0, 5, teks_untuk)
     pdf.ln(2)
     
     for b in berkas_list:
