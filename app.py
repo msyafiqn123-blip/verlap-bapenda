@@ -790,37 +790,61 @@ with tab0:
         st.write("")
         cek_btn = st.button("🔍 Cek", use_container_width=True)
     
-    matched_row = None
+    if 'last_nopel' not in st.session_state:
+        st.session_state.last_nopel = ""
+        
+    if f"nop_{fk}" not in st.session_state:
+        st.session_state[f"nop_{fk}"] = "32.16."
+    if f"nama_{fk}" not in st.session_state:
+        st.session_state[f"nama_{fk}"] = ""
+    if f"kat_{fk}" not in st.session_state:
+        st.session_state[f"kat_{fk}"] = "Berkas Pendataan"
+        
+    if not nopel_baru:
+        st.session_state.last_nopel = ""
+    
     if nopel_baru and not df_sheet.empty:
         import pandas as pd
         df_sheet[2] = df_sheet[2].astype(str).str.strip()
+        
+        should_sync = cek_btn or (nopel_baru != st.session_state.last_nopel)
         match = df_sheet[df_sheet[2] == nopel_baru.strip()]
+        
         if not match.empty:
             matched_row = match.iloc[0]
             st.success("✅ Data Nomor Pelayanan ditemukan (Sinkronisasi sukses)")
+            
+            if should_sync:
+                st.session_state[f"nop_{fk}"] = str(matched_row[3]).strip() if not pd.isna(matched_row[3]) else "32.16."
+                st.session_state[f"nama_{fk}"] = str(matched_row[4]).strip() if not pd.isna(matched_row[4]) else ""
+                jp = str(matched_row[5]).strip().upper() if not pd.isna(matched_row[5]) else ""
+                
+                if "OBJEK BARU" in jp:
+                    st.session_state[f"kat_{fk}"] = "Berkas Objek Baru"
+                elif "BPHTB" in jp or nopel_baru.strip().startswith("0"):
+                    st.session_state[f"kat_{fk}"] = "Berkas BPHTB"
+                else:
+                    st.session_state[f"kat_{fk}"] = "Berkas Pendataan"
+                    
+                st.session_state.last_nopel = nopel_baru
+                st.rerun()
+                
         elif nopel_baru.strip().startswith("0"):
             st.info("ℹ️ Berkas BPHTB terdeteksi. Silakan input NOP & Nama Pemohon secara manual (Kecamatan/Kelurahan otomatis dari NOP).")
+            if should_sync:
+                st.session_state[f"kat_{fk}"] = "Berkas BPHTB"
+                st.session_state.last_nopel = nopel_baru
+                st.rerun()
+                
         elif cek_btn:
             st.error("❌ Data Nomor Pelayanan tidak ditemukan")
+            st.session_state.last_nopel = nopel_baru
             
-    import pandas as pd
-    default_nop = str(matched_row[3]).strip() if matched_row is not None and not pd.isna(matched_row[3]) else "32.16."
-    default_nama = str(matched_row[4]).strip() if matched_row is not None and not pd.isna(matched_row[4]) else ""
-    jenis_permohonan = str(matched_row[5]).strip().upper() if matched_row is not None and not pd.isna(matched_row[5]) else ""
-    
-    cat_index = 0
-    if nopel_baru and nopel_baru.strip().startswith("0"):
-        cat_index = 1
-    elif "OBJEK BARU" in jenis_permohonan:
-        cat_index = 2
-    elif "BPHTB" in jenis_permohonan:
-        cat_index = 1
-    
-    kategori_baru = st.selectbox("Kategori Berkas", ["Berkas Pendataan", "Berkas BPHTB", "Berkas Objek Baru"], index=cat_index, key=f"kat_{fk}")
+    kategori_baru = st.selectbox("Kategori Berkas", ["Berkas Pendataan", "Berkas BPHTB", "Berkas Objek Baru"], key=f"kat_{fk}")
     
     col1, col2 = st.columns(2)
     with col1:
-        nop_baru = st.text_input("Nomor NOP", value=default_nop, placeholder="Contoh: 32.16.031...", key=f"nop_{fk}")
+        nop_baru = st.text_input("Nomor NOP", placeholder="Contoh: 32.16.031...", key=f"nop_{fk}")
         
         import streamlit.components.v1 as components
         import re
@@ -898,7 +922,7 @@ with tab0:
             elif len(nop_clean_preview) >= 18:
                 st.warning("⚠️ Kode Kecamatan/Kelurahan pada NOP tidak valid (Bukan wilayah Purwakarta)")
     with col2:
-        pemohon_baru = st.text_input("Nama Pemohon", value=default_nama, placeholder="Nama Wajib Pajak", key=f"nama_{fk}")
+        pemohon_baru = st.text_input("Nama Pemohon", placeholder="Nama Wajib Pajak", key=f"nama_{fk}")
         urgensi_baru = st.checkbox("🔥 Tandai sebagai MENDESAK (Prioritas Utama)", key=f"urgensi_{fk}")
         
     st.info("💡 Kecamatan dan Kelurahan akan terisi otomatis berdasarkan 18 digit Nomor NOP. Pastikan NOP terisi dan valid (Misal: 32.16.080.014...).")
