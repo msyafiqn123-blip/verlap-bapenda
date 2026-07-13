@@ -466,7 +466,7 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
         pdf.set_x(x)
         pdf.cell(30, 5, "NOP", 0, 0)
         pdf.cell(5, 5, ":", 0, 0)
-        pdf.cell(0, 5, b['nomor_nop'], ln=True)
+        pdf.cell(0, 5, format_nop_string(b['nomor_nop']), ln=True)
         
         pdf.set_x(x)
         pdf.cell(30, 5, "Letak Tanah", 0, 0)
