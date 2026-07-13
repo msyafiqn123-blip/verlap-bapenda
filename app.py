@@ -617,7 +617,7 @@ def fetch_pegawai():
         ]
         jabatans = [
             "Kepala Sub Bidang Pajak Bumi dan Bangunan Perdesaan dan Perkotaan, dan Bea Perolehan Hak Atas Tanah dan Bangunan",
-            "Analis Keuangan Pusat dan Daerah Ahli Muda",
+            "PENGOLAH DATA DAN INFORMASI PENILAIAN",
             "PENGELOLA PAJAK DAERAH",
             "PENGELOLA PAJAK DAERAH",
             "PENGELOLA PAJAK DAERAH",
