@@ -1676,3 +1676,29 @@ with tab5:
                             st.error("❌ Berkas gagal dihapus atau tidak ditemukan di database.")
             else:
                 st.warning("Nomor Pelayanan tidak ditemukan di sistem. Pastikan diketik dengan benar.")
+
+    st.write("---")
+    st.subheader("⚠️ Reset Sistem")
+    with st.expander("Klik untuk menghapus SELURUH berkas dari sistem"):
+        st.error("PERHATIAN: Tindakan ini akan MENGHAPUS SEMUA DATA BERKAS secara permanen. Gunakan hanya saat akan memulai penerapan sistem baru.")
+        confirm_reset = st.text_input("Ketik 'RESET' untuk mengonfirmasi:")
+        if st.button("🗑️ Hapus Semua Data", type="primary", use_container_width=True):
+            if confirm_reset == 'RESET':
+                if USE_MOCK_DATA:
+                    st.session_state.mock_berkas = []
+                    st.success("✅ Semua data mock berhasil dihapus.")
+                    import time
+                    time.sleep(1.5)
+                    st.rerun()
+                else:
+                    try:
+                        supabase.table('berkas').delete().neq('id', 'dummy_string').execute()
+                        st.cache_data.clear()
+                        st.success("✅ Semua data berhasil dihapus dari sistem.")
+                        import time
+                        time.sleep(1.5)
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"❌ Gagal menghapus data: {e}")
+            else:
+                st.warning("Silakan ketik 'RESET' dengan huruf kapital pada kolom di atas untuk mengonfirmasi.")
