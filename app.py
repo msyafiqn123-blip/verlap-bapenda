@@ -597,6 +597,10 @@ def fetch_pegawai():
         df = pd.DataFrame(response.data)
         if df.empty:
             raise Exception("Tabel kosong")
+            
+        # Patch jabatan Syafiq jika dari database masih salah
+        df.loc[df['nama_pegawai'] == "MUHAMMAD SYAFIQ N", 'jabatan'] = "PENGOLAH DATA DAN INFORMASI"
+            
         return df
     except Exception as e:
         # Fallback to hardcoded list if table doesn't exist or permission denied
@@ -634,7 +638,7 @@ def fetch_pegawai():
             "PENGELOLA PAJAK DAERAH",
             "PENGOLAH DATA DAN INFORMASI",
             "PENATA LAYANAN OPERASIONAL",
-            "PENELAAH TEKNIS KEBIJAKAN",
+            "PENGOLAH DATA DAN INFORMASI",
             "PENATA LAYANAN OPERASIONAL",
             "PENELAAH TEKNIS KEBIJAKAN",
             "PENGELOLA PAJAK DAERAH"
