@@ -43,8 +43,8 @@ hide_streamlit_style = """
 <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
-.stDeployButton {display:none;}
-.viewerBadge_container__1QSob {display: none;}
+.stDeployButton {display:none !important;}
+[class^="viewerBadge_container"] {display: none !important;}
 [data-testid="stAppViewBlockContainer"] {padding-top: 2rem;}
 </style>
 """
