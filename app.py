@@ -340,7 +340,7 @@ def init_mock_data():
         st.session_state.mock_berkas = data
 
 
-def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_surat="340"):
+def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_surat="340", with_tte=False):
     from fpdf import FPDF
     import datetime
     
@@ -529,6 +529,12 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     pdf.set_x(120)
     pdf.multi_cell(0, 5, "A.n Kepala Badan Pendapatan Daerah\nKabupaten Purwakarta\nKepala Bidang Pendataan dan Penilaian")
     
+    if with_tte:
+        try:
+            pdf.image("tte_edi.jpg", x=105, y=pdf.get_y() + 2, w=90)
+        except Exception as e:
+            pass
+            
     return bytes(pdf.output(dest='S'))
 
 
@@ -753,10 +759,18 @@ if 'mobile_tab_switched' not in st.session_state:
 
 # --- TAB 0: INPUT BERKAS BARU ---
 with tab0:
-    st.header("📝 Input Antrean Berkas Baru")
+    st.header("📋 Input Antrean Berkas Baru")
     st.write("Tambahkan data berkas yang akan disurvei lapangan. Berkas akan masuk ke Daftar Tunggu (Belum Disurvei).")
     
-    @st.cache_data(ttl=300, show_spinner="🔃 Proses sinkronisasi data...")
+    if 'form_key' not in st.session_state:
+        st.session_state.form_key = 0
+    if 'success_msg' in st.session_state and st.session_state.success_msg:
+        st.success(st.session_state.success_msg)
+        st.session_state.success_msg = None
+        
+    fk = st.session_state.form_key
+    
+    @st.cache_data(ttl=300, show_spinner="🔄 Proses sinkronisasi data...")
     def fetch_spreadsheet_data():
         import pandas as pd
         url = "https://docs.google.com/spreadsheets/d/1mrbqAXbRDK7MR-rjlMsVxFzzo6jlhxHpbtHAT5W55RQ/export?format=xlsx"
@@ -770,7 +784,7 @@ with tab0:
     
     col_nopel, col_btn = st.columns([4, 1])
     with col_nopel:
-        nopel_baru = st.text_input("Nomor Pelayanan", placeholder="Contoh: 2026.0001.134", help="Ketik Nomor Pelayanan, data akan disinkronisasikan secara otomatis jika cocok.")
+        nopel_baru = st.text_input("Nomor Pelayanan", placeholder="Contoh: 2026.0001.134", help="Ketik Nomor Pelayanan, data akan disinkronisasikan secara otomatis jika cocok.", key=f"nopel_{fk}")
     with col_btn:
         st.write("")
         st.write("")
@@ -802,11 +816,11 @@ with tab0:
     elif "BPHTB" in jenis_permohonan:
         cat_index = 1
     
-    kategori_baru = st.selectbox("Kategori Berkas", ["Berkas Pendataan", "Berkas BPHTB", "Berkas Objek Baru"], index=cat_index)
+    kategori_baru = st.selectbox("Kategori Berkas", ["Berkas Pendataan", "Berkas BPHTB", "Berkas Objek Baru"], index=cat_index, key=f"kat_{fk}")
     
     col1, col2 = st.columns(2)
     with col1:
-        nop_baru = st.text_input("Nomor NOP", value=default_nop, placeholder="Contoh: 32.16.031...")
+        nop_baru = st.text_input("Nomor NOP", value=default_nop, placeholder="Contoh: 32.16.031...", key=f"nop_{fk}")
         
         import streamlit.components.v1 as components
         import re
@@ -884,8 +898,8 @@ with tab0:
             elif len(nop_clean_preview) >= 18:
                 st.warning("⚠️ Kode Kecamatan/Kelurahan pada NOP tidak valid (Bukan wilayah Purwakarta)")
     with col2:
-        pemohon_baru = st.text_input("Nama Pemohon", value=default_nama, placeholder="Nama Wajib Pajak")
-        urgensi_baru = st.checkbox("🔥 Tandai sebagai MENDESAK (Prioritas Utama)")
+        pemohon_baru = st.text_input("Nama Pemohon", value=default_nama, placeholder="Nama Wajib Pajak", key=f"nama_{fk}")
+        urgensi_baru = st.checkbox("🔥 Tandai sebagai MENDESAK (Prioritas Utama)", key=f"urgensi_{fk}")
         
     st.info("💡 Kecamatan dan Kelurahan akan terisi otomatis berdasarkan 18 digit Nomor NOP. Pastikan NOP terisi dan valid (Misal: 32.16.080.014...).")
     st.markdown("**Titik Koordinat Geografis** (Opsional)")
@@ -898,9 +912,9 @@ with tab0:
         
     gmaps_col1, gmaps_col2 = st.columns([4, 1])
     with gmaps_col1:
-        gmaps_link = st.text_input("Atau Paste Link Google Maps", placeholder="https://maps.app.goo.gl/...", label_visibility="collapsed")
+        gmaps_link = st.text_input("Atau Paste Link Google Maps", placeholder="https://maps.app.goo.gl/...", label_visibility="collapsed", key=f"gmaps_{fk}")
     with gmaps_col2:
-        cek_btn = st.button("🔍 Cek", use_container_width=True, key="btn_cek_gmaps")
+        cek_btn = st.button("🔍 Cek", use_container_width=True, key=f"btn_cek_gmaps_{fk}")
     
     if cek_btn and gmaps_link:
         import requests
@@ -945,9 +959,9 @@ with tab0:
             
     col5, col6 = st.columns(2)
     with col5:
-        lat_baru = st.text_input("Latitude (Opsional)", value=gmaps_lat, placeholder="Contoh: -6.550")
+        lat_baru = st.text_input("Latitude (Opsional)", value=gmaps_lat, placeholder="Contoh: -6.550", key=f"lat_{fk}")
     with col6:
-        lon_baru = st.text_input("Longitude (Opsional)", value=gmaps_lon, placeholder="Contoh: 107.450")
+        lon_baru = st.text_input("Longitude (Opsional)", value=gmaps_lon, placeholder="Contoh: 107.450", key=f"lon_{fk}")
         
     submit_input = st.button("Simpan & Masukkan Antrean", type="primary")
     
@@ -1061,7 +1075,9 @@ with tab0:
                 if 'mock_berkas' not in st.session_state:
                     init_mock_data()
                 st.session_state.mock_berkas.append(new_berkas)
-                st.success(f"Berhasil! Berkas {nopel_baru} (Kel. {kelurahan_baru}) masuk ke Daftar Tunggu.")
+                st.session_state.success_msg = f"✅ Berhasil! Berkas {nopel_baru} (Kel. {kelurahan_baru}) masuk ke Daftar Tunggu."
+                st.session_state.form_key += 1
+                st.rerun()
             else:
                 try:
                     db_berkas = {
@@ -1079,7 +1095,9 @@ with tab0:
                     }
                     supabase.table('berkas').insert(db_berkas).execute()
                     st.cache_data.clear()
-                    st.success(f"Berhasil! Berkas {nopel_baru} (Kel. {kelurahan_baru}) berhasil disimpan ke Database.")
+                    st.session_state.success_msg = f"✅ Berhasil! Berkas {nopel_baru} (Kel. {kelurahan_baru}) berhasil disimpan ke Database."
+                    st.session_state.form_key += 1
+                    st.rerun()
                 except Exception as e:
                     st.error(f"Gagal menyimpan ke database (Pastikan tabel 'berkas' sudah dibuat di SQL Editor). Error: {e}")
 
@@ -1379,7 +1397,6 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                 except ValueError:
                     base_nomor_surat = nomor_surat
                 
-                cols = st.columns(2)
                 for i, b in enumerate(berkas_list_pdf):
                     single_b = [b]
                     
@@ -1388,17 +1405,32 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                     else:
                         current_nomor_surat = f"{nomor_surat}-{i+1}"
                         
-                    pdf_bytes = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, current_nomor_surat)
+                    pdf_bytes_tte = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, current_nomor_surat, with_tte=True)
+                    pdf_bytes_no_tte = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, current_nomor_surat, with_tte=False)
                     
-                    with cols[i % 2]:
+                    st.markdown(f"**📄 Surat Tugas: {b.get('nomor_pelayanan', b['nomor_nop'])}**")
+                    btn_col1, btn_col2 = st.columns(2)
+                    with btn_col1:
                         st.download_button(
-                            label=f"📄 Surat Tugas: {b.get('nomor_pelayanan', b['nomor_nop'])}",
-                            data=pdf_bytes,
-                            file_name=f"Surat_Perintah_{b.get('nomor_pelayanan', b['nomor_nop']).replace('.','_')}.pdf",
+                            label="Unduh PDF dengan TTE",
+                            data=pdf_bytes_tte,
+                            file_name=f"Surat_Perintah_{b.get('nomor_pelayanan', b['nomor_nop']).replace('.','_')}_TTE.pdf",
                             mime="application/pdf",
                             type="primary",
-                            key=f"dl_btn_{b['id']}_{i}"
+                            use_container_width=True,
+                            key=f"dl_tte_{b['id']}_{i}"
                         )
+                    with btn_col2:
+                        st.download_button(
+                            label="Unduh PDF Tanpa TTE",
+                            data=pdf_bytes_no_tte,
+                            file_name=f"Surat_Perintah_{b.get('nomor_pelayanan', b['nomor_nop']).replace('.','_')}_NO_TTE.pdf",
+                            mime="application/pdf",
+                            type="secondary",
+                            use_container_width=True,
+                            key=f"dl_notte_{b['id']}_{i}"
+                        )
+                    st.write("")
                 
                 if not USE_MOCK_DATA:
                     st.cache_data.clear()
