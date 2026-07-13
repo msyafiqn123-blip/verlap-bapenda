@@ -44,7 +44,7 @@ hide_streamlit_style = """
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 .stDeployButton {display:none !important;}
-[class^="viewerBadge_container"] {display: none !important;}
+[data-testid="stAppCreatorBadge"], [data-testid="viewerBadge"], [data-testid="manage-app-badge"], a[href*="streamlit"], a[href*="msyafiqn123"], a[href*="github"] {display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;}
 [data-testid="stAppViewBlockContainer"] {padding-top: 2rem;}
 </style>
 """
@@ -78,11 +78,16 @@ st.markdown('''
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    div[class*="viewerBadge_container"],
-    div[class*="CreatorBadge"],
-    div[class*="HostedBadge"],
-    a[href*="streamlit.io/cloud"] {
+    [data-testid="stAppCreatorBadge"],
+    [data-testid="viewerBadge"],
+    [data-testid="manage-app-badge"],
+    a[href*="streamlit"],
+    a[href*="msyafiqn123"],
+    a[href*="github.com"] {
         display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
     }
     
     /* Prevent horizontal scroll */
