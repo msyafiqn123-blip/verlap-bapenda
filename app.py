@@ -346,9 +346,11 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
                 except:
                     pass
             
-            self.set_y(280)
-            self.cell(0, 4, "Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik yang diterbitkan oleh", ln=True, align="R")
-            self.cell(0, 4, "Balai Sertifikat Elektronik (BSrE) Badan Siber dan Sandi Negara", ln=True, align="R")
+            self.set_y(278)
+            self.set_x(15)
+            self.cell(180, 4, "Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik yang diterbitkan oleh", ln=True, align="R")
+            self.set_x(15)
+            self.cell(180, 4, "Balai Sertifikat Elektronik (BSrE) Badan Siber dan Sandi Negara", ln=True, align="R")
 
     pdf = PDF(format='legal')
     pdf.add_font("calibri", "", "calibri.ttf", uni=True)
