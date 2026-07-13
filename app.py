@@ -74,10 +74,16 @@ st.markdown('''
         color: #1e293b !important; /* Slate 800 */
     }
     
-    /* Hide Streamlit Default Headers/Footers for Immersive App Feel */
+    /* Hide Streamlit Default Headers/Footers & Creator Badges for Immersive App Feel */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    div[class*="viewerBadge_container"],
+    div[class*="CreatorBadge"],
+    div[class*="HostedBadge"],
+    a[href*="streamlit.io/cloud"] {
+        display: none !important;
+    }
     
     /* Prevent horizontal scroll */
     .stApp, html, body {
@@ -1692,7 +1698,7 @@ with tab5:
                     st.rerun()
                 else:
                     try:
-                        supabase.table('berkas').delete().neq('id', 'dummy_string').execute()
+                        supabase.table('berkas').delete().neq('id', '00000000-0000-0000-0000-000000000000').execute()
                         st.cache_data.clear()
                         st.success("✅ Semua data berhasil dihapus dari sistem.")
                         import time
