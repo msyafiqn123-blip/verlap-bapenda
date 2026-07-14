@@ -1440,6 +1440,7 @@ with tab2:
             elif len(selected_pegawai) != 2:
                 st.error("Mohon pilih tepat 2 pegawai untuk diberangkatkan bersama!")
             else:
+                update_success = True
                 if USE_MOCK_DATA:
                     for b_id in selected_berkas:
                         for b in st.session_state.mock_berkas:
@@ -1449,7 +1450,6 @@ with tab2:
                                 b['petugas_2'] = selected_pegawai[1] if len(selected_pegawai) > 1 else None
                                 b['tgl_survei'] = str(tgl_survei)
                                 b['nomor_surat'] = nomor_surat
-                    st.success("Penugasan berhasil! Status 1 atau lebih berkas telah diupdate menjadi 'Dijadwalkan'.")
                 else:
                     for b_id in selected_berkas:
                         update_data = {
@@ -1461,15 +1461,19 @@ with tab2:
                         try:
                             supabase.table("berkas").update(update_data).eq("id", b_id).execute()
                         except Exception as e:
+                            update_success = False
                             if 'PGRST204' in str(e):
                                 st.error("⚠️ Kolom baru belum ditambahkan di Supabase. Tolong buka Supabase, pergi ke tabel 'berkas', lalu buat 2 kolom baru: 'nomor_surat' (tipe teks/varchar) dan 'tgl_survei' (tipe teks/varchar).")
                                 break # Stop looping to avoid spamming errors
                             else:
                                 st.error(f"Gagal update database: {e}")
-                    st.success("Penugasan berhasil disimpan! Status berkas telah diperbarui menjadi 'Dijadwalkan'.")
+                                break
                 
-                nama_petugas = " & ".join([pegawai_dict[p] for p in selected_pegawai])
-                st.success(f"""
+                if update_success:
+                    st.success("Penugasan berhasil disimpan! Status berkas telah diperbarui menjadi 'Dijadwalkan'.")
+                    
+                    nama_petugas = " & ".join([pegawai_dict[p] for p in selected_pegawai])
+                    st.success(f"""
 **SURAT TUGAS VERIFIKASI LAPANGAN**
 
 Tim Bertugas: **{nama_petugas}**
@@ -1477,62 +1481,62 @@ Tanggal Pelaksanaan: **{tgl_survei.strftime('%d %B %Y')}**
 
 Daftar Objek Pajak (No. Pelayanan / NOP):
 """)
-                for b_id in selected_berkas:
-                    st.write(f"- {berkas_labels[b_id]}")
-                    
-                # GET ACTUAL DATA FOR PDF
-                if USE_MOCK_DATA:
-                    berkas_list_pdf = [b for b in st.session_state.mock_berkas if b['id'] in selected_berkas]
-                else:
-                    berkas_list_pdf = df_berkas_belum[df_berkas_belum['id'].isin(selected_berkas)].to_dict('records')
-                    
-                pegawai_list_pdf = df_pegawai[df_pegawai['id'].isin(selected_pegawai)].to_dict('records')
-                
-                st.write("---")
-                st.write("Silakan download Surat Perintah untuk masing-masing berkas di bawah ini:")
-                
-                try:
-                    base_nomor_surat = int(nomor_surat)
-                except ValueError:
-                    base_nomor_surat = nomor_surat
-                
-                for i, b in enumerate(berkas_list_pdf):
-                    single_b = [b]
-                    
-                    if isinstance(base_nomor_surat, int):
-                        current_nomor_surat = str(base_nomor_surat + i).zfill(len(str(nomor_surat)))
-                    else:
-                        current_nomor_surat = f"{nomor_surat}-{i+1}"
+                    for b_id in selected_berkas:
+                        st.write(f"- {berkas_labels[b_id]}")
                         
-                    pdf_bytes_tte = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, current_nomor_surat, with_tte=True)
-                    pdf_bytes_no_tte = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, current_nomor_surat, with_tte=False)
+                    # GET ACTUAL DATA FOR PDF
+                    if USE_MOCK_DATA:
+                        berkas_list_pdf = [b for b in st.session_state.mock_berkas if b['id'] in selected_berkas]
+                    else:
+                        berkas_list_pdf = df_berkas_belum[df_berkas_belum['id'].isin(selected_berkas)].to_dict('records')
+                        
+                    pegawai_list_pdf = df_pegawai[df_pegawai['id'].isin(selected_pegawai)].to_dict('records')
                     
-                    st.markdown(f"**📄 Surat Tugas: {b.get('nomor_pelayanan', b['nomor_nop'])}**")
-                    btn_col1, btn_col2 = st.columns(2)
-                    with btn_col1:
-                        st.download_button(
-                            label="Unduh PDF dengan TTE",
-                            data=pdf_bytes_tte,
-                            file_name=f"Surat_Perintah_{b.get('nomor_pelayanan', b['nomor_nop']).replace('.','_')}_TTE.pdf",
-                            mime="application/pdf",
-                            type="primary",
-                            use_container_width=True,
-                            key=f"dl_tte_{b['id']}_{i}"
-                        )
-                    with btn_col2:
-                        st.download_button(
-                            label="Unduh PDF Tanpa TTE",
-                            data=pdf_bytes_no_tte,
-                            file_name=f"Surat_Perintah_{b.get('nomor_pelayanan', b['nomor_nop']).replace('.','_')}.pdf",
-                            mime="application/pdf",
-                            type="secondary",
-                            use_container_width=True,
-                            key=f"dl_notte_{b['id']}_{i}"
-                        )
-                    st.write("")
-                
-                if not USE_MOCK_DATA:
-                    st.cache_data.clear()
+                    st.write("---")
+                    st.write("Silakan download Surat Perintah untuk masing-masing berkas di bawah ini:")
+                    
+                    try:
+                        base_nomor_surat = int(nomor_surat)
+                    except ValueError:
+                        base_nomor_surat = nomor_surat
+                    
+                    for i, b in enumerate(berkas_list_pdf):
+                        single_b = [b]
+                        
+                        if isinstance(base_nomor_surat, int):
+                            current_nomor_surat = str(base_nomor_surat + i).zfill(len(str(nomor_surat)))
+                        else:
+                            current_nomor_surat = f"{nomor_surat}-{i+1}"
+                            
+                        pdf_bytes_tte = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, current_nomor_surat, with_tte=True)
+                        pdf_bytes_no_tte = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, current_nomor_surat, with_tte=False)
+                        
+                        st.markdown(f"**📄 Surat Tugas: {b.get('nomor_pelayanan', b['nomor_nop'])}**")
+                        btn_col1, btn_col2 = st.columns(2)
+                        with btn_col1:
+                            st.download_button(
+                                label="Unduh PDF dengan TTE",
+                                data=pdf_bytes_tte,
+                                file_name=f"Surat_Perintah_{b.get('nomor_pelayanan', b['nomor_nop']).replace('.','_')}_TTE.pdf",
+                                mime="application/pdf",
+                                type="primary",
+                                use_container_width=True,
+                                key=f"dl_tte_{b['id']}_{i}"
+                            )
+                        with btn_col2:
+                            st.download_button(
+                                label="Unduh PDF Tanpa TTE",
+                                data=pdf_bytes_no_tte,
+                                file_name=f"Surat_Perintah_{b.get('nomor_pelayanan', b['nomor_nop']).replace('.','_')}.pdf",
+                                mime="application/pdf",
+                                type="secondary",
+                                use_container_width=True,
+                                key=f"dl_notte_{b['id']}_{i}"
+                            )
+                        st.write("")
+                    
+                    if not USE_MOCK_DATA:
+                        st.cache_data.clear()
     else:
         st.warning("Data pegawai atau berkas (Belum Survei) masih kosong.")
         
@@ -1577,8 +1581,8 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                             st.download_button("📄 Unduh PDF Tanpa TTE", data=pdf_bytes_notte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}.pdf", mime="application/pdf", key=f"dl_ulang_notte_{b_dict['id']}")
                     except Exception as e:
                         st.error(f"Gagal menyiapkan PDF: {e}")
-        else:
-            st.info("Belum ada berkas yang dijadwalkan.")
+    else:
+        st.info("Belum ada berkas yang dijadwalkan.")
 
 with tab3:
     st.header("📊 Beban Kerja Pegawai (Workload Balancing)")
