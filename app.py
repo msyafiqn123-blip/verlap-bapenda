@@ -525,27 +525,25 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     today = datetime.date.today()
     pdf.cell(0, 5, f"{today.day} {bulan} {today.year}", ln=True)
     pdf.ln(5)
-    
     pdf.set_x(120)
     pdf.multi_cell(195 - pdf.get_x(), 5, "A.n Kepala Badan Pendapatan Daerah\nKabupaten Purwakarta\nKepala Bidang Pendataan dan Penilaian")
     
     sig_y = pdf.get_y() + 2
     if with_tte:
         try:
+            # Place TTE image
             pdf.image("tte_edi.jpg", x=135, y=sig_y, w=40)
-            pdf.ln(35)
         except Exception as e:
-            pdf.ln(25)
+            pass
     else:
         pdf.ln(25)
+        pdf.set_x(120)
+        pdf.set_font("calibri", "B", 11)
+        pdf.cell(0, 5, "EDI PURWANA, S.Si., M.Akt", ln=True)
+        pdf.set_x(120)
+        pdf.set_font("calibri", "", 11)
+        pdf.cell(0, 5, "NIP. 19800523 201001 1 004", ln=True)
         
-    pdf.set_x(120)
-    pdf.set_font("calibri", "B", 11)
-    pdf.cell(0, 5, "EDI PURWANA, S.Si., M.Akt", ln=True)
-    pdf.set_x(120)
-    pdf.set_font("calibri", "", 11)
-    pdf.cell(0, 5, "NIP. 19800523 201001 1 004", ln=True)
-            
     return bytes(pdf.output(dest='S'))
 
 
