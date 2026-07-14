@@ -46,6 +46,28 @@ footer {visibility: hidden;}
 .stDeployButton {display:none !important;}
 [data-testid="stAppCreatorBadge"], [data-testid="viewerBadge"], [data-testid="manage-app-badge"], a[href*="streamlit"], a[href*="msyafiqn123"], a[href*="github"] {display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;}
 [data-testid="stAppViewBlockContainer"] {padding-top: 2rem;}
+
+/* Hapus efek abu-abu (stale) saat aplikasi sedang loading/rerun */
+[data-testid="stApp"] [data-stale="true"] {
+    opacity: 1 !important;
+    filter: none !important;
+    transition: none !important;
+    pointer-events: auto !important;
+}
+[style*="opacity: 0.5"] {
+    opacity: 1 !important;
+}
+
+/* Modernize Spinner Box */
+[data-testid="stSpinner"] {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    padding: 15px 25px;
+    border-radius: 12px;
+    border: 1px solid #bfdbfe;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    color: #1e3a8a;
+    font-weight: 600;
+}
 </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
