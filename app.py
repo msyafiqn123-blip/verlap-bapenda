@@ -346,18 +346,21 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     
     class PDF(FPDF):
         def footer(self):
-            self.set_y(272)
+            self.set_y(-20)
+            y_base = self.get_y()
             self.set_font("calibri", "", 9)
-            self.line(15, 275, 195, 275)
-            # Add BSrE logo if exists
+            
+            # Draw line 3 mm below the start of the footer region
+            self.line(15, y_base, 195, y_base)
+            
             import os
             if os.path.exists('logo_bsre.png'):
                 try:
-                    self.image('logo_bsre.png', 15, 277, 25)
+                    self.image('logo_bsre.png', 15, y_base + 2, 25)
                 except:
                     pass
             
-            self.set_y(278)
+            self.set_y(y_base + 3)
             self.set_x(45)
             self.cell(150, 4, "Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik yang diterbitkan oleh", ln=True, align="R")
             self.set_x(45)
