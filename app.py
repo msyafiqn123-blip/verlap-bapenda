@@ -548,7 +548,10 @@ def fetch_berkas(kecamatan=None, status=None, only_urgent=False):
             if kecamatan and kecamatan != "Semua":
                 query = query.eq('kecamatan', kecamatan)
             if status and status != "Semua":
-                query = query.eq('status_survey', status)
+                if isinstance(status, list):
+                    query = query.in_('status_survey', status)
+                else:
+                    query = query.eq('status_survey', status)
             if only_urgent:
                 query = query.eq('mendesak', True)
             response = query.execute()
@@ -1320,13 +1323,14 @@ with tab1:
 with tab2:
     st.header("Form Penjadwalan & Penugasan")
     df_pegawai = fetch_pegawai()
-    df_berkas_belum = fetch_berkas(status="Belum")
+    df_berkas_belum = fetch_berkas(status=["Belum", "Dijadwalkan"])
     
     if not df_pegawai.empty and not df_berkas_belum.empty:
         st.info("💡 Pilih bundel rute yang disarankan dari Peta, atau biarkan 'Pilih Sendiri' untuk memilih berkas secara manual.")
         
-        # 1. Hitung ulang rute untuk mendapatkan bundel
-        routes_dict = optimize_multiple_routes(df_berkas_belum)
+        # 1. Hitung ulang rute untuk mendapatkan bundel (hanya untuk yang Belum dijadwalkan agar bundel otomatis tetap relevan)
+        df_hanya_belum = df_berkas_belum[df_berkas_belum['status_survey'] == 'Belum']
+        routes_dict = optimize_multiple_routes(df_hanya_belum)
         
         bundle_options = ["Pilih Sendiri (Manual)"]
         bundle_data = {}
@@ -1343,7 +1347,11 @@ with tab2:
             
         # Pemetaan ID ke Label Display
         berkas_options = df_berkas_belum['id'].tolist()
-        berkas_labels = {row['id']: f"{row.get('nomor_pelayanan', '-')} / {format_nop_string(row['nomor_nop'])} - {row['nama_pemohon']} ({row.get('keterangan_berkas', '-')})" for _, row in df_berkas_belum.iterrows()}
+        berkas_labels = {
+            row['id']: (f"[DIJADWALKAN] " if row.get('status_survey') == 'Dijadwalkan' else "") + 
+                       f"{row.get('nomor_pelayanan', '-')} / {format_nop_string(row['nomor_nop'])} - {row['nama_pemohon']} ({row.get('keterangan_berkas', '-')})" 
+            for _, row in df_berkas_belum.iterrows()
+        }
         pegawai_dict = {row['id']: f"{row['nama_pegawai'].split(',')[0]} - {row.get('nip', '-')} ({row.get('jabatan', '-')})" for _, row in df_pegawai.iterrows()}
         
         with st.form("form_penugasan"):
@@ -1380,12 +1388,16 @@ with tab2:
                                 b['status_survey'] = 'Dijadwalkan'
                                 b['petugas_1'] = selected_pegawai[0] if len(selected_pegawai) > 0 else None
                                 b['petugas_2'] = selected_pegawai[1] if len(selected_pegawai) > 1 else None
+                                b['tgl_survei'] = str(tgl_survei)
+                                b['nomor_surat'] = nomor_surat
                     st.success("Penugasan berhasil! Status 1 atau lebih berkas telah diupdate menjadi 'Dijadwalkan'.")
                 else:
                     for b_id in selected_berkas:
                         update_data = {
                             "status_survey": "Dijadwalkan",
-                            "petugas_survey": " & ".join(selected_pegawai)
+                            "petugas_survey": " & ".join(selected_pegawai),
+                            "tgl_survei": str(tgl_survei),
+                            "nomor_surat": nomor_surat
                         }
                         try:
                             supabase.table("berkas").update(update_data).eq("id", b_id).execute()
@@ -1460,6 +1472,51 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                     st.cache_data.clear()
     else:
         st.warning("Data pegawai atau berkas (Belum Survei) masih kosong.")
+        
+    st.write("---")
+    st.header("🖨️ Riwayat Penugasan (Cetak Ulang)")
+    if not df_berkas_belum.empty:
+        df_berkas_jadwal = df_berkas_belum[df_berkas_belum['status_survey'] == 'Dijadwalkan']
+        if not df_berkas_jadwal.empty:
+            st.write("Berikut adalah daftar berkas yang sudah dijadwalkan. Anda dapat mengunduh ulang PDF Surat Tugasnya kapan saja.")
+            for idx, row in df_berkas_jadwal.iterrows():
+                b_dict = row.to_dict()
+                with st.expander(f"[DIJADWALKAN] {b_dict.get('nomor_pelayanan', b_dict['nomor_nop'])} - {b_dict['nama_pemohon']}"):
+                    tgl_str = str(b_dict.get('tgl_survei', 'Belum diset'))
+                    st.write(f"**Tanggal Survei:** {tgl_str}")
+                    st.write(f"**Nomor Surat:** {b_dict.get('nomor_surat', '340')}")
+                    
+                    if not USE_MOCK_DATA:
+                        tim_ids = [t.strip() for t in str(b_dict.get('petugas_survey', '')).split('&') if t.strip()]
+                    else:
+                        tim_ids = [b_dict.get('petugas_1'), b_dict.get('petugas_2')]
+                        tim_ids = [t for t in tim_ids if t]
+                        
+                    peg_list = df_pegawai[df_pegawai['id'].isin(tim_ids)]
+                    
+                    tim_names = [f"{p['nama_pegawai'].split(',')[0]} ({p.get('jabatan', '-')})" for _, p in peg_list.iterrows()]
+                    st.write(f"**Tim Survei:** {', '.join(tim_names)}")
+                    
+                    try:
+                        import datetime
+                        try:
+                            tgl_s = datetime.datetime.strptime(tgl_str, '%Y-%m-%d').date()
+                        except:
+                            tgl_s = datetime.date.today()
+                            
+                        pegawai_list_pdf_ulang = peg_list.to_dict('records')
+                        pdf_bytes_tte_ulang = generate_surat_perintah([b_dict], pegawai_list_pdf_ulang, tgl_s, b_dict.get('nomor_surat', '340'), with_tte=True)
+                        pdf_bytes_notte_ulang = generate_surat_perintah([b_dict], pegawai_list_pdf_ulang, tgl_s, b_dict.get('nomor_surat', '340'), with_tte=False)
+                        
+                        uc1, uc2 = st.columns(2)
+                        with uc1:
+                            st.download_button("📄 Unduh PDF dengan TTE", data=pdf_bytes_tte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}_TTE.pdf", mime="application/pdf", key=f"dl_ulang_tte_{b_dict['id']}")
+                        with uc2:
+                            st.download_button("📄 Unduh PDF Tanpa TTE", data=pdf_bytes_notte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}_NO_TTE.pdf", mime="application/pdf", key=f"dl_ulang_notte_{b_dict['id']}")
+                    except Exception as e:
+                        st.error(f"Gagal menyiapkan PDF: {e}")
+        else:
+            st.info("Belum ada berkas yang dijadwalkan.")
 
 with tab3:
     st.header("📊 Beban Kerja Pegawai (Workload Balancing)")
