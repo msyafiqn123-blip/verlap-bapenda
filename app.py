@@ -347,7 +347,7 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     class PDF(FPDF):
         def footer(self):
             self.set_y(272)
-            self.set_font("calibri", "", 10)
+            self.set_font("calibri", "", 9)
             self.line(15, 275, 195, 275)
             # Add BSrE logo if exists
             import os
@@ -358,10 +358,10 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
                     pass
             
             self.set_y(278)
-            self.set_x(15)
-            self.cell(180, 4, "Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik yang diterbitkan oleh", ln=True, align="R")
-            self.set_x(15)
-            self.cell(180, 4, "Balai Sertifikat Elektronik (BSrE) Badan Siber dan Sandi Negara", ln=True, align="R")
+            self.set_x(45)
+            self.cell(150, 4, "Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik yang diterbitkan oleh", ln=True, align="R")
+            self.set_x(45)
+            self.cell(150, 4, "Balai Sertifikat Elektronik (BSrE) Badan Siber dan Sandi Negara", ln=True, align="R")
 
     pdf = PDF(format='legal')
     pdf.add_font("calibri", "", "calibri.ttf", uni=True)
