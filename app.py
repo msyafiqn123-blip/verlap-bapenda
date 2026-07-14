@@ -1360,6 +1360,7 @@ with tab1:
                 
                 # Ubah boolean menjadi teks yang mudah dipahami
                 df_display['is_urgent'] = df_display['is_urgent'].apply(lambda x: "🚨 Mendesak" if x else "Normal")
+                df_display['nomor_nop'] = df_display['nomor_nop'].apply(format_nop_string)
                 
                 # Ubah nama header kolom menjadi bahasa Indonesia formal
                 df_display = df_display.rename(columns={
@@ -1750,6 +1751,7 @@ with tab5:
     if not result_page.empty:
         df_show = result_page[['nomor_pelayanan', 'nomor_nop', 'nama_pemohon', 'keterangan_berkas', 'kecamatan', 'desa', 'status_survey', 'tanggal_input']].copy()
         
+        df_show['nomor_nop'] = df_show['nomor_nop'].apply(format_nop_string)
         df_show = df_show.rename(columns={
             'nomor_pelayanan': 'No. Pelayanan',
             'nomor_nop': 'NOP',
