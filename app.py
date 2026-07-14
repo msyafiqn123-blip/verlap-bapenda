@@ -1538,11 +1538,10 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
         
     st.write("---")
     st.header("🖨️ Riwayat Penugasan (Cetak Ulang)")
-    if not df_berkas_belum.empty:
-        df_berkas_jadwal = df_berkas_belum[df_berkas_belum['status_survey'] == 'Dijadwalkan']
-        if not df_berkas_jadwal.empty:
-            st.write("Berikut adalah daftar berkas yang sudah dijadwalkan. Anda dapat mengunduh ulang PDF Surat Tugasnya kapan saja.")
-            for idx, row in df_berkas_jadwal.iterrows():
+    df_berkas_riwayat = fetch_berkas(status="Dijadwalkan")
+    if not df_berkas_riwayat.empty:
+        st.write("Berikut adalah daftar berkas yang sudah dijadwalkan. Anda dapat mengunduh ulang PDF Surat Tugasnya kapan saja.")
+        for idx, row in df_berkas_riwayat.iterrows():
                 b_dict = row.to_dict()
                 with st.expander(f"[DIJADWALKAN] {b_dict.get('nomor_pelayanan', b_dict['nomor_nop'])} - {b_dict['nama_pemohon']}"):
                     tgl_str = str(b_dict.get('tgl_survei', 'Belum diset'))
