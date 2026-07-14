@@ -1461,11 +1461,21 @@ with tab2:
                         try:
                             supabase.table("berkas").update(update_data).eq("id", b_id).execute()
                         except Exception as e:
-                            update_success = False
                             if 'PGRST204' in str(e):
-                                st.error("⚠️ Kolom baru belum ditambahkan di Supabase. Tolong buka Supabase, pergi ke tabel 'berkas', lalu buat 2 kolom baru: 'nomor_surat' (tipe teks/varchar) dan 'tgl_survei' (tipe teks/varchar).")
-                                break # Stop looping to avoid spamming errors
+                                # Fallback: Update without nomor_surat and tgl_survei
+                                fallback_data = {
+                                    "status_survey": "Dijadwalkan",
+                                    "petugas_survey": " & ".join(selected_pegawai)
+                                }
+                                try:
+                                    supabase.table("berkas").update(fallback_data).eq("id", b_id).execute()
+                                    st.warning("⚠️ Penugasan berhasil disimpan, NAMUN Nomor Surat & Tanggal tidak tersimpan permanen karena kolom belum ditambahkan di Supabase. (Buat kolom 'nomor_surat' & 'tgl_survei' tipe varchar di tabel berkas).")
+                                except Exception as e_fallback:
+                                    update_success = False
+                                    st.error(f"Gagal update database (Fallback): {e_fallback}")
+                                    break
                             else:
+                                update_success = False
                                 st.error(f"Gagal update database: {e}")
                                 break
                 
