@@ -1475,7 +1475,7 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                         st.download_button(
                             label="Unduh PDF Tanpa TTE",
                             data=pdf_bytes_no_tte,
-                            file_name=f"Surat_Perintah_{b.get('nomor_pelayanan', b['nomor_nop']).replace('.','_')}_NO_TTE.pdf",
+                            file_name=f"Surat_Perintah_{b.get('nomor_pelayanan', b['nomor_nop']).replace('.','_')}.pdf",
                             mime="application/pdf",
                             type="secondary",
                             use_container_width=True,
@@ -1527,7 +1527,7 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                         with uc1:
                             st.download_button("📄 Unduh PDF dengan TTE", data=pdf_bytes_tte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}_TTE.pdf", mime="application/pdf", key=f"dl_ulang_tte_{b_dict['id']}")
                         with uc2:
-                            st.download_button("📄 Unduh PDF Tanpa TTE", data=pdf_bytes_notte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}_NO_TTE.pdf", mime="application/pdf", key=f"dl_ulang_notte_{b_dict['id']}")
+                            st.download_button("📄 Unduh PDF Tanpa TTE", data=pdf_bytes_notte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}.pdf", mime="application/pdf", key=f"dl_ulang_notte_{b_dict['id']}")
                     except Exception as e:
                         st.error(f"Gagal menyiapkan PDF: {e}")
         else:
