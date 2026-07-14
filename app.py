@@ -587,7 +587,10 @@ def fetch_berkas(kecamatan=None, status=None, only_urgent=False):
     if not df.empty and kecamatan and kecamatan != "Semua":
         df = df[df['kecamatan'] == kecamatan]
     if not df.empty and status and status != "Semua":
-        df = df[df['status_survey'] == status]
+        if isinstance(status, list):
+            df = df[df['status_survey'].isin(status)]
+        else:
+            df = df[df['status_survey'] == status]
     if not df.empty and only_urgent:
         df = df[df['is_urgent'] == True]
         
