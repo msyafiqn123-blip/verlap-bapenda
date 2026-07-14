@@ -538,15 +538,7 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
             pdf.image("tte_edi.jpg", x=105, y=sig_y, w=90)
         except Exception as e:
             pass
-    else:
-        pdf.ln(25)
-        pdf.set_x(120)
-        pdf.set_font("calibri", "B", 11)
-        pdf.cell(0, 5, "EDI PURWANA, S.Si., M.Akt", ln=True)
-        pdf.set_x(120)
-        pdf.set_font("calibri", "", 11)
-        pdf.cell(0, 5, "NIP. 19800523 201001 1 004", ln=True)
-        
+    
     return bytes(pdf.output(dest='S'))
 
 
