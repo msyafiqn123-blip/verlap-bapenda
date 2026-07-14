@@ -532,7 +532,7 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     if with_tte:
         try:
             # Place TTE image
-            pdf.image("tte_edi.jpg", x=135, y=sig_y, w=40)
+            pdf.image("tte_edi.jpg", x=105, y=sig_y, w=90)
         except Exception as e:
             pass
     else:
