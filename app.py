@@ -1461,7 +1461,11 @@ with tab2:
                         try:
                             supabase.table("berkas").update(update_data).eq("id", b_id).execute()
                         except Exception as e:
-                            st.error(f"Gagal update database: {e}")
+                            if 'PGRST204' in str(e):
+                                st.error("⚠️ Kolom baru belum ditambahkan di Supabase. Tolong buka Supabase, pergi ke tabel 'berkas', lalu buat 2 kolom baru: 'nomor_surat' (tipe teks/varchar) dan 'tgl_survei' (tipe teks/varchar).")
+                                break # Stop looping to avoid spamming errors
+                            else:
+                                st.error(f"Gagal update database: {e}")
                     st.success("Penugasan berhasil disimpan! Status berkas telah diperbarui menjadi 'Dijadwalkan'.")
                 
                 nama_petugas = " & ".join([pegawai_dict[p] for p in selected_pegawai])
