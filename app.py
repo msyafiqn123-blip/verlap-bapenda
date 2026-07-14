@@ -1218,6 +1218,35 @@ with tab1:
     # Inisialisasi Peta
     m = folium.Map(location=center_loc, zoom_start=zoom_level)
 
+    # Masker (Hitamkan luar Purwakarta)
+    mask_geojson = load_geojson("mask_purwakarta.geojson")
+    if mask_geojson:
+        folium.GeoJson(
+            mask_geojson,
+            style_function=lambda x: {
+                'fillColor': 'black',
+                'color': 'none',
+                'weight': 0,
+                'fillOpacity': 0.6
+            },
+            name="Luar Purwakarta"
+        ).add_to(m)
+
+    # Batas Kabupaten Purwakarta
+    kab_geojson = load_geojson("kab_purwakarta.geojson")
+    if kab_geojson:
+        folium.GeoJson(
+            kab_geojson,
+            style_function=lambda x: {
+                'fillColor': 'none',
+                'color': 'black',
+                'weight': 3,
+                'dashArray': '5, 5',
+                'fillOpacity': 0
+            },
+            name="Batas Purwakarta"
+        ).add_to(m)
+
     # Highlight
     if geom_to_highlight:
         folium.GeoJson(
