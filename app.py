@@ -469,7 +469,7 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
         if 'BPHTB' in kategori:
             teks_untuk = "Melakukan Verifikasi Lapangan sehubungan dengan permohonan Formulir Penelitian SSPD-BPHTB yang diragukan sesuai dengan permohonan atas:"
             
-    pdf.multi_cell(0, 5, teks_untuk)
+    pdf.multi_cell(195 - pdf.get_x(), 5, teks_untuk)
     pdf.ln(2)
     
     for b in berkas_list:
@@ -507,10 +507,10 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     pdf.set_x(x)
     hari = ["SENIN", "SELASA", "RABU", "KAMIS", "JUMAT", "SABTU", "MINGGU"][tanggal_survei.weekday()]
     bulan = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"][tanggal_survei.month - 1]
-    pdf.multi_cell(0, 5, f"dilaksanakan pada hari {hari} , {tanggal_survei.day} {bulan} {tanggal_survei.year}")
+    pdf.multi_cell(195 - pdf.get_x(), 5, f"dilaksanakan pada hari {hari} , {tanggal_survei.day} {bulan} {tanggal_survei.year}")
     
     pdf.set_x(x)
-    pdf.multi_cell(0, 5, "Demikian surat perintah ini dikeluarkan untuk dilaksanakan dan melaporkan hasilnya.")
+    pdf.multi_cell(195 - pdf.get_x(), 5, "Demikian surat perintah ini dikeluarkan untuk dilaksanakan dan melaporkan hasilnya.")
     pdf.ln(10)
     
     # Signatures
@@ -527,7 +527,7 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     pdf.ln(5)
     
     pdf.set_x(120)
-    pdf.multi_cell(0, 5, "A.n Kepala Badan Pendapatan Daerah\nKabupaten Purwakarta\nKepala Bidang Pendataan dan Penilaian")
+    pdf.multi_cell(195 - pdf.get_x(), 5, "A.n Kepala Badan Pendapatan Daerah\nKabupaten Purwakarta\nKepala Bidang Pendataan dan Penilaian")
     
     if with_tte:
         try:
