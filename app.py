@@ -346,7 +346,7 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     
     class PDF(FPDF):
         def footer(self):
-            self.set_y(-20)
+            self.set_y(-50)
             y_base = self.get_y()
             self.set_font("calibri", "", 9)
             
