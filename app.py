@@ -1462,14 +1462,14 @@ with tab2:
                             supabase.table("berkas").update(update_data).eq("id", b_id).execute()
                         except Exception as e:
                             if 'PGRST204' in str(e):
-                                # Fallback: Update without nomor_surat and tgl_survei
+                                # Fallback: Encode nomor_surat and tgl_survei into petugas_survey
                                 fallback_data = {
                                     "status_survey": "Dijadwalkan",
-                                    "petugas_survey": " & ".join(selected_pegawai)
+                                    "petugas_survey": f"{' & '.join(selected_pegawai)}|{tgl_survei}|{nomor_surat}"
                                 }
                                 try:
                                     supabase.table("berkas").update(fallback_data).eq("id", b_id).execute()
-                                    st.warning("⚠️ Penugasan berhasil disimpan, NAMUN Nomor Surat & Tanggal tidak tersimpan permanen karena kolom belum ditambahkan di Supabase. (Buat kolom 'nomor_surat' & 'tgl_survei' tipe varchar di tabel berkas).")
+                                    st.warning("⚠️ Penugasan berhasil disimpan (menggunakan metode alternatif karena kolom belum ada di Supabase).")
                                 except Exception as e_fallback:
                                     update_success = False
                                     st.error(f"Gagal update database (Fallback): {e_fallback}")
@@ -1557,6 +1557,14 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
         st.write("Berikut adalah daftar berkas yang sudah dijadwalkan. Anda dapat mengunduh ulang PDF Surat Tugasnya kapan saja.")
         for idx, row in df_berkas_riwayat.iterrows():
                 b_dict = row.to_dict()
+                
+                # Decode fallback data if present
+                petugas_survey_val = str(b_dict.get('petugas_survey', ''))
+                parts = petugas_survey_val.split('|')
+                b_dict['petugas_survey'] = parts[0]
+                if len(parts) > 1: b_dict['tgl_survei'] = parts[1]
+                if len(parts) > 2: b_dict['nomor_surat'] = parts[2]
+                
                 with st.expander(f"[DIJADWALKAN] {b_dict.get('nomor_pelayanan', b_dict['nomor_nop'])} - {b_dict['nama_pemohon']}"):
                     tgl_str = str(b_dict.get('tgl_survei', 'Belum diset'))
                     st.write(f"**Tanggal Survei:** {tgl_str}")
