@@ -1,774 +1,774 @@
 {
-    "OBJEK KHUSUS_OBJEK KHUSUS": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "JATILUHUR_JATIMEKAR": {
-        "lat": -6.5184662,
-        "lon": 107.3943614
-    },
-    "JATILUHUR_CIKAO BANDUNG": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "JATILUHUR_JATILUHUR": {
-        "lat": -6.5282507,
-        "lon": 107.4216594
-    },
-    "JATILUHUR_CILEGONG": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "JATILUHUR_KEMBANG KUNING": {
-        "lat": -6.5552884,
-        "lon": 107.4215768
-    },
-    "JATILUHUR_CIBINONG": {
-        "lat": -6.5656893,
-        "lon": 107.4078995
-    },
-    "JATILUHUR_BUNDER": {
-        "lat": -6.5608039,
-        "lon": 107.4301099
-    },
-    "JATILUHUR_MEKARGALIH": {
-        "lat": -6.57026,
-        "lon": 107.4319786
-    },
-    "JATILUHUR_CISALADA": {
-        "lat": -6.5835891,
-        "lon": 107.4417824
-    },
-    "JATILUHUR_PARAKANLIMA": {
-        "lat": -6.5905482,
-        "lon": 107.4438704
-    },
-    "SUKASARI_SUKASARI": {
-        "lat": -6.5444914,
-        "lon": 107.4474365
-    },
-    "SUKASARI_KERTAMANAH": {
-        "lat": -6.5428681,
-        "lon": 107.2901411
-    },
-    "SUKASARI_CIRIRIP": {
-        "lat": -6.5851184,
-        "lon": 107.2899547
-    },
-    "SUKASARI_KUTAMANAH": {
-        "lat": -6.5070691,
-        "lon": 107.3034498
-    },
-    "SUKASARI_PARUNGBANTENG": {
-        "lat": -6.6129131,
-        "lon": 107.2563478
-    },
-    "TEGALWARU_SUKAHAJI": {
-        "lat": -6.6572047,
-        "lon": 107.3241506
-    },
-    "TEGALWARU_KAROYA": {
-        "lat": -6.6660899,
-        "lon": 107.3406423
-    },
-    "TEGALWARU_CADASSARI": {
-        "lat": -6.6668636,
-        "lon": 107.3545358
-    },
-    "TEGALWARU_CADASMEKAR": {
-        "lat": -6.6645767,
-        "lon": 107.3584522
-    },
-    "TEGALWARU_CITALANG": {
-        "lat": -6.6504741,
-        "lon": 107.3474066
-    },
-    "TEGALWARU_BATUTUMPANG": {
-        "lat": -6.6381768,
-        "lon": 107.3540705
-    },
-    "TEGALWARU_TEGALWARU": {
-        "lat": -6.6467904,
-        "lon": 107.3423476
-    },
-    "TEGALWARU_TEGALSARI": {
-        "lat": -6.6441066,
-        "lon": 107.3348282
-    },
-    "TEGALWARU_WARUNGJERUK": {
-        "lat": -6.6537365,
-        "lon": 107.3202462
-    },
-    "TEGALWARU_GALUMPIT": {
-        "lat": -6.6500866,
-        "lon": 107.3133572
-    },
-    "TEGALWARU_CISARUA": {
-        "lat": -6.6118231,
-        "lon": 107.3315883
-    },
-    "TEGALWARU_SUKAMULYA": {
-        "lat": -6.6025641,
-        "lon": 107.3448004
-    },
-    "TEGALWARU_PASANGGRAHAN": {
-        "lat": -6.5871221,
-        "lon": 107.3420527
-    },
-    "PLERED_RAWASARI": {
-        "lat": -6.6585799,
-        "lon": 107.3657704
-    },
-    "PLERED_GANDASOLI": {
-        "lat": -6.6729589,
-        "lon": 107.3752736
-    },
-    "PLERED_GANDAMEKAR": {
-        "lat": -6.6696009,
-        "lon": 107.3847937
-    },
-    "PLERED_CIBOGO HILIR": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PLERED_PALINGGIHAN": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PLERED_BABAKAN SARI": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PLERED_PLERED": {
-        "lat": -6.6459072,
-        "lon": 107.3864372
-    },
-    "PLERED_SINDANGSARI": {
-        "lat": -6.6859382,
-        "lon": 107.526628
-    },
-    "PLERED_CITEKO": {
-        "lat": -6.6460161,
-        "lon": 107.3740146
-    },
-    "PLERED_CITEKO KALER": {
-        "lat": -6.6424635,
-        "lon": 107.3794621
-    },
-    "PLERED_LINGGARSARI": {
-        "lat": -6.6345678,
-        "lon": 107.3827026
-    },
-    "PLERED_PAMOYANAN": {
-        "lat": -6.6434956,
-        "lon": 107.3681254
-    },
-    "PLERED_LIUNG GUNUNG": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PLERED_ANJUN": {
-        "lat": -6.6379613,
-        "lon": 107.3919092
-    },
-    "PLERED_CIBOGO GIRANG": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PLERED_SEMPUR": {
-        "lat": -6.6645809,
-        "lon": 107.3984804
-    },
-    "MANIIS_TEGALDATAR": {
-        "lat": -6.7133721,
-        "lon": 107.3028468
-    },
-    "MANIIS_SINARGALIH": {
-        "lat": -6.7072362,
-        "lon": 107.3136018
-    },
-    "MANIIS_CITAMIANG": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "MANIIS_CIJATI": {
-        "lat": -6.6890929,
-        "lon": 107.3203719
-    },
-    "MANIIS_GUNUNGKARUNG": {
-        "lat": -6.6846705,
-        "lon": 107.2963881
-    },
-    "MANIIS_PASIRJAMBU": {
-        "lat": -6.701014,
-        "lon": 107.2751574
-    },
-    "MANIIS_CIRAMAHILIR": {
-        "lat": -6.6908359,
-        "lon": 107.2623437
-    },
-    "MANIIS_SUKAMUKTI": {
-        "lat": -6.6418286,
-        "lon": 107.276643
-    },
-    "SUKATANI_CIPICUNG": {
-        "lat": -6.6125602,
-        "lon": 107.3780551
-    },
-    "SUKATANI_SUKAMAJU": {
-        "lat": -6.6087715,
-        "lon": 107.3933139
-    },
-    "SUKATANI_CILALAWI": {
-        "lat": -6.6155839,
-        "lon": 107.3987424
-    },
-    "SUKATANI_CIANTING UTARA": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "SUKATANI_CIBODAS": {
-        "lat": -6.4183286,
-        "lon": 107.4956883
-    },
-    "SUKATANI_CIANTING": {
-        "lat": -6.6346119,
-        "lon": 107.4046686
-    },
-    "SUKATANI_PASIR MUNJUL": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "SUKATANI_SUKATANI": {
-        "lat": -6.6108247,
-        "lon": 107.4084641
-    },
-    "SUKATANI_MALANGNENGAH": {
-        "lat": -6.6012245,
-        "lon": 107.4065745
-    },
-    "SUKATANI_SUKAJAYA": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "SUKATANI_CIJANTUNG": {
-        "lat": -6.5829484,
-        "lon": 107.4291351
-    },
-    "SUKATANI_TAJURSINDANG": {
-        "lat": -6.5875971,
-        "lon": 107.3850355
-    },
-    "SUKATANI_PANYINDANGAN": {
-        "lat": -6.5727858,
-        "lon": 107.3466335
-    },
-    "SUKATANI_SINDANGLAYA": {
-        "lat": -6.5846002,
-        "lon": 107.3730542
-    },
-    "DARANGDAN_MEKARSARI": {
-        "lat": -6.6832372,
-        "lon": 107.3802603
-    },
-    "DARANGDAN_LEGOK SARI": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "DARANGDAN_DEPOK": {
-        "lat": -6.6898224,
-        "lon": 107.4005762
-    },
-    "DARANGDAN_SIRNAMANAH": {
-        "lat": -6.6874749,
-        "lon": 107.4208545
-    },
-    "DARANGDAN_SAWIT": {
-        "lat": -6.6932872,
-        "lon": 107.4375125
-    },
-    "DARANGDAN_LINGGA SARI": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "DARANGDAN_NANGEWER": {
-        "lat": -6.7111378,
-        "lon": 107.4723821
-    },
-    "DARANGDAN_PASIR ANGIN": {
-        "lat": -6.5875,
-        "lon": 107.395556
-    },
-    "DARANGDAN_NEGLA SARI": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "DARANGDAN_CILINGGA": {
-        "lat": -6.684051,
-        "lon": 107.4687608
-    },
-    "DARANGDAN_LINGGAMUKTI": {
-        "lat": -6.6799635,
-        "lon": 107.452026
-    },
-    "DARANGDAN_SADARKARYA": {
-        "lat": -6.6870843,
-        "lon": 107.4458166
-    },
-    "DARANGDAN_DARANGDAN": {
-        "lat": -6.6914228,
-        "lon": 107.4356853
-    },
-    "DARANGDAN_GUNUNGHEJO": {
-        "lat": -6.6646878,
-        "lon": 107.4161931
-    },
-    "DARANGDAN_NAGRAK": {
-        "lat": -6.6510491,
-        "lon": 107.4142942
-    },
-    "BOJONG_CIBINBIN": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "BOJONG_BOJONG TIMUR": {
-        "lat": -6.7176575,
-        "lon": 107.5191451
-    },
-    "BOJONG_PASANGGRAHAN": {
-        "lat": -6.5871221,
-        "lon": 107.3420527
-    },
-    "BOJONG_CIHANJAWAR": {
-        "lat": -6.7203299,
-        "lon": 107.5301574
-    },
-    "BOJONG_CIKERIS": {
-        "lat": -6.7039481,
-        "lon": 107.5206873
-    },
-    "BOJONG_BOJONG BARAT": {
-        "lat": -6.7176575,
-        "lon": 107.5191451
-    },
-    "BOJONG_PANGKALAN": {
-        "lat": -6.7141397,
-        "lon": 107.4964771
-    },
-    "BOJONG_SUKAMANAH": {
-        "lat": -6.5512451,
-        "lon": 107.5157295
-    },
-    "BOJONG_PAWENANG": {
-        "lat": -6.695499,
-        "lon": 107.5171704
-    },
-    "BOJONG_SINDANGSARI": {
-        "lat": -6.6859382,
-        "lon": 107.526628
-    },
-    "BOJONG_SINDANGPANON": {
-        "lat": -6.6786362,
-        "lon": 107.5173831
-    },
-    "BOJONG_CIPEUNDEUY": {
-        "lat": -6.6878277,
-        "lon": 107.4958538
-    },
-    "BOJONG_CILEUNCA": {
-        "lat": -6.6773658,
-        "lon": 107.4849246
-    },
-    "BOJONG_KERTASARI": {
-        "lat": -6.6730325,
-        "lon": 107.4777235
-    },
-    "WANAYASA_NANGERANG": {
-        "lat": -6.6945199,
-        "lon": 107.5352362
-    },
-    "WANAYASA_SIMPANG": {
-        "lat": -6.5655981,
-        "lon": 107.451809
-    },
-    "WANAYASA_SAKAMBANG": {
-        "lat": -6.7025147,
-        "lon": 107.5373159
-    },
-    "WANAYASA_NAGROG": {
-        "lat": -6.6985176,
-        "lon": 107.5401242
-    },
-    "WANAYASA_CIBUNTU": {
-        "lat": -6.6904266,
-        "lon": 107.5511697
-    },
-    "WANAYASA_SUMUR UGUL": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "WANAYASA_RAHARJA": {
-        "lat": -6.6875703,
-        "lon": 107.5487568
-    },
-    "WANAYASA_WANAYASA": {
-        "lat": -6.6772444,
-        "lon": 107.5564034
-    },
-    "WANAYASA_BABAKAN": {
-        "lat": -6.678434,
-        "lon": 107.5679149
-    },
-    "WANAYASA_WANASARI": {
-        "lat": -6.6670851,
-        "lon": 107.5478895
-    },
-    "WANAYASA_LEGOK HUNI": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "WANAYASA_CIAWI": {
-        "lat": -6.6507158,
-        "lon": 107.5207392
-    },
-    "WANAYASA_SUKADAMI": {
-        "lat": -6.6434938,
-        "lon": 107.5244066
-    },
-    "WANAYASA_TARINGGUL TONGGOH": {
-        "lat": -6.6380423,
-        "lon": 107.5247613
-    },
-    "WANAYASA_TARINGGUL TENGAH": {
-        "lat": -6.632004,
-        "lon": 107.5266218
-    },
-    "KIARA PEDES_KIARAPEDES": {
-        "lat": -6.6467641,
-        "lon": 107.5740351
-    },
-    "KIARA PEDES_PUSAKAMULYA": {
-        "lat": -6.675178,
-        "lon": 107.5860288
-    },
-    "KIARA PEDES_CIRACAS": {
-        "lat": -6.6487845,
-        "lon": 107.5792709
-    },
-    "KIARA PEDES_MARGALUYU": {
-        "lat": -6.6317904,
-        "lon": 107.5628987
-    },
-    "KIARA PEDES_MEKARJAYA": {
-        "lat": -6.6211147,
-        "lon": 107.5740921
-    },
-    "KIARA PEDES_TARINGGULLANDEUH": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "KIARA PEDES_GARDU": {
-        "lat": -6.6360176,
-        "lon": 107.5438713
-    },
-    "KIARA PEDES_PARAKAN GAROKGEK": {
-        "lat": -6.6639146,
-        "lon": 107.5935069
-    },
-    "KIARA PEDES_SUMBERSARI": {
-        "lat": -6.6607159,
-        "lon": 107.5528756
-    },
-    "KIARA PEDES_CIBEBER": {
-        "lat": -6.6652255,
-        "lon": 107.5667063
-    },
-    "PASAWAHAN_PASAWAHAN KIDUL": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PASAWAHAN_PASAWAHAN": {
-        "lat": -6.5653126,
-        "lon": 107.4655873
-    },
-    "PASAWAHAN_PASAWAHAN ANYAR": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PASAWAHAN_CIHERANG": {
-        "lat": -6.5960459,
-        "lon": 107.4551064
-    },
-    "PASAWAHAN_CIDAHU": {
-        "lat": -6.5911966,
-        "lon": 107.455322
-    },
-    "PASAWAHAN_SAWAHKULON": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PASAWAHAN_KERTAJAYA": {
-        "lat": -6.5755528,
-        "lon": 107.4614237
-    },
-    "PASAWAHAN_LEBAK ANYAR": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PASAWAHAN_CIHUNI": {
-        "lat": -6.5653126,
-        "lon": 107.4655873
-    },
-    "PASAWAHAN_WARUNGKADU": {
-        "lat": -6.5558889,
-        "lon": 107.4658173
-    },
-    "PASAWAHAN_MARGASARI": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PASAWAHAN_SELAAWI": {
-        "lat": -6.5527348,
-        "lon": 107.4750429
-    },
-    "PONDOK SALAM_PARAKANSALAM": {
-        "lat": -6.6039346,
-        "lon": 107.4872253
-    },
-    "PONDOK SALAM_PONDOK BUNGUR": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PONDOK SALAM_SALEM": {
-        "lat": -6.626257,
-        "lon": 107.5022406
-    },
-    "PONDOK SALAM_SALAMJAYA": {
-        "lat": -6.6063336,
-        "lon": 107.4850377
-    },
-    "PONDOK SALAM_SALAMMULYA": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PONDOK SALAM_GALUDRA": {
-        "lat": -6.6234454,
-        "lon": 107.4919794
-    },
-    "PONDOK SALAM_BUNGURJAYA": {
-        "lat": -6.6546273,
-        "lon": 107.5181108
-    },
-    "PONDOK SALAM_TANJUNGSARI": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PONDOK SALAM_SITU": {
-        "lat": -6.5950293,
-        "lon": 107.4713077
-    },
-    "PONDOK SALAM_SUKAJADI": {
-        "lat": -6.6085062,
-        "lon": 107.464737
-    },
-    "PONDOK SALAM_GURUDUG": {
-        "lat": -6.5748211,
-        "lon": 107.5191051
-    },
-    "PURWAKARTA_SINDANG KASIH": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PURWAKARTA_NAGRI KIDUL": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PURWAKARTA_CIPAISAN": {
-        "lat": -6.5582245,
-        "lon": 107.4364614
-    },
-    "PURWAKARTA_NAGRI TENGAH": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PURWAKARTA_PURWAMEKAR": {
-        "lat": -6.5381219,
-        "lon": 107.4393797
-    },
-    "PURWAKARTA_NAGRI KALER": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PURWAKARTA_TEGAL MUNJUL": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "PURWAKARTA_CITALANG": {
-        "lat": -6.6504741,
-        "lon": 107.3474066
-    },
-    "PURWAKARTA_MUNJULJAYA": {
-        "lat": -6.5462989,
-        "lon": 107.4482706
-    },
-    "PURWAKARTA_CISEUREUH": {
-        "lat": -6.5223463,
-        "lon": 107.4486708
-    },
-    "BABAKAN CIKAO_BABAKANCIKAO": {
-        "lat": -6.5081051,
-        "lon": 107.4215269
-    },
-    "BABAKAN CIKAO_CIWARENG": {
-        "lat": -6.5290047,
-        "lon": 107.4397958
-    },
-    "BABAKAN CIKAO_CIGELAM": {
-        "lat": -6.4851029,
-        "lon": 107.4524377
-    },
-    "BABAKAN CIKAO_CILANGKAP": {
-        "lat": -6.4833721,
-        "lon": 107.3908286
-    },
-    "BABAKAN CIKAO_MARACANG": {
-        "lat": -6.5215265,
-        "lon": 107.4337127
-    },
-    "BABAKAN CIKAO_MULYAMEKAR": {
-        "lat": -6.5147567,
-        "lon": 107.4537563
-    },
-    "BABAKAN CIKAO_KADUMEKAR": {
-        "lat": -6.5151192,
-        "lon": 107.422235
-    },
-    "BABAKAN CIKAO_CICADAS": {
-        "lat": -6.4919021,
-        "lon": 107.4012279
-    },
-    "BABAKAN CIKAO_HEGARMANAH": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "CAMPAKA_CIRENDE": {
-        "lat": -6.5383694,
-        "lon": 107.4933146
-    },
-    "CAMPAKA_BENTENG": {
-        "lat": -6.5175609,
-        "lon": 107.4972359
-    },
-    "CAMPAKA_CAMPAKA": {
-        "lat": -6.585556,
-        "lon": 107.541667
-    },
-    "CAMPAKA_CAMPAKASARI": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "CAMPAKA_CIJUNTI": {
-        "lat": -6.4363772,
-        "lon": 107.5194495
-    },
-    "CAMPAKA_CISAAT": {
-        "lat": -6.4509659,
-        "lon": 107.5381279
-    },
-    "CAMPAKA_CIMAHI": {
-        "lat": -6.4633537,
-        "lon": 107.5180864
-    },
-    "CAMPAKA_CIKUMPAY": {
-        "lat": -6.4987662,
-        "lon": 107.4901124
-    },
-    "CAMPAKA_CIJAYA": {
-        "lat": -6.4902605,
-        "lon": 107.500062
-    },
-    "CAMPAKA_KERTAMUKTI": {
-        "lat": -6.4955,
-        "lon": 107.5029
-    },
-    "BUNGUR SARI_CIBUNGUR": {
-        "lat": -6.4678378,
-        "lon": 107.4795654
-    },
-    "BUNGUR SARI_CIBENING": {
-        "lat": -6.4965072,
-        "lon": 107.4720382
-    },
-    "BUNGUR SARI_BUNGURSARI": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "BUNGUR SARI_KARANGMUKTI": {
-        "lat": -6.4354008,
-        "lon": 107.5026583
-    },
-    "BUNGUR SARI_DANGDEUR": {
-        "lat": -6.4758052,
-        "lon": 107.4639916
-    },
-    "BUNGUR SARI_CIWANGI": {
-        "lat": -6.5066762,
-        "lon": 107.4642709
-    },
-    "BUNGUR SARI_WANAKERTA": {
-        "lat": -6.462181,
-        "lon": 107.4688196
-    },
-    "BUNGUR SARI_CINANGKA": {
-        "lat": -6.4339082,
-        "lon": 107.4679398
-    },
-    "BUNGUR SARI_CIKOPO": {
-        "lat": -6.4563776,
-        "lon": 107.5028705
-    },
-    "BUNGUR SARI_CIBODAS": {
-        "lat": -6.4183286,
-        "lon": 107.4956883
-    },
-    "CIBATU_CIBATU": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "CIBATU_CILANDAK": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "CIBATU_CIRANGKONG": {
-        "lat": -6.5171306,
-        "lon": 107.522174
-    },
-    "CIBATU_CIBUKAMANAH": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "CIBATU_WANAWALI": {
-        "lat": -6.5694088,
-        "lon": 107.5318199
-    },
-    "CIBATU_CIKADU": {
-        "lat": -6.5324846,
-        "lon": 107.5545679
-    },
-    "CIBATU_CIPINANG": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "CIBATU_CIPARUNGSARI": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "CIBATU_KARYAMEKAR": {
-        "lat": -6.553618,
-        "lon": 107.451278
-    },
-    "CIBATU_CIPANCUR": {
-        "lat": -6.5174856,
-        "lon": 107.538085
-    }
+    "OBJEK KHUSUS_OBJEK KHUSUS":  {
+                                      "lat":  -6.553618,
+                                      "lon":  107.451278
+                                  },
+    "JATILUHUR_JATIMEKAR":  {
+                                "lat":  -6.5184662,
+                                "lon":  107.3943614
+                            },
+    "JATILUHUR_CIKAO BANDUNG":  {
+                                    "lat":  -6.558412,
+                                    "lon":  107.416938
+                                },
+    "JATILUHUR_JATILUHUR":  {
+                                "lat":  -6.5282507,
+                                "lon":  107.4216594
+                            },
+    "JATILUHUR_CILEGONG":  {
+                               "lat":  -6.558482,
+                               "lon":  107.416732
+                           },
+    "JATILUHUR_KEMBANG KUNING":  {
+                                     "lat":  -6.5552884,
+                                     "lon":  107.4215768
+                                 },
+    "JATILUHUR_CIBINONG":  {
+                               "lat":  -6.5656893,
+                               "lon":  107.4078995
+                           },
+    "JATILUHUR_BUNDER":  {
+                             "lat":  -6.5608039,
+                             "lon":  107.4301099
+                         },
+    "JATILUHUR_MEKARGALIH":  {
+                                 "lat":  -6.57026,
+                                 "lon":  107.4319786
+                             },
+    "JATILUHUR_CISALADA":  {
+                               "lat":  -6.5835891,
+                               "lon":  107.4417824
+                           },
+    "JATILUHUR_PARAKANLIMA":  {
+                                  "lat":  -6.5905482,
+                                  "lon":  107.4438704
+                              },
+    "SUKASARI_SUKASARI":  {
+                              "lat":  -6.5444914,
+                              "lon":  107.4474365
+                          },
+    "SUKASARI_KERTAMANAH":  {
+                                "lat":  -6.5428681,
+                                "lon":  107.2901411
+                            },
+    "SUKASARI_CIRIRIP":  {
+                             "lat":  -6.5851184,
+                             "lon":  107.2899547
+                         },
+    "SUKASARI_KUTAMANAH":  {
+                               "lat":  -6.5070691,
+                               "lon":  107.3034498
+                           },
+    "SUKASARI_PARUNGBANTENG":  {
+                                   "lat":  -6.6129131,
+                                   "lon":  107.2563478
+                               },
+    "TEGALWARU_SUKAHAJI":  {
+                               "lat":  -6.6572047,
+                               "lon":  107.3241506
+                           },
+    "TEGALWARU_KAROYA":  {
+                             "lat":  -6.6660899,
+                             "lon":  107.3406423
+                         },
+    "TEGALWARU_CADASSARI":  {
+                                "lat":  -6.6668636,
+                                "lon":  107.3545358
+                            },
+    "TEGALWARU_CADASMEKAR":  {
+                                 "lat":  -6.6645767,
+                                 "lon":  107.3584522
+                             },
+    "TEGALWARU_CITALANG":  {
+                               "lat":  -6.6504741,
+                               "lon":  107.3474066
+                           },
+    "TEGALWARU_BATUTUMPANG":  {
+                                  "lat":  -6.6381768,
+                                  "lon":  107.3540705
+                              },
+    "TEGALWARU_TEGALWARU":  {
+                                "lat":  -6.6467904,
+                                "lon":  107.3423476
+                            },
+    "TEGALWARU_TEGALSARI":  {
+                                "lat":  -6.6441066,
+                                "lon":  107.3348282
+                            },
+    "TEGALWARU_WARUNGJERUK":  {
+                                  "lat":  -6.6537365,
+                                  "lon":  107.3202462
+                              },
+    "TEGALWARU_GALUMPIT":  {
+                               "lat":  -6.6500866,
+                               "lon":  107.3133572
+                           },
+    "TEGALWARU_CISARUA":  {
+                              "lat":  -6.6118231,
+                              "lon":  107.3315883
+                          },
+    "TEGALWARU_SUKAMULYA":  {
+                                "lat":  -6.6025641,
+                                "lon":  107.3448004
+                            },
+    "TEGALWARU_PASANGGRAHAN":  {
+                                   "lat":  -6.5871221,
+                                   "lon":  107.3420527
+                               },
+    "PLERED_RAWASARI":  {
+                            "lat":  -6.6585799,
+                            "lon":  107.3657704
+                        },
+    "PLERED_GANDASOLI":  {
+                             "lat":  -6.6729589,
+                             "lon":  107.3752736
+                         },
+    "PLERED_GANDAMEKAR":  {
+                              "lat":  -6.6696009,
+                              "lon":  107.3847937
+                          },
+    "PLERED_CIBOGO HILIR":  {
+                                "lat":  -6.632780,
+                                "lon":  107.381259
+                            },
+    "PLERED_PALINGGIHAN":  {
+                               "lat":  -6.641120,
+                               "lon":  107.383647
+                           },
+    "PLERED_BABAKAN SARI":  {
+                                "lat":  -6.669047,
+                                "lon":  107.377882
+                            },
+    "PLERED_PLERED":  {
+                          "lat":  -6.6459072,
+                          "lon":  107.3864372
+                      },
+    "PLERED_SINDANGSARI":  {
+                               "lat":  -6.6859382,
+                               "lon":  107.526628
+                           },
+    "PLERED_CITEKO":  {
+                          "lat":  -6.6460161,
+                          "lon":  107.3740146
+                      },
+    "PLERED_CITEKO KALER":  {
+                                "lat":  -6.6424635,
+                                "lon":  107.3794621
+                            },
+    "PLERED_LINGGARSARI":  {
+                               "lat":  -6.6345678,
+                               "lon":  107.3827026
+                           },
+    "PLERED_PAMOYANAN":  {
+                             "lat":  -6.6434956,
+                             "lon":  107.3681254
+                         },
+    "PLERED_LIUNG GUNUNG":  {
+                                "lat":  -6.653677,
+                                "lon":  107.361316
+                            },
+    "PLERED_ANJUN":  {
+                         "lat":  -6.6379613,
+                         "lon":  107.3919092
+                     },
+    "PLERED_CIBOGO GIRANG":  {
+                                 "lat":  -6.669081,
+                                 "lon":  107.398688
+                             },
+    "PLERED_SEMPUR":  {
+                          "lat":  -6.6645809,
+                          "lon":  107.3984804
+                      },
+    "MANIIS_TEGALDATAR":  {
+                              "lat":  -6.7133721,
+                              "lon":  107.3028468
+                          },
+    "MANIIS_SINARGALIH":  {
+                              "lat":  -6.7072362,
+                              "lon":  107.3136018
+                          },
+    "MANIIS_CITAMIANG":  {
+                             "lat":  -6.698390,
+                             "lon":  107.278384
+                         },
+    "MANIIS_CIJATI":  {
+                          "lat":  -6.6890929,
+                          "lon":  107.3203719
+                      },
+    "MANIIS_GUNUNGKARUNG":  {
+                                "lat":  -6.6846705,
+                                "lon":  107.2963881
+                            },
+    "MANIIS_PASIRJAMBU":  {
+                              "lat":  -6.701014,
+                              "lon":  107.2751574
+                          },
+    "MANIIS_CIRAMAHILIR":  {
+                               "lat":  -6.6908359,
+                               "lon":  107.2623437
+                           },
+    "MANIIS_SUKAMUKTI":  {
+                             "lat":  -6.6418286,
+                             "lon":  107.276643
+                         },
+    "SUKATANI_CIPICUNG":  {
+                              "lat":  -6.6125602,
+                              "lon":  107.3780551
+                          },
+    "SUKATANI_SUKAMAJU":  {
+                              "lat":  -6.6087715,
+                              "lon":  107.3933139
+                          },
+    "SUKATANI_CILALAWI":  {
+                              "lat":  -6.6155839,
+                              "lon":  107.3987424
+                          },
+    "SUKATANI_CIANTING UTARA":  {
+                                    "lat":  -6.610171,
+                                    "lon":  107.396700
+                                },
+    "SUKATANI_CIBODAS":  {
+                             "lat":  -6.4183286,
+                             "lon":  107.4956883
+                         },
+    "SUKATANI_CIANTING":  {
+                              "lat":  -6.6346119,
+                              "lon":  107.4046686
+                          },
+    "SUKATANI_PASIR MUNJUL":  {
+                                  "lat":  -6.416812,
+                                  "lon":  107.490804
+                              },
+    "SUKATANI_SUKATANI":  {
+                              "lat":  -6.6108247,
+                              "lon":  107.4084641
+                          },
+    "SUKATANI_MALANGNENGAH":  {
+                                  "lat":  -6.6012245,
+                                  "lon":  107.4065745
+                              },
+    "SUKATANI_SUKAJAYA":  {
+                              "lat":  -6.613423,
+                              "lon":  107.379602
+                          },
+    "SUKATANI_CIJANTUNG":  {
+                               "lat":  -6.5829484,
+                               "lon":  107.4291351
+                           },
+    "SUKATANI_TAJURSINDANG":  {
+                                  "lat":  -6.5875971,
+                                  "lon":  107.3850355
+                              },
+    "SUKATANI_PANYINDANGAN":  {
+                                  "lat":  -6.5727858,
+                                  "lon":  107.3466335
+                              },
+    "SUKATANI_SINDANGLAYA":  {
+                                 "lat":  -6.5846002,
+                                 "lon":  107.3730542
+                             },
+    "DARANGDAN_MEKARSARI":  {
+                                "lat":  -6.6832372,
+                                "lon":  107.3802603
+                            },
+    "DARANGDAN_LEGOK SARI":  {
+                                 "lat":  -6.690666,
+                                 "lon":  107.420430
+                             },
+    "DARANGDAN_DEPOK":  {
+                            "lat":  -6.6898224,
+                            "lon":  107.4005762
+                        },
+    "DARANGDAN_SIRNAMANAH":  {
+                                 "lat":  -6.6874749,
+                                 "lon":  107.4208545
+                             },
+    "DARANGDAN_SAWIT":  {
+                            "lat":  -6.6932872,
+                            "lon":  107.4375125
+                        },
+    "DARANGDAN_LINGGA SARI":  {
+                                  "lat":  -6.676510,
+                                  "lon":  107.451709
+                              },
+    "DARANGDAN_NANGEWER":  {
+                               "lat":  -6.7111378,
+                               "lon":  107.4723821
+                           },
+    "DARANGDAN_PASIR ANGIN":  {
+                                  "lat":  -6.5875,
+                                  "lon":  107.395556
+                              },
+    "DARANGDAN_NEGLA SARI":  {
+                                 "lat":  -6.688787,
+                                 "lon":  107.443802
+                             },
+    "DARANGDAN_CILINGGA":  {
+                               "lat":  -6.684051,
+                               "lon":  107.4687608
+                           },
+    "DARANGDAN_LINGGAMUKTI":  {
+                                  "lat":  -6.6799635,
+                                  "lon":  107.452026
+                              },
+    "DARANGDAN_SADARKARYA":  {
+                                 "lat":  -6.6870843,
+                                 "lon":  107.4458166
+                             },
+    "DARANGDAN_DARANGDAN":  {
+                                "lat":  -6.6914228,
+                                "lon":  107.4356853
+                            },
+    "DARANGDAN_GUNUNGHEJO":  {
+                                 "lat":  -6.6646878,
+                                 "lon":  107.4161931
+                             },
+    "DARANGDAN_NAGRAK":  {
+                             "lat":  -6.6510491,
+                             "lon":  107.4142942
+                         },
+    "BOJONG_CIBINBIN":  {
+                            "lat":  -6.586081,
+                            "lon":  107.340160
+                        },
+    "BOJONG_BOJONG TIMUR":  {
+                                "lat":  -6.7176575,
+                                "lon":  107.5191451
+                            },
+    "BOJONG_PASANGGRAHAN":  {
+                                "lat":  -6.5871221,
+                                "lon":  107.3420527
+                            },
+    "BOJONG_CIHANJAWAR":  {
+                              "lat":  -6.7203299,
+                              "lon":  107.5301574
+                          },
+    "BOJONG_CIKERIS":  {
+                           "lat":  -6.7039481,
+                           "lon":  107.5206873
+                       },
+    "BOJONG_BOJONG BARAT":  {
+                                "lat":  -6.7176575,
+                                "lon":  107.5191451
+                            },
+    "BOJONG_PANGKALAN":  {
+                             "lat":  -6.7141397,
+                             "lon":  107.4964771
+                         },
+    "BOJONG_SUKAMANAH":  {
+                             "lat":  -6.5512451,
+                             "lon":  107.5157295
+                         },
+    "BOJONG_PAWENANG":  {
+                            "lat":  -6.695499,
+                            "lon":  107.5171704
+                        },
+    "BOJONG_SINDANGSARI":  {
+                               "lat":  -6.6859382,
+                               "lon":  107.526628
+                           },
+    "BOJONG_SINDANGPANON":  {
+                                "lat":  -6.6786362,
+                                "lon":  107.5173831
+                            },
+    "BOJONG_CIPEUNDEUY":  {
+                              "lat":  -6.6878277,
+                              "lon":  107.4958538
+                          },
+    "BOJONG_CILEUNCA":  {
+                            "lat":  -6.6773658,
+                            "lon":  107.4849246
+                        },
+    "BOJONG_KERTASARI":  {
+                             "lat":  -6.6730325,
+                             "lon":  107.4777235
+                         },
+    "WANAYASA_NANGERANG":  {
+                               "lat":  -6.6945199,
+                               "lon":  107.5352362
+                           },
+    "WANAYASA_SIMPANG":  {
+                             "lat":  -6.5655981,
+                             "lon":  107.451809
+                         },
+    "WANAYASA_SAKAMBANG":  {
+                               "lat":  -6.7025147,
+                               "lon":  107.5373159
+                           },
+    "WANAYASA_NAGROG":  {
+                            "lat":  -6.6985176,
+                            "lon":  107.5401242
+                        },
+    "WANAYASA_CIBUNTU":  {
+                             "lat":  -6.6904266,
+                             "lon":  107.5511697
+                         },
+    "WANAYASA_SUMUR UGUL":  {
+                                "lat":  -6.647504,
+                                "lon":  107.517612
+                            },
+    "WANAYASA_RAHARJA":  {
+                             "lat":  -6.6875703,
+                             "lon":  107.5487568
+                         },
+    "WANAYASA_WANAYASA":  {
+                              "lat":  -6.6772444,
+                              "lon":  107.5564034
+                          },
+    "WANAYASA_BABAKAN":  {
+                             "lat":  -6.678434,
+                             "lon":  107.5679149
+                         },
+    "WANAYASA_WANASARI":  {
+                              "lat":  -6.6670851,
+                              "lon":  107.5478895
+                          },
+    "WANAYASA_LEGOK HUNI":  {
+                                "lat":  -6.635556,
+                                "lon":  107.529292
+                            },
+    "WANAYASA_CIAWI":  {
+                           "lat":  -6.6507158,
+                           "lon":  107.5207392
+                       },
+    "WANAYASA_SUKADAMI":  {
+                              "lat":  -6.6434938,
+                              "lon":  107.5244066
+                          },
+    "WANAYASA_TARINGGUL TONGGOH":  {
+                                       "lat":  -6.6380423,
+                                       "lon":  107.5247613
+                                   },
+    "WANAYASA_TARINGGUL TENGAH":  {
+                                      "lat":  -6.632004,
+                                      "lon":  107.5266218
+                                  },
+    "KIARA PEDES_KIARAPEDES":  {
+                                   "lat":  -6.6467641,
+                                   "lon":  107.5740351
+                               },
+    "KIARA PEDES_PUSAKAMULYA":  {
+                                    "lat":  -6.675178,
+                                    "lon":  107.5860288
+                                },
+    "KIARA PEDES_CIRACAS":  {
+                                "lat":  -6.6487845,
+                                "lon":  107.5792709
+                            },
+    "KIARA PEDES_MARGALUYU":  {
+                                  "lat":  -6.6317904,
+                                  "lon":  107.5628987
+                              },
+    "KIARA PEDES_MEKARJAYA":  {
+                                  "lat":  -6.6211147,
+                                  "lon":  107.5740921
+                              },
+    "KIARA PEDES_TARINGGULLANDEUH":  {
+                                         "lat":  -6.659073,
+                                         "lon":  107.552519
+                                     },
+    "KIARA PEDES_GARDU":  {
+                              "lat":  -6.6360176,
+                              "lon":  107.5438713
+                          },
+    "KIARA PEDES_PARAKAN GAROKGEK":  {
+                                         "lat":  -6.6639146,
+                                         "lon":  107.5935069
+                                     },
+    "KIARA PEDES_SUMBERSARI":  {
+                                   "lat":  -6.6607159,
+                                   "lon":  107.5528756
+                               },
+    "KIARA PEDES_CIBEBER":  {
+                                "lat":  -6.6652255,
+                                "lon":  107.5667063
+                            },
+    "PASAWAHAN_PASAWAHAN KIDUL":  {
+                                      "lat":  -6.593692,
+                                      "lon":  107.454359
+                                  },
+    "PASAWAHAN_PASAWAHAN":  {
+                                "lat":  -6.5653126,
+                                "lon":  107.4655873
+                            },
+    "PASAWAHAN_PASAWAHAN ANYAR":  {
+                                      "lat":  -6.599472,
+                                      "lon":  107.458312
+                                  },
+    "PASAWAHAN_CIHERANG":  {
+                               "lat":  -6.5960459,
+                               "lon":  107.4551064
+                           },
+    "PASAWAHAN_CIDAHU":  {
+                             "lat":  -6.5911966,
+                             "lon":  107.455322
+                         },
+    "PASAWAHAN_SAWAHKULON":  {
+                                 "lat":  -6.597538,
+                                 "lon":  107.450378
+                             },
+    "PASAWAHAN_KERTAJAYA":  {
+                                "lat":  -6.5755528,
+                                "lon":  107.4614237
+                            },
+    "PASAWAHAN_LEBAK ANYAR":  {
+                                  "lat":  -6.593531,
+                                  "lon":  107.455972
+                              },
+    "PASAWAHAN_CIHUNI":  {
+                             "lat":  -6.5653126,
+                             "lon":  107.4655873
+                         },
+    "PASAWAHAN_WARUNGKADU":  {
+                                 "lat":  -6.5558889,
+                                 "lon":  107.4658173
+                             },
+    "PASAWAHAN_MARGASARI":  {
+                                "lat":  -6.570820,
+                                "lon":  107.463527
+                            },
+    "PASAWAHAN_SELAAWI":  {
+                              "lat":  -6.5527348,
+                              "lon":  107.4750429
+                          },
+    "PONDOK SALAM_PARAKANSALAM":  {
+                                      "lat":  -6.6039346,
+                                      "lon":  107.4872253
+                                  },
+    "PONDOK SALAM_PONDOK BUNGUR":  {
+                                       "lat":  -6.607393,
+                                       "lon":  107.481487
+                                   },
+    "PONDOK SALAM_SALEM":  {
+                               "lat":  -6.626257,
+                               "lon":  107.5022406
+                           },
+    "PONDOK SALAM_SALAMJAYA":  {
+                                   "lat":  -6.6063336,
+                                   "lon":  107.4850377
+                               },
+    "PONDOK SALAM_SALAMMULYA":  {
+                                    "lat":  -6.656969,
+                                    "lon":  107.520314
+                                },
+    "PONDOK SALAM_GALUDRA":  {
+                                 "lat":  -6.6234454,
+                                 "lon":  107.4919794
+                             },
+    "PONDOK SALAM_BUNGURJAYA":  {
+                                    "lat":  -6.6546273,
+                                    "lon":  107.5181108
+                                },
+    "PONDOK SALAM_TANJUNGSARI":  {
+                                     "lat":  -6.626160,
+                                     "lon":  107.498823
+                                 },
+    "PONDOK SALAM_SITU":  {
+                              "lat":  -6.5950293,
+                              "lon":  107.4713077
+                          },
+    "PONDOK SALAM_SUKAJADI":  {
+                                  "lat":  -6.6085062,
+                                  "lon":  107.464737
+                              },
+    "PONDOK SALAM_GURUDUG":  {
+                                 "lat":  -6.5748211,
+                                 "lon":  107.5191051
+                             },
+    "PURWAKARTA_SINDANG KASIH":  {
+                                     "lat":  -6.652031,
+                                     "lon":  107.347795
+                                 },
+    "PURWAKARTA_NAGRI KIDUL":  {
+                                   "lat":  -6.546341,
+                                   "lon":  107.452301
+                               },
+    "PURWAKARTA_CIPAISAN":  {
+                                "lat":  -6.5582245,
+                                "lon":  107.4364614
+                            },
+    "PURWAKARTA_NAGRI TENGAH":  {
+                                    "lat":  -6.561926,
+                                    "lon":  107.438955
+                                },
+    "PURWAKARTA_PURWAMEKAR":  {
+                                  "lat":  -6.5381219,
+                                  "lon":  107.4393797
+                              },
+    "PURWAKARTA_NAGRI KALER":  {
+                                   "lat":  -6.554029,
+                                   "lon":  107.435917
+                               },
+    "PURWAKARTA_TEGAL MUNJUL":  {
+                                    "lat":  -6.558777,
+                                    "lon":  107.438341
+                                },
+    "PURWAKARTA_CITALANG":  {
+                                "lat":  -6.6504741,
+                                "lon":  107.3474066
+                            },
+    "PURWAKARTA_MUNJULJAYA":  {
+                                  "lat":  -6.5462989,
+                                  "lon":  107.4482706
+                              },
+    "PURWAKARTA_CISEUREUH":  {
+                                 "lat":  -6.5223463,
+                                 "lon":  107.4486708
+                             },
+    "BABAKAN CIKAO_BABAKANCIKAO":  {
+                                       "lat":  -6.5081051,
+                                       "lon":  107.4215269
+                                   },
+    "BABAKAN CIKAO_CIWARENG":  {
+                                   "lat":  -6.5290047,
+                                   "lon":  107.4397958
+                               },
+    "BABAKAN CIKAO_CIGELAM":  {
+                                  "lat":  -6.4851029,
+                                  "lon":  107.4524377
+                              },
+    "BABAKAN CIKAO_CILANGKAP":  {
+                                    "lat":  -6.4833721,
+                                    "lon":  107.3908286
+                                },
+    "BABAKAN CIKAO_MARACANG":  {
+                                   "lat":  -6.5215265,
+                                   "lon":  107.4337127
+                               },
+    "BABAKAN CIKAO_MULYAMEKAR":  {
+                                     "lat":  -6.5147567,
+                                     "lon":  107.4537563
+                                 },
+    "BABAKAN CIKAO_KADUMEKAR":  {
+                                    "lat":  -6.5151192,
+                                    "lon":  107.422235
+                                },
+    "BABAKAN CIKAO_CICADAS":  {
+                                  "lat":  -6.4919021,
+                                  "lon":  107.4012279
+                              },
+    "BABAKAN CIKAO_HEGARMANAH":  {
+                                     "lat":  -6.514487,
+                                     "lon":  107.458546
+                                 },
+    "CAMPAKA_CIRENDE":  {
+                            "lat":  -6.5383694,
+                            "lon":  107.4933146
+                        },
+    "CAMPAKA_BENTENG":  {
+                            "lat":  -6.5175609,
+                            "lon":  107.4972359
+                        },
+    "CAMPAKA_CAMPAKA":  {
+                            "lat":  -6.585556,
+                            "lon":  107.541667
+                        },
+    "CAMPAKA_CAMPAKASARI":  {
+                                "lat":  -6.582706,
+                                "lon":  107.540042
+                            },
+    "CAMPAKA_CIJUNTI":  {
+                            "lat":  -6.4363772,
+                            "lon":  107.5194495
+                        },
+    "CAMPAKA_CISAAT":  {
+                           "lat":  -6.4509659,
+                           "lon":  107.5381279
+                       },
+    "CAMPAKA_CIMAHI":  {
+                           "lat":  -6.4633537,
+                           "lon":  107.5180864
+                       },
+    "CAMPAKA_CIKUMPAY":  {
+                             "lat":  -6.4987662,
+                             "lon":  107.4901124
+                         },
+    "CAMPAKA_CIJAYA":  {
+                           "lat":  -6.4902605,
+                           "lon":  107.500062
+                       },
+    "CAMPAKA_KERTAMUKTI":  {
+                               "lat":  -6.4955,
+                               "lon":  107.5029
+                           },
+    "BUNGUR SARI_CIBUNGUR":  {
+                                 "lat":  -6.4678378,
+                                 "lon":  107.4795654
+                             },
+    "BUNGUR SARI_CIBENING":  {
+                                 "lat":  -6.4965072,
+                                 "lon":  107.4720382
+                             },
+    "BUNGUR SARI_BUNGURSARI":  {
+                                   "lat":  -6.436949,
+                                   "lon":  107.471419
+                               },
+    "BUNGUR SARI_KARANGMUKTI":  {
+                                    "lat":  -6.4354008,
+                                    "lon":  107.5026583
+                                },
+    "BUNGUR SARI_DANGDEUR":  {
+                                 "lat":  -6.4758052,
+                                 "lon":  107.4639916
+                             },
+    "BUNGUR SARI_CIWANGI":  {
+                                "lat":  -6.5066762,
+                                "lon":  107.4642709
+                            },
+    "BUNGUR SARI_WANAKERTA":  {
+                                  "lat":  -6.462181,
+                                  "lon":  107.4688196
+                              },
+    "BUNGUR SARI_CINANGKA":  {
+                                 "lat":  -6.4339082,
+                                 "lon":  107.4679398
+                             },
+    "BUNGUR SARI_CIKOPO":  {
+                               "lat":  -6.4563776,
+                               "lon":  107.5028705
+                           },
+    "BUNGUR SARI_CIBODAS":  {
+                                "lat":  -6.4183286,
+                                "lon":  107.4956883
+                            },
+    "CIBATU_CIBATU":  {
+                          "lat":  -6.568934,
+                          "lon":  107.530365
+                      },
+    "CIBATU_CILANDAK":  {
+                            "lat":  -6.519468,
+                            "lon":  107.537070
+                        },
+    "CIBATU_CIRANGKONG":  {
+                              "lat":  -6.5171306,
+                              "lon":  107.522174
+                          },
+    "CIBATU_CIBUKAMANAH":  {
+                               "lat":  -6.536956,
+                               "lon":  107.551824
+                           },
+    "CIBATU_WANAWALI":  {
+                            "lat":  -6.5694088,
+                            "lon":  107.5318199
+                        },
+    "CIBATU_CIKADU":  {
+                          "lat":  -6.5324846,
+                          "lon":  107.5545679
+                      },
+    "CIBATU_CIPINANG":  {
+                            "lat":  -6.567395,
+                            "lon":  107.534950
+                        },
+    "CIBATU_CIPARUNGSARI":  {
+                                "lat":  -6.569152,
+                                "lon":  107.535370
+                            },
+    "CIBATU_KARYAMEKAR":  {
+                              "lat":  -6.519275,
+                              "lon":  107.518541
+                          },
+    "CIBATU_CIPANCUR":  {
+                            "lat":  -6.5174856,
+                            "lon":  107.538085
+                        }
 }
