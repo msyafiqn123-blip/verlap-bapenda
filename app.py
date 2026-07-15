@@ -691,39 +691,97 @@ def fetch_pegawai():
 
 def optimize_multiple_routes(df):
     """
-    Groups points by compass direction relative to Bapenda,
-    then runs a Greedy TSP within each direction to ensure no bolak-balik.
+    Groups points by spatial clustering (connected components by distance),
+    then runs a Greedy TSP within each cluster to ensure no bolak-balik.
     """
     if df.empty or 'lat' not in df.columns or df['lat'].isnull().all():
         return {}
     
     df_clean = df.dropna(subset=['lat', 'lon']).copy()
+    points = df_clean.to_dict('records')
     
-    for idx, row in df_clean.iterrows():
-        brng = calculate_bearing(BAPENDA_COORD[0], BAPENDA_COORD[1], row['lat'], row['lon'])
-        df_clean.at[idx, 'arah'] = get_compass_direction(brng)
+    # 1. Spatial Clustering (Connected Components, max distance 8 km)
+    max_distance_km = 8.0
+    clusters = []
+    unvisited_idx = set(range(len(points)))
+    
+    while unvisited_idx:
+        start_idx = unvisited_idx.pop()
+        cluster = [points[start_idx]]
+        queue = [points[start_idx]]
+        
+        while queue:
+            curr = queue.pop(0)
+            to_remove = []
+            for idx in unvisited_idx:
+                pt = points[idx]
+                dist = haversine(curr['lon'], curr['lat'], pt['lon'], pt['lat'])
+                if dist < max_distance_km:
+                    cluster.append(pt)
+                    queue.append(pt)
+                    to_remove.append(idx)
+            for idx in to_remove:
+                unvisited_idx.remove(idx)
+        clusters.append(cluster)
         
     routes_dict = {}
     
-    for arah, group in df_clean.groupby('arah'):
-        unvisited = group.to_dict('records')
+    # 2. For each cluster, label it by average direction & kecamatan, then TSP
+    for cluster in clusters:
+        avg_lat = sum(p['lat'] for p in cluster) / len(cluster)
+        avg_lon = sum(p['lon'] for p in cluster) / len(cluster)
+        brng = calculate_bearing(BAPENDA_COORD[0], BAPENDA_COORD[1], avg_lat, avg_lon)
+        
+        # upgrade get_compass_direction inside logic to 8 directions for finer labeling
+        def get_8_compass(b):
+            if 337.5 <= b or b < 22.5: return "Utara"
+            if 22.5 <= b < 67.5: return "Timur Laut"
+            if 67.5 <= b < 112.5: return "Timur"
+            if 112.5 <= b < 157.5: return "Tenggara"
+            if 157.5 <= b < 202.5: return "Selatan"
+            if 202.5 <= b < 247.5: return "Barat Daya"
+            if 247.5 <= b < 292.5: return "Barat"
+            if 292.5 <= b < 337.5: return "Barat Laut"
+            return "Utara"
+            
+        arah = get_8_compass(brng)
+        
+        kecamatans = list(set([p.get('kecamatan', 'Unknown') for p in cluster]))
+        if len(kecamatans) <= 2:
+            kec_label = ", ".join(kecamatans)
+        else:
+            kec_label = f"{kecamatans[0]} dkk"
+            
+        # create unique route key if multiple clusters fall in same general direction
+        base_name = f"{arah} ({kec_label})"
+        route_name = base_name
+        counter = 2
+        while route_name in routes_dict:
+            route_name = f"{base_name} - Part {counter}"
+            counter += 1
+            
+        # Greedy TSP
+        unvisited_cluster = cluster.copy()
         current_loc = {'lat': BAPENDA_COORD[0], 'lon': BAPENDA_COORD[1]}
         route = []
         
-        while unvisited:
-            nearest_idx = 0
+        while unvisited_cluster:
+            nearest_idx = -1
             min_dist = float('inf')
-            for i, point in enumerate(unvisited):
+            for i, point in enumerate(unvisited_cluster):
                 dist = haversine(current_loc['lon'], current_loc['lat'], point['lon'], point['lat'])
                 if dist < min_dist:
                     min_dist = dist
                     nearest_idx = i
                     
-            next_point = unvisited.pop(nearest_idx)
+            next_point = unvisited_cluster.pop(nearest_idx)
             route.append(next_point)
             current_loc = {'lat': next_point['lat'], 'lon': next_point['lon']}
             
-        routes_dict[arah] = route
+        routes_dict[route_name] = route
+        
+    # Sort routes_dict by size (largest cluster first)
+    routes_dict = dict(sorted(routes_dict.items(), key=lambda item: len(item[1]), reverse=True))
         
     return routes_dict
 
@@ -1348,7 +1406,7 @@ with tab1:
     
     if routes_dict:
         total_berkas = sum(len(r) for r in routes_dict.values())
-        st.success(f"📌 Ditemukan {total_berkas} Berkas Belum Survei. Sistem telah membaginya menjadi {len(routes_dict)} rute berdasarkan kelompok 4 arah mata angin (Searah).")
+        st.success(f"📌 Ditemukan {total_berkas} Berkas Belum Survei. Sistem telah membaginya menjadi {len(routes_dict)} klaster rute pintar berdasarkan kedekatan jarak antar kecamatan dan 8 arah mata angin.")
         
         route_tabs = st.tabs([f"🚗 Rute {idx+1}" for idx in range(len(routes_dict))])
         for idx, (arah, route_list) in enumerate(routes_dict.items()):
