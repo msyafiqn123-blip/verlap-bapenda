@@ -1193,27 +1193,41 @@ with tab0:
                 st.session_state.form_key += 1
                 st.rerun()
             else:
+                db_berkas = {
+                    'no_pelayanan': nopel_baru,
+                    'kategori_berkas': kategori_baru,
+                    'nomor_nop': nop_clean,
+                    'nama_pemohon': pemohon_baru,
+                    'mendesak': urgensi_baru,
+                    'kecamatan': kecamatan_baru,
+                    'kelurahan': kelurahan_baru,
+                    'lokasi_map': gmaps_link,
+                    'latitude': lat_val,
+                    'longitude': lon_val,
+                    'status_survey': 'Belum'
+                }
                 try:
-                    db_berkas = {
-                        'no_pelayanan': nopel_baru,
-                        'kategori_berkas': kategori_baru,
-                        'nomor_nop': nop_clean,
-                        'nama_pemohon': pemohon_baru,
-                        'mendesak': urgensi_baru,
-                        'kecamatan': kecamatan_baru,
-                        'kelurahan': kelurahan_baru,
-                        'lokasi_map': gmaps_link,
-                        'latitude': lat_val,
-                        'longitude': lon_val,
-                        'status_survey': 'Belum'
-                    }
                     supabase.table('berkas').insert(db_berkas).execute()
                     st.cache_data.clear()
                     st.session_state.success_msg = f"✅ Berhasil! Berkas {nopel_baru} (Kel. {kelurahan_baru}) berhasil disimpan ke Database."
                     st.session_state.form_key += 1
                     st.rerun()
                 except Exception as e:
-                    st.error(f"Gagal menyimpan ke database (Pastikan tabel 'berkas' sudah dibuat di SQL Editor). Error: {e}")
+                    if 'PGRST204' in str(e):
+                        try:
+                            # Fallback: remove new columns
+                            fallback_db = db_berkas.copy()
+                            fallback_db.pop('lokasi_map', None)
+                            
+                            supabase.table('berkas').insert(fallback_db).execute()
+                            st.cache_data.clear()
+                            st.session_state.success_msg = f"✅ Berhasil! Berkas {nopel_baru} berhasil disimpan. (Info: Kolom lokasi_map tidak tersimpan karena belum ada di Supabase)"
+                            st.session_state.form_key += 1
+                            st.rerun()
+                        except Exception as e2:
+                            st.error(f"Gagal menyimpan ke database (Fallback). Error: {e2}")
+                    else:
+                        st.error(f"Gagal menyimpan ke database Supabase. Error: {e}")
 
 
 # --- TAB 1: PETA INTERAKTIF ---
