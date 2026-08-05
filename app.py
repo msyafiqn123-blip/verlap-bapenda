@@ -1485,14 +1485,14 @@ with tab2:
         }
         pegawai_dict = {row['id']: f"{row['nama_pegawai'].split(',')[0]} - {row.get('nip', '-')} ({row.get('jabatan', '-')})" for _, row in df_pegawai.iterrows()}
         
+        selected_berkas = st.multiselect(
+            "Pilih Berkas (No. Pelayanan / NOP - Nama)", 
+            options=berkas_options,
+            default=default_selected,
+            format_func=lambda x: berkas_labels[x]
+        )
+        
         with st.form("form_penugasan"):
-            selected_berkas = st.multiselect(
-                "Pilih Berkas (No. Pelayanan / NOP - Nama)", 
-                options=berkas_options,
-                default=default_selected,
-                format_func=lambda x: berkas_labels[x]
-            )
-            
             selected_pegawai = st.multiselect(
                 "Pilih 2 Pegawai (Tim Survei)", 
                 options=list(pegawai_dict.keys()), 
@@ -1501,7 +1501,17 @@ with tab2:
             )
             
             tgl_survei = st.date_input("Rencana Tanggal Survei", datetime.date.today())
-            nomor_surat = st.text_input("Nomor Surat (3 digit)", value="340", max_chars=3)
+            
+            st.markdown("**Penomoran Surat Tugas**")
+            nomor_surat_dict = {}
+            if selected_berkas:
+                for i, b_id in enumerate(selected_berkas):
+                    default_ns = str(340 + i)
+                    label_berkas = berkas_labels[b_id].split(' - ')[0].replace('[DIJADWALKAN] ', '').strip()
+                    ns_val = st.text_input(f"No. Surat untuk {label_berkas}", value=default_ns, max_chars=3, key=f"ns_{b_id}")
+                    nomor_surat_dict[b_id] = ns_val
+            else:
+                st.info("Pilih berkas di atas untuk mengatur Nomor Surat.")
             
             submit_btn = st.form_submit_button("Tugaskan & Jadwalkan")
             
@@ -1514,16 +1524,8 @@ with tab2:
             else:
                 update_success = True
                 if USE_MOCK_DATA:
-                    try:
-                        base_nomor_surat = int(nomor_surat)
-                    except ValueError:
-                        base_nomor_surat = nomor_surat
-
                     for i, b_id in enumerate(selected_berkas):
-                        if isinstance(base_nomor_surat, int):
-                            curr_ns = str(base_nomor_surat + i).zfill(len(str(nomor_surat)))
-                        else:
-                            curr_ns = f"{nomor_surat}-{i+1}"
+                        curr_ns = nomor_surat_dict.get(b_id, "340")
                         for b in st.session_state.mock_berkas:
                             if b['id'] == b_id:
                                 b['status_survey'] = 'Dijadwalkan'
@@ -1532,17 +1534,9 @@ with tab2:
                                 b['tgl_survei'] = str(tgl_survei)
                                 b['nomor_surat'] = curr_ns
                 else:
-                    try:
-                        base_nomor_surat = int(nomor_surat)
-                    except ValueError:
-                        base_nomor_surat = nomor_surat
-
                     for i, b_id in enumerate(selected_berkas):
-                        if isinstance(base_nomor_surat, int):
-                            curr_ns = str(base_nomor_surat + i).zfill(len(str(nomor_surat)))
-                        else:
-                            curr_ns = f"{nomor_surat}-{i+1}"
-                            
+                        curr_ns = nomor_surat_dict.get(b_id, "340")
+                        
                         update_data = {
                             "status_survey": "Dijadwalkan",
                             "petugas_survey": " & ".join(selected_pegawai),
@@ -1596,27 +1590,15 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                     st.write("---")
                     st.write("Silakan download Surat Perintah untuk masing-masing berkas di bawah ini:")
                     
-                    try:
-                        base_nomor_surat = int(nomor_surat)
-                    except ValueError:
-                        base_nomor_surat = nomor_surat
-                    
                     for i, b in enumerate(berkas_list_pdf):
                         single_b = [b]
                         
                         # Match the current ns mapping that we saved
                         if USE_MOCK_DATA:
-                            curr_ns = b.get('nomor_surat', nomor_surat)
+                            curr_ns = b.get('nomor_surat', "340")
                         else:
-                            # For non-mock, df_berkas_belum might not have the updated curr_ns, so recalculate based on selected_berkas index if possible
-                            try:
-                                b_index = selected_berkas.index(b['id'])
-                                if isinstance(base_nomor_surat, int):
-                                    curr_ns = str(base_nomor_surat + b_index).zfill(len(str(nomor_surat)))
-                                else:
-                                    curr_ns = f"{nomor_surat}-{b_index+1}"
-                            except:
-                                curr_ns = nomor_surat
+                            # For non-mock, df_berkas_belum might not have the updated curr_ns, so we use the dict
+                            curr_ns = nomor_surat_dict.get(b['id'], "340")
                             
                         pdf_bytes_tte = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, curr_ns, with_tte=True)
                         pdf_bytes_no_tte = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, curr_ns, with_tte=False)
