@@ -516,7 +516,7 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
         pdf.set_x(x)
         pdf.cell(30, 5, "Letak Tanah", 0, 0)
         pdf.cell(5, 5, ":", 0, 0)
-        pdf.cell(0, 5, f"KP WARNASARI", ln=True)
+        pdf.cell(0, 5, f"Kel/Desa {b.get('desa', '-').upper()} Kecamatan {b.get('kecamatan', '-').upper()}", ln=True)
         
         pdf.set_x(x)
         pdf.cell(30, 5, "Desa", 0, 0)
@@ -1514,21 +1514,40 @@ with tab2:
             else:
                 update_success = True
                 if USE_MOCK_DATA:
-                    for b_id in selected_berkas:
+                    try:
+                        base_nomor_surat = int(nomor_surat)
+                    except ValueError:
+                        base_nomor_surat = nomor_surat
+
+                    for i, b_id in enumerate(selected_berkas):
+                        if isinstance(base_nomor_surat, int):
+                            curr_ns = str(base_nomor_surat + i).zfill(len(str(nomor_surat)))
+                        else:
+                            curr_ns = f"{nomor_surat}-{i+1}"
                         for b in st.session_state.mock_berkas:
                             if b['id'] == b_id:
                                 b['status_survey'] = 'Dijadwalkan'
                                 b['petugas_1'] = selected_pegawai[0] if len(selected_pegawai) > 0 else None
                                 b['petugas_2'] = selected_pegawai[1] if len(selected_pegawai) > 1 else None
                                 b['tgl_survei'] = str(tgl_survei)
-                                b['nomor_surat'] = nomor_surat
+                                b['nomor_surat'] = curr_ns
                 else:
-                    for b_id in selected_berkas:
+                    try:
+                        base_nomor_surat = int(nomor_surat)
+                    except ValueError:
+                        base_nomor_surat = nomor_surat
+
+                    for i, b_id in enumerate(selected_berkas):
+                        if isinstance(base_nomor_surat, int):
+                            curr_ns = str(base_nomor_surat + i).zfill(len(str(nomor_surat)))
+                        else:
+                            curr_ns = f"{nomor_surat}-{i+1}"
+                            
                         update_data = {
                             "status_survey": "Dijadwalkan",
                             "petugas_survey": " & ".join(selected_pegawai),
                             "tgl_survei": str(tgl_survei),
-                            "nomor_surat": nomor_surat
+                            "nomor_surat": curr_ns
                         }
                         try:
                             supabase.table("berkas").update(update_data).eq("id", b_id).execute()
@@ -1537,7 +1556,7 @@ with tab2:
                                 # Fallback: Encode nomor_surat and tgl_survei into petugas_survey
                                 fallback_data = {
                                     "status_survey": "Dijadwalkan",
-                                    "petugas_survey": f"{' & '.join(selected_pegawai)}|{tgl_survei}|{nomor_surat}"
+                                    "petugas_survey": f"{' & '.join(selected_pegawai)}|{tgl_survei}|{curr_ns}"
                                 }
                                 try:
                                     supabase.table("berkas").update(fallback_data).eq("id", b_id).execute()
@@ -1585,13 +1604,22 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                     for i, b in enumerate(berkas_list_pdf):
                         single_b = [b]
                         
-                        if isinstance(base_nomor_surat, int):
-                            current_nomor_surat = str(base_nomor_surat + i).zfill(len(str(nomor_surat)))
+                        # Match the current ns mapping that we saved
+                        if USE_MOCK_DATA:
+                            curr_ns = b.get('nomor_surat', nomor_surat)
                         else:
-                            current_nomor_surat = f"{nomor_surat}-{i+1}"
+                            # For non-mock, df_berkas_belum might not have the updated curr_ns, so recalculate based on selected_berkas index if possible
+                            try:
+                                b_index = selected_berkas.index(b['id'])
+                                if isinstance(base_nomor_surat, int):
+                                    curr_ns = str(base_nomor_surat + b_index).zfill(len(str(nomor_surat)))
+                                else:
+                                    curr_ns = f"{nomor_surat}-{b_index+1}"
+                            except:
+                                curr_ns = nomor_surat
                             
-                        pdf_bytes_tte = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, current_nomor_surat, with_tte=True)
-                        pdf_bytes_no_tte = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, current_nomor_surat, with_tte=False)
+                        pdf_bytes_tte = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, curr_ns, with_tte=True)
+                        pdf_bytes_no_tte = generate_surat_perintah(single_b, pegawai_list_pdf, tgl_survei, curr_ns, with_tte=False)
                         
                         st.markdown(f"**📄 Surat Tugas: {b.get('nomor_pelayanan', b['nomor_nop'])}**")
                         btn_col1, btn_col2 = st.columns(2)
@@ -1630,17 +1658,29 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
         for idx, row in df_berkas_riwayat.iterrows():
                 b_dict = row.to_dict()
                 
+                # Clean up NaN for tgl_survei and nomor_surat if they came from pandas
+                if pd.isna(b_dict.get('tgl_survei')): b_dict['tgl_survei'] = None
+                if pd.isna(b_dict.get('nomor_surat')): b_dict['nomor_surat'] = None
+                
                 # Decode fallback data if present
                 petugas_survey_val = str(b_dict.get('petugas_survey', ''))
                 parts = petugas_survey_val.split('|')
                 b_dict['petugas_survey'] = parts[0]
-                if len(parts) > 1: b_dict['tgl_survei'] = parts[1]
-                if len(parts) > 2: b_dict['nomor_surat'] = parts[2]
+                
+                if len(parts) > 1 and not pd.isna(parts[1]) and parts[1].strip(): 
+                    b_dict['tgl_survei'] = parts[1]
+                if len(parts) > 2 and not pd.isna(parts[2]) and parts[2].strip(): 
+                    b_dict['nomor_surat'] = parts[2]
                 
                 with st.expander(f"[DIJADWALKAN] {b_dict.get('nomor_pelayanan', b_dict['nomor_nop'])} - {b_dict['nama_pemohon']}"):
-                    tgl_str = str(b_dict.get('tgl_survei', 'Belum diset'))
+                    tgl_str = str(b_dict.get('tgl_survei') or 'Belum diset')
+                    if tgl_str == 'nan' or tgl_str == 'None': tgl_str = 'Belum diset'
+                    
+                    ns_str = str(b_dict.get('nomor_surat') or '340')
+                    if ns_str == 'nan' or ns_str == 'None': ns_str = '340'
+                    
                     st.write(f"**Tanggal Survei:** {tgl_str}")
-                    st.write(f"**Nomor Surat:** {b_dict.get('nomor_surat', '340')}")
+                    st.write(f"**Nomor Surat:** {ns_str}")
                     
                     if not USE_MOCK_DATA:
                         tim_ids = [t.strip() for t in str(b_dict.get('petugas_survey', '')).split('&') if t.strip()]
@@ -1661,8 +1701,8 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                             tgl_s = datetime.date.today()
                             
                         pegawai_list_pdf_ulang = peg_list.to_dict('records')
-                        pdf_bytes_tte_ulang = generate_surat_perintah([b_dict], pegawai_list_pdf_ulang, tgl_s, b_dict.get('nomor_surat', '340'), with_tte=True)
-                        pdf_bytes_notte_ulang = generate_surat_perintah([b_dict], pegawai_list_pdf_ulang, tgl_s, b_dict.get('nomor_surat', '340'), with_tte=False)
+                        pdf_bytes_tte_ulang = generate_surat_perintah([b_dict], pegawai_list_pdf_ulang, tgl_s, ns_str, with_tte=True)
+                        pdf_bytes_notte_ulang = generate_surat_perintah([b_dict], pegawai_list_pdf_ulang, tgl_s, ns_str, with_tte=False)
                         
                         uc1, uc2 = st.columns(2)
                         with uc1:
