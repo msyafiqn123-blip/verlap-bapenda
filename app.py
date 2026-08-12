@@ -1416,7 +1416,8 @@ with tab1:
     folium.LayerControl().add_to(m)
             
     dynamic_map_key = f"map_{selected_kec}_{selected_desa}_{selected_status}_{only_urgent}_{len(df_berkas)}"
-    st_folium(m, width=1200, height=500, returned_objects=[], key=dynamic_map_key)
+    with st.spinner("⏳ Memuat Peta Interaktif (merender area dan titik koordinat)..."):
+        st_folium(m, width=1200, height=500, returned_objects=[], key=dynamic_map_key)
     
     if routes_dict:
         total_berkas = sum(len(r) for r in routes_dict.values())
