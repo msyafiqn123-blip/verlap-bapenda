@@ -1895,8 +1895,48 @@ with tab5:
             else:
                 return [''] * len(s)
                 
+        df_show['Tandai Selesai'] = False
+        
         styled_df = df_show.style.apply(highlight_status, axis=1)
-        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+        
+        edited_df = st.data_editor(
+            styled_df,
+            column_config={
+                "Tandai Selesai": st.column_config.CheckboxColumn(
+                    "Tandai Selesai",
+                    help="Centang untuk menandai berkas ini telah selesai disurvei",
+                    default=False,
+                )
+            },
+            disabled=["No. Pelayanan", "NOP", "Nama Pemohon", "Kategori", "Kecamatan", "Kelurahan", "Status Survei", "Tgl Input"],
+            use_container_width=True, 
+            hide_index=True
+        )
+        
+        rows_to_finish = edited_df[edited_df['Tandai Selesai'] == True]
+        
+        if not rows_to_finish.empty:
+            if st.button("✅ Simpan Perubahan (Selesaikan Berkas)"):
+                update_err = False
+                for _, row in rows_to_finish.iterrows():
+                    nopel = row['No. Pelayanan']
+                    if USE_MOCK_DATA:
+                        for b in st.session_state.mock_berkas:
+                            if str(b['nomor_pelayanan']).strip() == str(nopel).strip():
+                                b['status_survey'] = 'Sudah'
+                    else:
+                        try:
+                            supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(nopel).strip()).execute()
+                        except Exception as e:
+                            st.error(f"Gagal update berkas {nopel}: {e}")
+                            update_err = True
+                
+                if not update_err:
+                    st.cache_data.clear()
+                    st.success("Berkas terpilih berhasil ditandai selesai!")
+                    import time
+                    time.sleep(1)
+                    st.rerun()
     else:
         st.info("Pencarian tidak ditemukan. Pastikan Nomor Pelayanan atau NOP sudah diketik dengan benar.")
 
