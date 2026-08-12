@@ -1522,6 +1522,7 @@ with tab2:
             elif len(selected_pegawai) != 2:
                 st.error("Mohon pilih tepat 2 pegawai untuk diberangkatkan bersama!")
             else:
+                loading_msg = st.info("⏳ Sedang menyimpan penugasan dan membuat PDF Surat Tugas... Mohon tunggu.")
                 update_success = True
                 if USE_MOCK_DATA:
                     for i, b_id in enumerate(selected_berkas):
@@ -1626,6 +1627,7 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                     
                     if not USE_MOCK_DATA:
                         st.cache_data.clear()
+                loading_msg.empty()
     else:
         st.warning("Data pegawai atau berkas (Belum Survei) masih kosong.")
         
@@ -1798,22 +1800,23 @@ with tab4:
                 if not selected_lapangan:
                     st.error("Mohon pilih berkas terlebih dahulu!")
                 else:
-                    try:
-                        update_data = {'status_survey': 'Sudah'}
-                        if catatan:
-                            update_data['catatan_petugas'] = catatan
-                        if location and location.get('latitude'):
-                            update_data['lat_petugas'] = location['latitude']
-                            update_data['lon_petugas'] = location['longitude']
-                            
-                        supabase.table('berkas').update(update_data).eq('id', selected_lapangan).execute()
-                        st.cache_data.clear()
-                        st.success("✅ Laporan lapangan berhasil disubmit dan tersimpan di database!")
-                        import time
-                        time.sleep(1.5)
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"Gagal menyimpan laporan: {e}")
+                    with st.spinner("⏳ Sedang menyimpan laporan ke database..."):
+                        try:
+                            update_data = {'status_survey': 'Sudah'}
+                            if catatan:
+                                update_data['catatan_petugas'] = catatan
+                            if location and location.get('latitude'):
+                                update_data['lat_petugas'] = location['latitude']
+                                update_data['lon_petugas'] = location['longitude']
+                                
+                            supabase.table('berkas').update(update_data).eq('id', selected_lapangan).execute()
+                            st.cache_data.clear()
+                            st.success("✅ Laporan lapangan berhasil disubmit dan tersimpan di database!")
+                            import time
+                            time.sleep(1.5)
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Gagal menyimpan laporan: {e}")
     else:
         st.info("Tidak ada berkas yang berstatus 'Dijadwalkan'.")
 
@@ -1917,26 +1920,27 @@ with tab5:
         
         if not rows_to_finish.empty:
             if st.button("✅ Simpan Perubahan (Selesaikan Berkas)"):
-                update_err = False
-                for _, row in rows_to_finish.iterrows():
-                    nopel = row['No. Pelayanan']
-                    if USE_MOCK_DATA:
-                        for b in st.session_state.mock_berkas:
-                            if str(b['nomor_pelayanan']).strip() == str(nopel).strip():
-                                b['status_survey'] = 'Sudah'
-                    else:
-                        try:
-                            supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(nopel).strip()).execute()
-                        except Exception as e:
-                            st.error(f"Gagal update berkas {nopel}: {e}")
-                            update_err = True
-                
-                if not update_err:
-                    st.cache_data.clear()
-                    st.success("Berkas terpilih berhasil ditandai selesai!")
-                    import time
-                    time.sleep(1)
-                    st.rerun()
+                with st.spinner("⏳ Sedang memperbarui status berkas ke database..."):
+                    update_err = False
+                    for _, row in rows_to_finish.iterrows():
+                        nopel = row['No. Pelayanan']
+                        if USE_MOCK_DATA:
+                            for b in st.session_state.mock_berkas:
+                                if str(b['nomor_pelayanan']).strip() == str(nopel).strip():
+                                    b['status_survey'] = 'Sudah'
+                        else:
+                            try:
+                                supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(nopel).strip()).execute()
+                            except Exception as e:
+                                st.error(f"Gagal update berkas {nopel}: {e}")
+                                update_err = True
+                    
+                    if not update_err:
+                        st.cache_data.clear()
+                        st.success("Berkas terpilih berhasil ditandai selesai!")
+                        import time
+                        time.sleep(1)
+                        st.rerun()
     else:
         st.info("Pencarian tidak ditemukan. Pastikan Nomor Pelayanan atau NOP sudah diketik dengan benar.")
 
