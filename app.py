@@ -1544,24 +1544,21 @@ with tab2:
                             "nomor_surat": curr_ns
                         }
                         try:
-                            supabase.table("berkas").update(update_data).eq("id", b_id).execute()
+                            # Try updating with the new columns first
+                            res = supabase.table("berkas").update(update_data).eq("id", b_id).execute()
+                            if hasattr(res, 'error') and res.error:
+                                raise Exception(str(res.error))
                         except Exception as e:
-                            if 'PGRST204' in str(e):
-                                # Fallback: Encode nomor_surat and tgl_survei into petugas_survey
-                                fallback_data = {
-                                    "status_survey": "Dijadwalkan",
-                                    "petugas_survey": f"{' & '.join(selected_pegawai)}|{tgl_survei}|{curr_ns}"
-                                }
-                                try:
-                                    supabase.table("berkas").update(fallback_data).eq("id", b_id).execute()
-                                    st.warning("⚠️ Penugasan berhasil disimpan (menggunakan metode alternatif karena kolom belum ada di Supabase).")
-                                except Exception as e_fallback:
-                                    update_success = False
-                                    st.error(f"Gagal update database (Fallback): {e_fallback}")
-                                    break
-                            else:
+                            # If it fails (likely due to missing columns), use the fallback method
+                            fallback_data = {
+                                "status_survey": "Dijadwalkan",
+                                "petugas_survey": f"{' & '.join(selected_pegawai)}|{tgl_survei}|{curr_ns}"
+                            }
+                            try:
+                                supabase.table("berkas").update(fallback_data).eq("id", b_id).execute()
+                            except Exception as e_fallback:
                                 update_success = False
-                                st.error(f"Gagal update database: {e}")
+                                st.error(f"Gagal menyimpan ke database: {e_fallback}")
                                 break
                 
                 if update_success:
