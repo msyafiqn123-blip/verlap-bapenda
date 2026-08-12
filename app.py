@@ -1637,7 +1637,48 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
     df_berkas_riwayat = fetch_berkas(status="Dijadwalkan")
     if not df_berkas_riwayat.empty:
         st.write("Berikut adalah daftar berkas yang sudah dijadwalkan. Anda dapat mengunduh ulang PDF Surat Tugasnya kapan saja.")
-        for idx, row in df_berkas_riwayat.iterrows():
+        
+        if 'tanggal_input' in df_berkas_riwayat.columns:
+            df_berkas_riwayat['tanggal_input_dt'] = pd.to_datetime(df_berkas_riwayat['tanggal_input'], errors='coerce')
+            df_berkas_riwayat = df_berkas_riwayat.sort_values(by='tanggal_input_dt', ascending=False)
+        else:
+            df_berkas_riwayat = df_berkas_riwayat.iloc[::-1]
+
+        f_col1, f_col2 = st.columns(2)
+        with f_col1:
+            kec_list = ["Semua"] + sorted([k for k in df_berkas_riwayat['kecamatan'].unique() if pd.notna(k)])
+            filter_kec = st.selectbox("Filter Kecamatan:", kec_list, key="filter_kec_riwayat")
+        with f_col2:
+            kat_list = ["Semua"] + sorted([k for k in df_berkas_riwayat['keterangan_berkas'].unique() if pd.notna(k)])
+            filter_kat = st.selectbox("Filter Kategori (Jenis Berkas):", kat_list, key="filter_kat_riwayat")
+
+        res_riwayat = df_berkas_riwayat.copy()
+        if filter_kec != "Semua":
+            res_riwayat = res_riwayat[res_riwayat['kecamatan'] == filter_kec]
+        if filter_kat != "Semua":
+            res_riwayat = res_riwayat[res_riwayat['keterangan_berkas'] == filter_kat]
+
+        items_per_page = 5
+        total_pages = max(1, (len(res_riwayat) - 1) // items_per_page + 1)
+        
+        c_info, c_page = st.columns([3, 1])
+        with c_info:
+            st.markdown(f"**Total {len(res_riwayat)} Surat Tugas (Halaman {1 if total_pages==0 else page_riwayat} dari {total_pages})**" if 'page_riwayat' in locals() else f"**Total {len(res_riwayat)} Surat Tugas**")
+        with c_page:
+            if total_pages > 1:
+                page_riwayat = st.number_input("Halaman", min_value=1, max_value=total_pages, step=1, key="page_riwayat")
+            else:
+                page_riwayat = 1
+                
+        start_idx = (page_riwayat - 1) * items_per_page
+        end_idx = start_idx + items_per_page
+        
+        res_page = res_riwayat.iloc[start_idx:end_idx]
+        
+        if res_page.empty:
+            st.info("Tidak ada berkas yang sesuai dengan filter.")
+            
+        for idx, row in res_page.iterrows():
                 b_dict = row.to_dict()
                 
                 # Clean up NaN for tgl_survei and nomor_surat if they came from pandas
