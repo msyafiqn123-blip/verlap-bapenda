@@ -1702,14 +1702,30 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
         items_per_page = 5
         total_pages = max(1, (len(res_riwayat) - 1) // items_per_page + 1)
         
-        c_info, c_page = st.columns([3, 1])
+        if 'page_riwayat_state' not in st.session_state:
+            st.session_state.page_riwayat_state = 1
+            
+        if st.session_state.page_riwayat_state > total_pages:
+            st.session_state.page_riwayat_state = max(1, total_pages)
+        if st.session_state.page_riwayat_state < 1:
+            st.session_state.page_riwayat_state = 1
+            
+        c_info, c_prev, c_curr, c_next = st.columns([5, 1, 2, 1])
         with c_info:
-            st.markdown(f"**Total {len(res_riwayat)} Surat Tugas (Halaman {1 if total_pages==0 else page_riwayat} dari {total_pages})**" if 'page_riwayat' in locals() else f"**Total {len(res_riwayat)} Surat Tugas**")
-        with c_page:
-            if total_pages > 1:
-                page_riwayat = st.number_input("Halaman", min_value=1, max_value=total_pages, step=1, key="page_riwayat")
-            else:
-                page_riwayat = 1
+            st.markdown(f"**Total {len(res_riwayat)} Surat Tugas**")
+        
+        with c_prev:
+            if st.button("⬅️", disabled=(st.session_state.page_riwayat_state <= 1), use_container_width=True, key="prev_riw"):
+                st.session_state.page_riwayat_state -= 1
+                st.rerun()
+        with c_curr:
+            st.markdown(f"<div style='text-align: center; padding-top: 8px; font-weight: 600; color: #64748b;'>Hal {st.session_state.page_riwayat_state} dari {total_pages}</div>", unsafe_allow_html=True)
+        with c_next:
+            if st.button("➡️", disabled=(st.session_state.page_riwayat_state >= total_pages), use_container_width=True, key="next_riw"):
+                st.session_state.page_riwayat_state += 1
+                st.rerun()
+                
+        page_riwayat = st.session_state.page_riwayat_state
                 
         start_idx = (page_riwayat - 1) * items_per_page
         end_idx = start_idx + items_per_page
@@ -2018,14 +2034,30 @@ with tab5:
     items_per_page = 10
     total_pages = max(1, (len(result) - 1) // items_per_page + 1)
     
-    col_info, col_page = st.columns([3, 1])
+    if 'page_tab5_state' not in st.session_state:
+        st.session_state.page_tab5_state = 1
+        
+    if st.session_state.page_tab5_state > total_pages:
+        st.session_state.page_tab5_state = max(1, total_pages)
+    if st.session_state.page_tab5_state < 1:
+        st.session_state.page_tab5_state = 1
+        
+    col_info, col_prev, col_curr, col_next = st.columns([5, 1, 2, 1])
     with col_info:
         st.markdown(f"##### 📋 Menampilkan Total {len(result)} Berkas")
-    with col_page:
-        if total_pages > 1:
-            page = st.number_input("Halaman", min_value=1, max_value=total_pages, step=1)
-        else:
-            page = 1
+    
+    with col_prev:
+        if st.button("⬅️", disabled=(st.session_state.page_tab5_state <= 1), use_container_width=True, key="prev_t5"):
+            st.session_state.page_tab5_state -= 1
+            st.rerun()
+    with col_curr:
+        st.markdown(f"<div style='text-align: center; padding-top: 8px; font-weight: 600; color: #64748b;'>Hal {st.session_state.page_tab5_state} dari {total_pages}</div>", unsafe_allow_html=True)
+    with col_next:
+        if st.button("➡️", disabled=(st.session_state.page_tab5_state >= total_pages), use_container_width=True, key="next_t5"):
+            st.session_state.page_tab5_state += 1
+            st.rerun()
+            
+    page = st.session_state.page_tab5_state
             
     start_idx = (page - 1) * items_per_page
     end_idx = start_idx + items_per_page
