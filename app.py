@@ -1822,11 +1822,21 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                         pdf_bytes_tte_ulang = generate_surat_perintah([b_dict], pegawai_list_pdf_ulang, tgl_s, ns_str, with_tte=True)
                         pdf_bytes_notte_ulang = generate_surat_perintah([b_dict], pegawai_list_pdf_ulang, tgl_s, ns_str, with_tte=False)
                         
-                        uc1, uc2 = st.columns(2)
+                        uc1, uc2, uc3 = st.columns(3)
                         with uc1:
-                            st.download_button("📄 Unduh PDF dengan TTE", data=pdf_bytes_tte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}_TTE.pdf", mime="application/pdf", key=f"dl_ulang_tte_{b_dict['id']}")
+                            st.download_button("📄 Unduh PDF dengan TTE", data=pdf_bytes_tte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}_TTE.pdf", mime="application/pdf", key=f"dl_ulang_tte_{b_dict['id']}", use_container_width=True)
                         with uc2:
-                            st.download_button("📄 Unduh PDF Tanpa TTE", data=pdf_bytes_notte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}.pdf", mime="application/pdf", key=f"dl_ulang_notte_{b_dict['id']}")
+                            st.download_button("📄 Unduh PDF Tanpa TTE", data=pdf_bytes_notte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}.pdf", mime="application/pdf", key=f"dl_ulang_notte_{b_dict['id']}", use_container_width=True)
+                        with uc3:
+                            clean_nopel = str(b_dict.get('nomor_pelayanan', '')).replace('.', '_').strip()
+                            if clean_nopel and clean_nopel != 'None' and clean_nopel != 'nan':
+                                drive_url = f"https://drive.google.com/drive/search?q=parent:1vwT9x3I992FNC8ek05f4c31M3fCgH0ZH%20{clean_nopel}"
+                            else:
+                                drive_url = "https://drive.google.com/drive/folders/1vwT9x3I992FNC8ek05f4c31M3fCgH0ZH"
+                            try:
+                                st.link_button("📂 Lihat SP TTE ASLI", drive_url, use_container_width=True)
+                            except:
+                                st.markdown(f'<a href="{drive_url}" target="_blank" style="display:inline-block; width:100%; text-align:center; padding:0.5rem; background-color:#eff6ff; color:#1d4ed8; border-radius:0.5rem; text-decoration:none; font-weight:600; border:1px solid #bfdbfe;">📂 Lihat SP TTE ASLI</a>', unsafe_allow_html=True)
                     except Exception as e:
                         st.error(f"Gagal menyiapkan PDF: {e}")
     else:
