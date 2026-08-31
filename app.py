@@ -1542,15 +1542,14 @@ with tab2:
                 max_selections=2
             )
             
-            tgl_survei = st.date_input("Rencana Tanggal Survei", datetime.date.today())
+            tgl_survei = st.date_input("Rencana Tanggal Survei", value=None)
             
             st.markdown("**Penomoran Surat Tugas**")
             nomor_surat_dict = {}
             if selected_berkas:
                 for i, b_id in enumerate(selected_berkas):
-                    default_ns = str(340 + i)
                     label_berkas = berkas_labels[b_id].split(' - ')[0].replace('[DIJADWALKAN] ', '').strip()
-                    ns_val = st.text_input(f"No. Surat untuk {label_berkas}", value=default_ns, max_chars=3, key=f"ns_{b_id}")
+                    ns_val = st.text_input(f"No. Surat untuk {label_berkas}", value="", max_chars=3, key=f"ns_{b_id}")
                     nomor_surat_dict[b_id] = ns_val
             else:
                 st.info("Pilih berkas di atas untuk mengatur Nomor Surat.")
@@ -1559,10 +1558,16 @@ with tab2:
             
         # PROSES DILUAR FORM
         if submit_btn:
+            kosong_ns = [k for k, v in nomor_surat_dict.items() if not v.strip()]
+            
             if not selected_berkas:
                 st.error("Mohon pilih setidaknya 1 berkas!")
             elif len(selected_pegawai) != 2:
                 st.error("Mohon pilih tepat 2 pegawai untuk diberangkatkan bersama!")
+            elif not tgl_survei:
+                st.error("Mohon isi Rencana Tanggal Survei!")
+            elif len(kosong_ns) > 0:
+                st.error("Mohon lengkapi semua Nomor Surat Tugas untuk berkas yang dipilih!")
             else:
                 loading_msg = st.info("⏳ Sedang menyimpan penugasan dan membuat PDF Surat Tugas... Mohon tunggu.")
                 update_success = True
