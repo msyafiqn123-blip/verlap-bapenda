@@ -1685,7 +1685,9 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
         else:
             df_berkas_riwayat = df_berkas_riwayat.iloc[::-1]
 
-        f_col1, f_col2 = st.columns(2)
+        f_search, f_col1, f_col2 = st.columns([2, 1.5, 1.5])
+        with f_search:
+            search_nama_riwayat = st.text_input("Cari Nama Pemohon / NOP:", placeholder="Ketik nama/nop...", key="search_nama_riwayat")
         with f_col1:
             kec_list = ["Semua"] + sorted([k for k in df_berkas_riwayat['kecamatan'].unique() if pd.notna(k)])
             filter_kec = st.selectbox("Filter Kecamatan:", kec_list, key="filter_kec_riwayat")
@@ -1694,6 +1696,9 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
             filter_kat = st.selectbox("Filter Kategori (Jenis Berkas):", kat_list, key="filter_kat_riwayat")
 
         res_riwayat = df_berkas_riwayat.copy()
+        if search_nama_riwayat:
+            mask = res_riwayat['nama_pemohon'].astype(str).str.contains(search_nama_riwayat, case=False, na=False) | res_riwayat['nomor_nop'].astype(str).str.contains(search_nama_riwayat, case=False, na=False) | res_riwayat['nomor_pelayanan'].astype(str).str.contains(search_nama_riwayat, case=False, na=False)
+            res_riwayat = res_riwayat[mask]
         if filter_kec != "Semua":
             res_riwayat = res_riwayat[res_riwayat['kecamatan'] == filter_kec]
         if filter_kat != "Semua":
