@@ -872,6 +872,19 @@ with tab0:
 
     df_sheet = fetch_spreadsheet_data()
     
+    @st.cache_data(ttl=600, show_spinner=False)
+    def fetch_alamat_op_data():
+        import pandas as pd
+        url = "https://docs.google.com/spreadsheets/d/1JSnGLEJiDttobYaxSeyvWxn02lzOkO4Gj0f71R-QsW8/export?format=csv&gid=1099214973"
+        try:
+            df = pd.read_csv(url, skiprows=10)
+            df = df.dropna(subset=['nop'])
+            df['nop'] = df['nop'].astype(str).str.strip()
+            df['alamat_op'] = df['alamat_op'].astype(str).str.strip()
+            return dict(zip(df['nop'], df['alamat_op']))
+        except Exception:
+            return {}
+    
     col_nopel, col_btn = st.columns([4, 1])
     with col_nopel:
         nopel_baru = st.text_input("Nomor Pelayanan", placeholder="Contoh: 2026.0001.134", help="Ketik Nomor Pelayanan, data akan disinkronisasikan secara otomatis jika cocok.", key=f"nopel_{fk}")
@@ -887,6 +900,8 @@ with tab0:
         st.session_state[f"nop_{fk}"] = "32.16."
     if f"nama_{fk}" not in st.session_state:
         st.session_state[f"nama_{fk}"] = ""
+    if f"letak_{fk}" not in st.session_state:
+        st.session_state[f"letak_{fk}"] = ""
     if f"kat_{fk}" not in st.session_state:
         st.session_state[f"kat_{fk}"] = "Berkas Pendataan"
         
@@ -905,8 +920,13 @@ with tab0:
             st.success("✅ Data Nomor Pelayanan ditemukan (Sinkronisasi sukses)")
             
             if should_sync:
-                st.session_state[f"nop_{fk}"] = str(matched_row[3]).strip() if not pd.isna(matched_row[3]) else "32.16."
+                nop_val = str(matched_row[3]).strip() if not pd.isna(matched_row[3]) else "32.16."
+                st.session_state[f"nop_{fk}"] = nop_val
                 st.session_state[f"nama_{fk}"] = str(matched_row[4]).strip() if not pd.isna(matched_row[4]) else ""
+                
+                alamat_op_dict = fetch_alamat_op_data()
+                st.session_state[f"letak_{fk}"] = alamat_op_dict.get(nop_val, "")
+                
                 jp = str(matched_row[5]).strip().upper() if not pd.isna(matched_row[5]) else ""
                 
                 if "OBJEK BARU" in jp:
@@ -1005,6 +1025,13 @@ with tab0:
         # 2. Tampilkan Lokasi
 
         if len(nop_clean_preview) >= 10:
+            if len(nop_clean_preview) == 18 and not st.session_state.get(f"letak_{fk}"):
+                f_nop = f"{nop_clean_preview[:2]}.{nop_clean_preview[2:4]}.{nop_clean_preview[4:7]}.{nop_clean_preview[7:10]}.{nop_clean_preview[10:13]}.{nop_clean_preview[13:17]}.{nop_clean_preview[17:]}"
+                alamat_op_dict = fetch_alamat_op_data()
+                if f_nop in alamat_op_dict:
+                    st.session_state[f"letak_{fk}"] = alamat_op_dict[f_nop]
+                    st.rerun()
+
             kode_prev = nop_clean_preview[4:10]
             ref_nop = load_referensi_nop()
             if kode_prev in ref_nop:
@@ -1013,6 +1040,7 @@ with tab0:
                 st.warning("⚠️ Kode Kecamatan/Kelurahan pada NOP tidak valid (Bukan wilayah Purwakarta)")
     with col2:
         pemohon_baru = st.text_input("Nama Pemohon", placeholder="Nama Wajib Pajak", key=f"nama_{fk}")
+        letak_tanah_baru = st.text_input("Letak Tanah (Alamat OP)", placeholder="Contoh: KP BOJONG", key=f"letak_{fk}")
         urgensi_baru = st.checkbox("🔥 Tandai sebagai MENDESAK (Prioritas Utama)", key=f"urgensi_{fk}")
         
     st.info("💡 Kecamatan dan Kelurahan akan terisi otomatis berdasarkan 18 digit Nomor NOP. Pastikan NOP terisi dan valid (Misal: 32.16.080.014...).")
@@ -1198,6 +1226,7 @@ with tab0:
                     'kategori_berkas': kategori_baru,
                     'nomor_nop': nop_clean,
                     'nama_pemohon': pemohon_baru,
+                    'letak_tanah': letak_tanah_baru,
                     'mendesak': urgensi_baru,
                     'kecamatan': kecamatan_baru,
                     'kelurahan': kelurahan_baru,
@@ -1218,6 +1247,7 @@ with tab0:
                             # Fallback: remove new columns
                             fallback_db = db_berkas.copy()
                             fallback_db.pop('lokasi_map', None)
+                            fallback_db.pop('letak_tanah', None)
                             
                             supabase.table('berkas').insert(fallback_db).execute()
                             st.cache_data.clear()
