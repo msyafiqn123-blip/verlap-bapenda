@@ -877,11 +877,17 @@ with tab0:
         import pandas as pd
         url = "https://docs.google.com/spreadsheets/d/1JSnGLEJiDttobYaxSeyvWxn02lzOkO4Gj0f71R-QsW8/export?format=csv&gid=1099214973"
         try:
-            df = pd.read_csv(url, skiprows=10)
+            df = pd.read_csv(url, header=2)
             df = df.dropna(subset=['nop'])
-            df['nop'] = df['nop'].astype(str).str.strip()
-            df['alamat_op'] = df['alamat_op'].astype(str).str.strip()
-            return dict(zip(df['nop'], df['alamat_op']))
+            res = {}
+            for _, r in df.iterrows():
+                alamat = str(r['alamat_op']).strip()
+                raw_nop = str(r['nop']).strip()
+                clean_nop_key = "".join([c for c in raw_nop if c.isdigit()])
+                if alamat and alamat != 'nan':
+                    res[raw_nop] = alamat
+                    res[clean_nop_key] = alamat
+            return res
         except Exception:
             return {}
     
@@ -924,8 +930,9 @@ with tab0:
                 st.session_state[f"nop_{fk}"] = nop_val
                 st.session_state[f"nama_{fk}"] = str(matched_row[4]).strip() if not pd.isna(matched_row[4]) else ""
                 
+                clean_target = "".join([c for c in nop_val if c.isdigit()])
                 alamat_op_dict = fetch_alamat_op_data()
-                st.session_state[f"letak_{fk}"] = alamat_op_dict.get(nop_val, "")
+                st.session_state[f"letak_{fk}"] = alamat_op_dict.get(clean_target, alamat_op_dict.get(nop_val, ""))
                 
                 jp = str(matched_row[5]).strip().upper() if not pd.isna(matched_row[5]) else ""
                 
@@ -1026,10 +1033,13 @@ with tab0:
 
         if len(nop_clean_preview) >= 10:
             if len(nop_clean_preview) == 18 and not st.session_state.get(f"letak_{fk}"):
-                f_nop = f"{nop_clean_preview[:2]}.{nop_clean_preview[2:4]}.{nop_clean_preview[4:7]}.{nop_clean_preview[7:10]}.{nop_clean_preview[10:13]}.{nop_clean_preview[13:17]}.{nop_clean_preview[17:]}"
                 alamat_op_dict = fetch_alamat_op_data()
-                if f_nop in alamat_op_dict:
-                    st.session_state[f"letak_{fk}"] = alamat_op_dict[f_nop]
+                matched_letak = alamat_op_dict.get(nop_clean_preview)
+                if not matched_letak:
+                    f_nop = f"{nop_clean_preview[:2]}.{nop_clean_preview[2:4]}.{nop_clean_preview[4:7]}.{nop_clean_preview[7:10]}.{nop_clean_preview[10:13]}.{nop_clean_preview[13:17]}.{nop_clean_preview[17:]}"
+                    matched_letak = alamat_op_dict.get(f_nop)
+                if matched_letak:
+                    st.session_state[f"letak_{fk}"] = matched_letak
                     st.rerun()
 
             kode_prev = nop_clean_preview[4:10]
