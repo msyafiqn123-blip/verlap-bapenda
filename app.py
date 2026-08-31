@@ -890,6 +890,28 @@ with tab0:
             return res
         except Exception:
             return {}
+            
+    @st.cache_data(ttl=120, show_spinner=False)
+    def fetch_gdrive_tte_files():
+        import requests
+        import re
+        url = "https://drive.google.com/drive/folders/1vwT9x3I992FNC8ek05f4c31M3fCgH0ZH"
+        try:
+            resp = requests.get(url, timeout=10)
+            html = resp.text
+            regex = r'(?:\\x22|")([a-zA-Z0-9_-]{25,})(?:\\x22|"),\s*(?:\\x5b|\[)(?:\\x22|")1vwT9x3I992FNC8ek05f4c31M3fCgH0ZH(?:\\x22|")(?:\\x5d|\]),\s*(?:\\x22|")([^"\\]+?\.pdf)(?:\\x22|")'
+            matches = re.findall(regex, html)
+            
+            file_map = {}
+            for file_id, filename in matches:
+                direct_link = f"https://drive.google.com/file/d/{file_id}/view"
+                digits = re.sub(r'\D', '', filename)
+                if digits:
+                    file_map[digits] = direct_link
+                file_map[filename] = direct_link
+            return file_map
+        except Exception:
+            return {}
     
     col_nopel, col_btn = st.columns([4, 1])
     with col_nopel:
@@ -1832,21 +1854,34 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                         pdf_bytes_tte_ulang = generate_surat_perintah([b_dict], pegawai_list_pdf_ulang, tgl_s, ns_str, with_tte=True)
                         pdf_bytes_notte_ulang = generate_surat_perintah([b_dict], pegawai_list_pdf_ulang, tgl_s, ns_str, with_tte=False)
                         
-                        uc1, uc2, uc3 = st.columns(3)
-                        with uc1:
-                            st.download_button("📄 Unduh PDF dengan TTE", data=pdf_bytes_tte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}_TTE.pdf", mime="application/pdf", key=f"dl_ulang_tte_{b_dict['id']}", use_container_width=True)
-                        with uc2:
-                            st.download_button("📄 Unduh PDF Tanpa TTE", data=pdf_bytes_notte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}.pdf", mime="application/pdf", key=f"dl_ulang_notte_{b_dict['id']}", use_container_width=True)
-                        with uc3:
-                            clean_nopel = str(b_dict.get('nomor_pelayanan', '')).replace('.', '_').strip()
-                            if clean_nopel and clean_nopel != 'None' and clean_nopel != 'nan':
-                                drive_url = f"https://drive.google.com/drive/search?q=parent:1vwT9x3I992FNC8ek05f4c31M3fCgH0ZH%20{clean_nopel}"
-                            else:
-                                drive_url = "https://drive.google.com/drive/folders/1vwT9x3I992FNC8ek05f4c31M3fCgH0ZH"
-                            try:
-                                st.link_button("📂 Lihat SP TTE ASLI", drive_url, use_container_width=True)
-                            except:
-                                st.markdown(f'<a href="{drive_url}" target="_blank" style="display:inline-block; width:100%; text-align:center; padding:0.5rem; background-color:#eff6ff; color:#1d4ed8; border-radius:0.5rem; text-decoration:none; font-weight:600; border:1px solid #bfdbfe;">📂 Lihat SP TTE ASLI</a>', unsafe_allow_html=True)
+                        tte_files_map = fetch_gdrive_tte_files()
+                        nopel_raw = str(b_dict.get('nomor_pelayanan', ''))
+                        nopel_digits = "".join([c for c in nopel_raw if c.isdigit()])
+                        nop_digits = "".join([c for c in str(b_dict.get('nomor_nop', '')) if c.isdigit()])
+                        
+                        matched_drive_link = None
+                        if nopel_digits and nopel_digits in tte_files_map:
+                            matched_drive_link = tte_files_map[nopel_digits]
+                        elif nop_digits and nop_digits in tte_files_map:
+                            matched_drive_link = tte_files_map[nop_digits]
+                        
+                        if matched_drive_link:
+                            uc1, uc2, uc3 = st.columns(3)
+                            with uc1:
+                                st.download_button("📄 Unduh PDF dengan TTE", data=pdf_bytes_tte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}_TTE.pdf", mime="application/pdf", key=f"dl_ulang_tte_{b_dict['id']}", use_container_width=True)
+                            with uc2:
+                                st.download_button("📄 Unduh PDF Tanpa TTE", data=pdf_bytes_notte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}.pdf", mime="application/pdf", key=f"dl_ulang_notte_{b_dict['id']}", use_container_width=True)
+                            with uc3:
+                                try:
+                                    st.link_button("📂 Lihat SP TTE ASLI", matched_drive_link, use_container_width=True)
+                                except:
+                                    st.markdown(f'<a href="{matched_drive_link}" target="_blank" style="display:inline-block; width:100%; text-align:center; padding:0.5rem; background-color:#eff6ff; color:#1d4ed8; border-radius:0.5rem; text-decoration:none; font-weight:600; border:1px solid #bfdbfe;">📂 Lihat SP TTE ASLI</a>', unsafe_allow_html=True)
+                        else:
+                            uc1, uc2 = st.columns(2)
+                            with uc1:
+                                st.download_button("📄 Unduh PDF dengan TTE", data=pdf_bytes_tte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}_TTE.pdf", mime="application/pdf", key=f"dl_ulang_tte_{b_dict['id']}", use_container_width=True)
+                            with uc2:
+                                st.download_button("📄 Unduh PDF Tanpa TTE", data=pdf_bytes_notte_ulang, file_name=f"Surat_Perintah_{b_dict.get('nomor_pelayanan', b_dict['nomor_nop']).replace('.','_')}.pdf", mime="application/pdf", key=f"dl_ulang_notte_{b_dict['id']}", use_container_width=True)
                     except Exception as e:
                         st.error(f"Gagal menyiapkan PDF: {e}")
     else:
