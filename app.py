@@ -1860,10 +1860,14 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                         nop_digits = "".join([c for c in str(b_dict.get('nomor_nop', '')) if c.isdigit()])
                         
                         matched_drive_link = None
-                        if nopel_digits and nopel_digits in tte_files_map:
-                            matched_drive_link = tte_files_map[nopel_digits]
-                        elif nop_digits and nop_digits in tte_files_map:
-                            matched_drive_link = tte_files_map[nop_digits]
+                        for fname, flink in tte_files_map.items():
+                            clean_f_digits = "".join([c for c in fname if c.isdigit()])
+                            if nopel_digits and len(nopel_digits) >= 6 and nopel_digits in clean_f_digits:
+                                matched_drive_link = flink
+                                break
+                            if nop_digits and len(nop_digits) >= 10 and nop_digits in clean_f_digits:
+                                matched_drive_link = flink
+                                break
                         
                         if matched_drive_link:
                             uc1, uc2, uc3 = st.columns(3)
