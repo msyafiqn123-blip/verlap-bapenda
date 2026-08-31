@@ -1496,7 +1496,7 @@ with tab1:
 with tab2:
     st.header("Form Penjadwalan & Penugasan")
     df_pegawai = fetch_pegawai()
-    df_berkas_belum = fetch_berkas(status=["Belum", "Dijadwalkan"])
+    df_berkas_belum = fetch_berkas(status=["Belum"])
     
     if not df_pegawai.empty and not df_berkas_belum.empty:
         st.info("💡 Pilih bundel rute yang disarankan dari Peta, atau biarkan 'Pilih Sendiri' untuk memilih berkas secara manual.")
