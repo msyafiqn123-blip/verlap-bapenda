@@ -1753,8 +1753,9 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                 if pd.isna(b_dict.get('nomor_surat')): b_dict['nomor_surat'] = None
                 
                 # Decode fallback data if present
-                petugas_survey_val = str(b_dict.get('petugas_survey', ''))
-                parts = petugas_survey_val.split('|')
+                petugas_survey_raw = str(b_dict.get('petugas_survey', ''))
+                b_dict['petugas_survey_raw'] = petugas_survey_raw
+                parts = petugas_survey_raw.split('|')
                 b_dict['petugas_survey'] = parts[0]
                 
                 if len(parts) > 1 and not pd.isna(parts[1]) and parts[1].strip(): 
@@ -1769,8 +1770,46 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                     ns_str = str(b_dict.get('nomor_surat') or '340')
                     if ns_str == 'nan' or ns_str == 'None': ns_str = '340'
                     
-                    st.write(f"**Tanggal Survei:** {tgl_str}")
                     st.write(f"**Nomor Surat:** {ns_str}")
+                    
+                    try:
+                        import datetime
+                        try:
+                            tgl_s = datetime.datetime.strptime(tgl_str, '%Y-%m-%d').date()
+                        except:
+                            tgl_s = datetime.date.today()
+                    except:
+                        tgl_s = None
+                        
+                    ec1, ec2 = st.columns([3, 1])
+                    with ec1:
+                        new_tgl = st.date_input("Tanggal Survei (Edit)", value=tgl_s, key=f"edit_tgl_{b_dict['id']}")
+                    with ec2:
+                        st.write("")
+                        st.write("")
+                        if st.button("Simpan Tanggal", key=f"btn_save_tgl_{b_dict['id']}", use_container_width=True):
+                            if not USE_MOCK_DATA:
+                                update_data = {"tgl_survei": str(new_tgl)}
+                                try:
+                                    res = supabase.table("berkas").update(update_data).eq("id", b_dict['id']).execute()
+                                    if hasattr(res, 'error') and res.error:
+                                        raise Exception(str(res.error))
+                                except:
+                                    # Fallback
+                                    petugas_str = b_dict['petugas_survey_raw'].split('|')[0]
+                                    fallback_data = {
+                                        "petugas_survey": f"{petugas_str}|{new_tgl}|{ns_str}"
+                                    }
+                                    try:
+                                        supabase.table("berkas").update(fallback_data).eq("id", b_dict['id']).execute()
+                                    except:
+                                        pass
+                            else:
+                                for mb in st.session_state.mock_berkas:
+                                    if mb['id'] == b_dict['id']:
+                                        mb['tgl_survei'] = str(new_tgl)
+                            st.cache_data.clear()
+                            st.rerun()
                     
                     if not USE_MOCK_DATA:
                         tim_ids = [t.strip() for t in str(b_dict.get('petugas_survey', '')).split('&') if t.strip()]
