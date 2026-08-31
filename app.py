@@ -47,17 +47,6 @@ footer {visibility: hidden;}
 [data-testid="stAppCreatorBadge"], [data-testid="viewerBadge"], [data-testid="manage-app-badge"], a[href*="streamlit"], a[href*="msyafiqn123"], a[href*="github"] {display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;}
 [data-testid="stAppViewBlockContainer"] {padding-top: 2rem;}
 
-/* Hapus efek abu-abu (stale) saat aplikasi sedang loading/rerun */
-[data-testid="stApp"] [data-stale="true"] {
-    opacity: 1 !important;
-    filter: none !important;
-    transition: none !important;
-    pointer-events: auto !important;
-}
-[style*="opacity: 0.5"] {
-    opacity: 1 !important;
-}
-
 /* Modernize Spinner Box */
 [data-testid="stSpinner"] {
     background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
@@ -99,7 +88,7 @@ st.markdown('''
     /* Hide Streamlit Default Headers/Footers & Creator Badges for Immersive App Feel */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    header {visibility: hidden;}
+    header[data-testid="stHeader"] {background: transparent !important;}
     [data-testid="stAppCreatorBadge"],
     [data-testid="viewerBadge"],
     [data-testid="manage-app-badge"],
