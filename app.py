@@ -591,16 +591,36 @@ def fetch_berkas(kecamatan=None, status=None, only_urgent=False):
                     'kelurahan': 'desa',
                     'mendesak': 'is_urgent'
                 }
-                if 'created_at' in df.columns:
+                if 'tanggal_input' not in df.columns and 'created_at' in df.columns:
                     rename_map['created_at'] = 'tanggal_input'
                 
                 df = df.rename(columns=rename_map)
                 
-                import datetime
+                # Cross-reference with Google Sheet df_sheet to get real input dates for PBB files!
+                try:
+                    df_sheet_sync = fetch_spreadsheet_data()
+                    if not df_sheet_sync.empty:
+                        date_map = {}
+                        for _, sr in df_sheet_sync.iterrows():
+                            nopel_s = str(sr[2]).strip() if len(sr) > 2 and pd.notna(sr[2]) else ""
+                            tgl_s = str(sr[6]).strip() if len(sr) > 6 and pd.notna(sr[6]) else ""
+                            if nopel_s and tgl_s and tgl_s != 'nan':
+                                parts = tgl_s.split('/')
+                                if len(parts) == 3:
+                                    date_map[nopel_s] = f"{parts[2]}-{parts[1]}-{parts[0]}"
+                                else:
+                                    date_map[nopel_s] = tgl_s
+                        
+                        if 'nomor_pelayanan' in df.columns:
+                            for i, r in df.iterrows():
+                                np = str(r['nomor_pelayanan']).strip()
+                                if np in date_map:
+                                    df.at[i, 'tanggal_input'] = date_map[np]
+                except Exception:
+                    pass
+                
                 if 'tanggal_input' not in df.columns:
-                    df['tanggal_input'] = datetime.date.today().strftime('%Y-%m-%d')
-                else:
-                    df['tanggal_input'] = pd.to_datetime(df['tanggal_input']).dt.strftime('%Y-%m-%d')
+                    df['tanggal_input'] = '-'
         except Exception as e:
             st.error(f"Gagal mengambil data dari Supabase: {e}")
             
@@ -1701,9 +1721,9 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
         
     st.write("---")
     st.header("🖨️ Riwayat Penugasan (Cetak Ulang)")
-    df_berkas_riwayat = fetch_berkas(status="Dijadwalkan")
+    df_berkas_riwayat = fetch_berkas(status=["Dijadwalkan", "Sudah"])
     if not df_berkas_riwayat.empty:
-        st.write("Berikut adalah daftar berkas yang sudah dijadwalkan. Anda dapat mengunduh ulang PDF Surat Tugasnya kapan saja.")
+        st.write("Berikut adalah daftar berkas yang sudah dijadwalkan / disurvei. Anda dapat mengunduh ulang PDF Surat Tugasnya kapan saja.")
         
         if 'tanggal_input' in df_berkas_riwayat.columns:
             df_berkas_riwayat['tanggal_input_dt'] = pd.to_datetime(df_berkas_riwayat['tanggal_input'], errors='coerce')
@@ -1784,7 +1804,8 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                 if len(parts) > 2 and not pd.isna(parts[2]) and parts[2].strip(): 
                     b_dict['nomor_surat'] = parts[2]
                 
-                with st.expander(f"[DIJADWALKAN] {b_dict.get('nomor_pelayanan', b_dict['nomor_nop'])} - {b_dict['nama_pemohon']}"):
+                st_tag = f"[{str(b_dict.get('status_survey', 'Dijadwalkan')).upper()}]"
+                with st.expander(f"{st_tag} {b_dict.get('nomor_pelayanan', b_dict['nomor_nop'])} - {b_dict['nama_pemohon']}"):
                     tgl_str = str(b_dict.get('tgl_survei') or 'Belum diset')
                     if tgl_str == 'nan' or tgl_str == 'None': tgl_str = 'Belum diset'
                     
@@ -2021,70 +2042,154 @@ with tab5:
     st.write("Cari dan lacak status berkas verifikasi lapangan secara real-time.")
     
     sheet_url_hardcoded = "https://docs.google.com/spreadsheets/d/1PXecV5-RbgF9oDmSXtBukikHacqBz5JDIsVI7dS1RpI/export?format=csv&gid=860149025"
-    if st.button("🔄 Jalankan Sinkronisasi Status Selesai (dari Google Sheet)", type="primary"):
-        with st.spinner("⏳ Mengunduh dan mencocokkan data dari Google Sheet..."):
-            try:
-                import requests
-                import csv
-                
-                resp = requests.get(sheet_url_hardcoded, timeout=10)
-                resp.raise_for_status()
-                
-                lines = resp.text.splitlines()
-                nopel_idx = -1
-                finished_nopel = []
-                
-                for line in lines:
-                    if not line.strip(): continue
-                    row = next(csv.reader([line]))
-                    if nopel_idx == -1:
-                        for i, col in enumerate(row):
-                            if "NOMOR PELAYANAN" in col.strip().upper():
-                                nopel_idx = i
-                                break
-                    else:
-                        if len(row) > nopel_idx:
-                            val = row[nopel_idx].strip()
-                            if val:
-                                finished_nopel.append(val)
-                
-                if nopel_idx == -1:
-                    st.error("Kolom 'NOMOR PELAYANAN' tidak ditemukan di Google Sheet.")
-                else:
-                    df_all = fetch_berkas() 
-                    mask_to_update = (df_all['status_survey'] != 'Sudah') & (df_all['nomor_pelayanan'].astype(str).str.strip().isin(finished_nopel))
-                    berkas_to_update = df_all[mask_to_update]
+    col_sync1, col_sync2 = st.columns(2)
+    with col_sync1:
+        if st.button("🔄 Sinkronisasi STATUS BERKAS PBB", type="primary", use_container_width=True):
+            with st.spinner("⏳ Mengunduh dan mencocokkan data PBB dari Google Sheet..."):
+                try:
+                    import requests
+                    import csv
                     
-                    if not berkas_to_update.empty:
-                        update_count = 0
-                        update_err = False
-                        for _, b_row in berkas_to_update.iterrows():
-                            nopel = b_row['nomor_pelayanan']
-                            if USE_MOCK_DATA:
-                                for mb in st.session_state.mock_berkas:
-                                    if str(mb['nomor_pelayanan']).strip() == str(nopel).strip():
-                                        mb['status_survey'] = 'Sudah'
-                                        update_count += 1
-                            else:
-                                try:
-                                    supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(nopel).strip()).execute()
-                                    update_count += 1
-                                except Exception as e:
-                                    update_err = True
-                                    st.error(f"Gagal update {nopel}: {e}")
+                    resp = requests.get(sheet_url_hardcoded, timeout=10)
+                    resp.raise_for_status()
+                    
+                    lines = resp.text.splitlines()
+                    nopel_idx = -1
+                    finished_nopel = []
+                    
+                    for line in lines:
+                        if not line.strip(): continue
+                        row = next(csv.reader([line]))
+                        if nopel_idx == -1:
+                            for i, col in enumerate(row):
+                                if "NOMOR PELAYANAN" in col.strip().upper():
+                                    nopel_idx = i
+                                    break
+                        else:
+                            if len(row) > nopel_idx:
+                                val = row[nopel_idx].strip()
+                                if val:
+                                    finished_nopel.append(val)
+                    
+                    if nopel_idx == -1:
+                        st.error("Kolom 'NOMOR PELAYANAN' tidak ditemukan di Google Sheet.")
+                    else:
+                        df_all = fetch_berkas() 
+                        mask_to_update = (df_all['status_survey'] != 'Sudah') & (df_all['nomor_pelayanan'].astype(str).str.strip().isin(finished_nopel))
+                        berkas_to_update = df_all[mask_to_update]
                         
-                        if update_count > 0:
+                        if not berkas_to_update.empty:
+                            update_count = 0
+                            update_err = False
+                            for _, b_row in berkas_to_update.iterrows():
+                                nopel = b_row['nomor_pelayanan']
+                                if USE_MOCK_DATA:
+                                    for mb in st.session_state.mock_berkas:
+                                        if str(mb['nomor_pelayanan']).strip() == str(nopel).strip():
+                                            mb['status_survey'] = 'Sudah'
+                                            update_count += 1
+                                else:
+                                    try:
+                                        supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(nopel).strip()).execute()
+                                        update_count += 1
+                                    except Exception as e:
+                                        update_err = True
+                                        st.error(f"Gagal update {nopel}: {e}")
+                            
+                            if update_count > 0:
+                                st.cache_data.clear()
+                                st.success(f"✅ Berhasil menandai {update_count} berkas PBB sebagai selesai!")
+                                import time
+                                time.sleep(2)
+                                st.rerun()
+                            elif not update_err:
+                                st.info("Tidak ada berkas yang berhasil diupdate.")
+                        else:
+                            st.info("Semua berkas PBB yang ada di Google Sheet sudah berstatus selesai di sistem.")
+                except Exception as e:
+                    st.error(f"Gagal sinkronisasi PBB: {e}")
+
+    with col_sync2:
+        if st.button("🔄 Sinkronisasi STATUS BERKAS BPHTB", type="primary", use_container_width=True):
+            with st.spinner("⏳ Menghubungi sistem SIP-BPHTB dan mengecek status verifikasi Kabid..."):
+                try:
+                    import requests
+                    import re
+                    from bs4 import BeautifulSoup
+                    
+                    session = requests.Session()
+                    login_url = "http://36.66.125.18:1226/bphtb-purwakarta/index.php/site/login"
+                    
+                    # 1. Login to SIP-BPHTB
+                    r_login = session.get(login_url, timeout=10)
+                    post_data = {
+                        "LoginForm[username]": "syafiqb",
+                        "LoginForm[password]": "topikgosip",
+                        "yt0": "Login"
+                    }
+                    session.post(login_url, data=post_data, timeout=10)
+                    
+                    # 2. Get pending BPHTB berkas from DB
+                    df_all_curr = fetch_berkas()
+                    bphtb_mask = (df_all_curr['status_survey'] != 'Sudah') & (
+                        (df_all_curr['keterangan_berkas'] == 'Berkas BPHTB') | 
+                        (df_all_curr['nomor_pelayanan'].astype(str).str.startswith('0'))
+                    )
+                    bphtb_berkas = df_all_curr[bphtb_mask]
+                    
+                    if bphtb_berkas.empty:
+                        st.info("Semua berkas BPHTB sudah berstatus selesai atau tidak ada berkas BPHTB yang menunggu.")
+                    else:
+                        # 3. Retrieve verified registration numbers from first 10 pages of BPHTB admin
+                        verified_set = set()
+                        for p in range(1, 11):
+                            admin_url = f"http://36.66.125.18:1226/bphtb-purwakarta/index.php/DataArsip/dataArsip/admin?DataArsip_page={p}"
+                            r_admin = session.get(admin_url, timeout=10)
+                            soup = BeautifulSoup(r_admin.text, 'html.parser')
+                            table = soup.find('table', class_='items') or soup.find('table')
+                            if not table:
+                                break
+                            rows = table.find_all('tr')
+                            if len(rows) <= 1:
+                                break
+                            for tr in rows[1:]:
+                                tds = [td.get_text(strip=True) for td in tr.find_all(['td', 'th'])]
+                                if len(tds) >= 8:
+                                    no_pend = tds[0]
+                                    status_verif = tds[7]
+                                    if "Telah diverifikasi Kabid" in status_verif:
+                                        verified_set.add(no_pend)
+                                        verified_set.add(re.sub(r'\D', '', no_pend))
+                        
+                        update_count_bphtb = 0
+                        update_err_bphtb = False
+                        for _, b_row in bphtb_berkas.iterrows():
+                            nopel = str(b_row['nomor_pelayanan']).strip()
+                            clean_np = re.sub(r'\D', '', nopel)
+                            if nopel in verified_set or clean_np in verified_set:
+                                if USE_MOCK_DATA:
+                                    for mb in st.session_state.mock_berkas:
+                                        if str(mb['nomor_pelayanan']).strip() == nopel:
+                                            mb['status_survey'] = 'Sudah'
+                                            update_count_bphtb += 1
+                                else:
+                                    try:
+                                        supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', nopel).execute()
+                                        update_count_bphtb += 1
+                                    except Exception as e:
+                                        update_err_bphtb = True
+                                        st.error(f"Gagal update BPHTB {nopel}: {e}")
+                                        
+                        if update_count_bphtb > 0:
                             st.cache_data.clear()
-                            st.success(f"✅ Berhasil menandai {update_count} berkas sebagai selesai!")
+                            st.success(f"✅ Berhasil menandai {update_count_bphtb} berkas BPHTB (Telah diverifikasi Kabid) sebagai selesai!")
                             import time
                             time.sleep(2)
                             st.rerun()
-                        elif not update_err:
-                            st.info("Tidak ada berkas yang berhasil diupdate.")
-                    else:
-                        st.info("Semua berkas yang ada di Google Sheet sudah berstatus selesai di sistem.")
-            except Exception as e:
-                st.error(f"Gagal sinkronisasi: {e}")
+                        elif not update_err_bphtb:
+                            st.info("Belum ada berkas BPHTB antrean Anda yang statusnya 'Telah diverifikasi Kabid' di sistem SIP-BPHTB.")
+                except Exception as e:
+                    st.error(f"Gagal sinkronisasi BPHTB: {e}")
     
     df_all = fetch_berkas()
     
@@ -2197,28 +2302,27 @@ with tab5:
         rows_to_finish = edited_df[edited_df['Tandai Selesai'] == True]
         
         if not rows_to_finish.empty:
-            if st.button("✅ Simpan Perubahan (Selesaikan Berkas)"):
-                with st.spinner("⏳ Sedang memperbarui status berkas ke database..."):
-                    update_err = False
-                    for _, row in rows_to_finish.iterrows():
-                        nopel = row['No. Pelayanan']
-                        if USE_MOCK_DATA:
-                            for b in st.session_state.mock_berkas:
-                                if str(b['nomor_pelayanan']).strip() == str(nopel).strip():
-                                    b['status_survey'] = 'Sudah'
-                        else:
-                            try:
-                                supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(nopel).strip()).execute()
-                            except Exception as e:
-                                st.error(f"Gagal update berkas {nopel}: {e}")
-                                update_err = True
-                    
-                    if not update_err:
-                        st.cache_data.clear()
-                        st.success("Berkas terpilih berhasil ditandai selesai!")
-                        import time
-                        time.sleep(1)
-                        st.rerun()
+            with st.spinner("⏳ Sedang menandai berkas selesai dan memperbarui ke database..."):
+                update_err = False
+                for _, row in rows_to_finish.iterrows():
+                    nopel = row['No. Pelayanan']
+                    if USE_MOCK_DATA:
+                        for b in st.session_state.mock_berkas:
+                            if str(b['nomor_pelayanan']).strip() == str(nopel).strip():
+                                b['status_survey'] = 'Sudah'
+                    else:
+                        try:
+                            supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(nopel).strip()).execute()
+                        except Exception as e:
+                            st.error(f"Gagal update berkas {nopel}: {e}")
+                            update_err = True
+                
+                if not update_err:
+                    st.cache_data.clear()
+                    st.toast("✅ Berkas terpilih berhasil ditandai selesai!", icon="🎉")
+                    import time
+                    time.sleep(0.8)
+                    st.rerun()
     else:
         st.info("Pencarian tidak ditemukan. Pastikan Nomor Pelayanan atau NOP sudah diketik dengan benar.")
 
@@ -2267,28 +2371,4 @@ with tab5:
             else:
                 st.warning("Nomor Pelayanan tidak ditemukan di sistem. Pastikan diketik dengan benar.")
 
-    st.write("---")
-    st.subheader("⚠️ Reset Sistem")
-    with st.expander("Klik untuk menghapus SELURUH berkas dari sistem"):
-        st.error("PERHATIAN: Tindakan ini akan MENGHAPUS SEMUA DATA BERKAS secara permanen. Gunakan hanya saat akan memulai penerapan sistem baru.")
-        confirm_reset = st.text_input("Masukkan Password Admin untuk mengonfirmasi:", type="password")
-        if st.button("🗑️ Hapus Semua Data", type="primary", use_container_width=True):
-            if confirm_reset == 'VerlapBapenda99!':
-                if USE_MOCK_DATA:
-                    st.session_state.mock_berkas = []
-                    st.success("✅ Semua data mock berhasil dihapus.")
-                    import time
-                    time.sleep(1.5)
-                    st.rerun()
-                else:
-                    try:
-                        supabase.table('berkas').delete().neq('id', '00000000-0000-0000-0000-000000000000').execute()
-                        st.cache_data.clear()
-                        st.success("✅ Semua data berhasil dihapus dari sistem.")
-                        import time
-                        time.sleep(1.5)
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"❌ Gagal menghapus data: {e}")
-            else:
-                st.warning("Silakan ketik 'RESET' dengan huruf kapital pada kolom di atas untuk mengonfirmasi.")
+
