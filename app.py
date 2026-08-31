@@ -1288,7 +1288,7 @@ with tab1:
         selected_desa = st.selectbox("Pilih Kelurahan/Desa", desa_list)
     with col3:
         status_options = ["Semua", "Belum", "Dijadwalkan", "Sudah"]
-        selected_status = st.selectbox("Status Survei", status_options)
+        selected_status = st.selectbox("Status Survei", status_options, index=1)
     with col4:
         st.write("") # Spacer for alignment
         st.write("")
