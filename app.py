@@ -130,6 +130,17 @@ st.markdown('''
         letter-spacing: -0.025em;
     }
     
+    /* Sticky Tabs wrapper */
+    .stTabs > div:first-child {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        background-color: #f8fafc;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        margin-top: -10px;
+    }
+    
     /* Modern Pill Tabs */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
