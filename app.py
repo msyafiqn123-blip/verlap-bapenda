@@ -2387,10 +2387,19 @@ with tab5:
         edited_df = st.data_editor(
             styled_df,
             column_config={
+                "No. Pelayanan": st.column_config.TextColumn("No. Pelayanan", width="medium"),
+                "NOP": st.column_config.TextColumn("NOP", width="large"),
+                "Nama Pemohon": st.column_config.TextColumn("Nama Pemohon", width="medium"),
+                "Kategori": st.column_config.TextColumn("Kategori", width="small"),
+                "Kecamatan": st.column_config.TextColumn("Kecamatan", width="small"),
+                "Kelurahan": st.column_config.TextColumn("Kelurahan", width="small"),
+                "Status Survei": st.column_config.TextColumn("Status Survei", width="medium"),
+                "Tgl Input": st.column_config.TextColumn("Tgl Input", width="small"),
                 "Tandai Selesai": st.column_config.CheckboxColumn(
                     "Tandai Selesai",
                     help="Centang untuk menandai berkas ini telah selesai disurvei",
                     default=False,
+                    width="small"
                 )
             },
             disabled=["No. Pelayanan", "NOP", "Nama Pemohon", "Kategori", "Kecamatan", "Kelurahan", "Status Survei", "Tgl Input"],
