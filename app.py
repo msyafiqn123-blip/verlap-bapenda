@@ -1561,7 +1561,37 @@ with tab2:
     st.header("Form Penjadwalan & Penugasan")
     df_pegawai = fetch_pegawai()
     df_berkas_belum = fetch_berkas(status=["Belum"])
+    df_all_wl = fetch_berkas()
     
+    if not df_pegawai.empty and not df_all_wl.empty:
+        pegawai_workload = []
+        for _, peg in df_pegawai.iterrows():
+            peg_id = peg['id']
+            peg_nama = peg['nama_pegawai']
+            ongoing = 0
+            selesai = 0
+            mask_peg = pd.Series(False, index=df_all_wl.index)
+            if 'petugas_survey' in df_all_wl.columns:
+                df_all_wl['petugas_survey'] = df_all_wl['petugas_survey'].fillna('')
+                mask_peg = mask_peg | df_all_wl['petugas_survey'].str.contains(r'\b' + re.escape(peg_id) + r'\b', regex=True)
+            if 'petugas_1' in df_all_wl.columns:
+                mask_peg = mask_peg | (df_all_wl['petugas_1'] == peg_id)
+            if 'petugas_2' in df_all_wl.columns:
+                mask_peg = mask_peg | (df_all_wl['petugas_2'] == peg_id)
+                
+            peg_berkas = df_all_wl[mask_peg]
+            ongoing = len(peg_berkas[peg_berkas['status_survey'] == 'Dijadwalkan'])
+            selesai = len(peg_berkas[peg_berkas['status_survey'] == 'Sudah'])
+            pegawai_workload.append({
+                'Nama Pegawai': peg_nama,
+                'Total': ongoing + selesai
+            })
+        df_wl_calc = pd.DataFrame(pegawai_workload)
+        lowest_wl = df_wl_calc.sort_values(by='Total', ascending=True).head(3)
+        if not lowest_wl.empty:
+            clean_saran_names = [n.split(',')[0].strip() for n in lowest_wl['Nama Pegawai'].tolist()]
+            st.info(f"💡 **Saran Penugasan:** Pertimbangkan menugaskan **{', '.join(clean_saran_names)}** karena beban survei mereka paling sedikit saat ini.")
+            
     if not df_pegawai.empty and not df_berkas_belum.empty:
         st.info("💡 Pilih bundel rute yang disarankan dari Peta, atau biarkan 'Pilih Sendiri' untuk memilih berkas secara manual.")
         
