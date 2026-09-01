@@ -2232,25 +2232,28 @@ with tab5:
                     if bphtb_berkas.empty:
                         st.info("Semua berkas BPHTB sudah berstatus selesai atau tidak ada berkas BPHTB yang menunggu.")
                     else:
-                        # 3. Retrieve verified registration numbers from first 10 pages of BPHTB admin
+                        # 3. Retrieve verified status directly for each pending BPHTB registration number
                         verified_set = set()
-                        for p in range(1, 11):
-                            admin_url = f"http://36.66.125.18:1226/bphtb-purwakarta/index.php/DataArsip/dataArsip/admin?DataArsip_page={p}"
-                            r_admin = session.get(admin_url, timeout=10)
+                        for _, b_row in bphtb_berkas.iterrows():
+                            nopel = str(b_row.get('nomor_pelayanan', '')).strip()
+                            if not nopel or nopel == 'nan':
+                                continue
                             
-                            # Standard regex parser for table rows without external bs4 dependency
-                            rows = re.findall(r'<tr[^>]*>([\s\S]*?)<\/tr>', r_admin.text, re.IGNORECASE)
-                            if not rows:
-                                break
-                            for tr_html in rows:
-                                cells = re.findall(r'<t[dh][^>]*>([\s\S]*?)<\/t[dh]>', tr_html, re.IGNORECASE)
-                                clean_cells = [re.sub(r'<[^>]+>', '', c).strip() for c in cells]
-                                if len(clean_cells) >= 8:
-                                    no_pend = clean_cells[0]
-                                    status_verif = clean_cells[7]
-                                    if "Telah diverifikasi Kabid" in status_verif:
-                                        verified_set.add(no_pend)
-                                        verified_set.add(re.sub(r'\D', '', no_pend))
+                            target_url = f"http://36.66.125.18:1226/bphtb-purwakarta/index.php/DataArsip/dataArsip/admin?Daftar%5Bno_daftar%5D={nopel}"
+                            try:
+                                r_search = session.get(target_url, timeout=10)
+                                rows = re.findall(r'<tr[^>]*>([\s\S]*?)<\/tr>', r_search.text, re.IGNORECASE)
+                                for tr_html in rows:
+                                    cells = re.findall(r'<t[dh][^>]*>([\s\S]*?)<\/t[dh]>', tr_html, re.IGNORECASE)
+                                    clean_cells = [re.sub(r'<[^>]+>', '', c).strip() for c in cells]
+                                    if len(clean_cells) >= 8 and clean_cells[0] != 'No.Pendaftaran':
+                                        status_verif = clean_cells[7]
+                                        if "Telah diverifikasi Kabid" in status_verif:
+                                            verified_set.add(nopel)
+                                            verified_set.add(re.sub(r'\D', '', nopel))
+                                            break
+                            except Exception:
+                                continue
                         
                         update_count_bphtb = 0
                         update_err_bphtb = False
