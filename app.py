@@ -2351,7 +2351,6 @@ with tab5:
     
     if not result_page.empty:
         df_show = pd.DataFrame()
-        df_show['Selesai?'] = False
         df_show['No. Pelayanan'] = result_page['nomor_pelayanan'].astype(str)
         df_show['NOP'] = result_page['nomor_nop'].apply(format_nop_string)
         df_show['Pemohon'] = result_page['nama_pemohon']
@@ -2366,53 +2365,64 @@ with tab5:
             
         df_show['Status'] = result_page['status_survey'].apply(format_status)
         df_show['Tgl'] = result_page['tanggal_input'].astype(str)
+        df_show['Tandai Selesai'] = False
         
-        edited_df = st.data_editor(
-            df_show,
-            column_config={
-                "Selesai?": st.column_config.CheckboxColumn(
-                    "Selesai?",
-                    help="Centang untuk menandai berkas ini telah selesai",
-                    default=False,
-                    width="small"
-                ),
-                "No. Pelayanan": st.column_config.TextColumn("No. Pelayanan"),
-                "NOP": st.column_config.TextColumn("NOP"),
-                "Pemohon": st.column_config.TextColumn("Pemohon"),
-                "Jenis": st.column_config.TextColumn("Jenis"),
-                "Lokasi": st.column_config.TextColumn("Lokasi (Desa, Kec)"),
-                "Status": st.column_config.TextColumn("Status"),
-                "Tgl": st.column_config.TextColumn("Tgl Input")
-            },
-            disabled=["No. Pelayanan", "NOP", "Pemohon", "Jenis", "Lokasi", "Status", "Tgl"],
-            use_container_width=True, 
-            hide_index=True
-        )
-        
-        rows_to_finish = edited_df[edited_df['Selesai?'] == True]
-        
-        if not rows_to_finish.empty:
-            with st.spinner("⏳ Sedang menandai berkas selesai dan memperbarui ke database..."):
-                update_err = False
-                for _, row in rows_to_finish.iterrows():
-                    nopel = row['No. Pelayanan']
-                    if USE_MOCK_DATA:
-                        for b in st.session_state.mock_berkas:
-                            if str(b['nomor_pelayanan']).strip() == str(nopel).strip():
-                                b['status_survey'] = 'Sudah'
-                    else:
-                        try:
-                            supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(nopel).strip()).execute()
-                        except Exception as e:
-                            st.error(f"Gagal update berkas {nopel}: {e}")
-                            update_err = True
+        with st.form("form_checklist_status"):
+            edited_df = st.data_editor(
+                df_show,
+                column_config={
+                    "No. Pelayanan": st.column_config.TextColumn("No. Pelayanan"),
+                    "NOP": st.column_config.TextColumn("NOP"),
+                    "Pemohon": st.column_config.TextColumn("Pemohon"),
+                    "Jenis": st.column_config.TextColumn("Jenis"),
+                    "Lokasi": st.column_config.TextColumn("Lokasi (Desa, Kec)"),
+                    "Status": st.column_config.TextColumn("Status"),
+                    "Tgl": st.column_config.TextColumn("Tgl Input"),
+                    "Tandai Selesai": st.column_config.CheckboxColumn(
+                        "Tandai Selesai",
+                        help="Centang berkas yang ingin diselesaikan, lalu klik tombol Simpan di bawah",
+                        default=False,
+                        width="small"
+                    )
+                },
+                disabled=["No. Pelayanan", "NOP", "Pemohon", "Jenis", "Lokasi", "Status", "Tgl"],
+                use_container_width=True, 
+                hide_index=True
+            )
+            
+            c_spc, c_save_btn = st.columns([3.5, 1.5])
+            with c_save_btn:
+                btn_simpan_status = st.form_submit_button("💾 Simpan Perubahan Status", type="primary", use_container_width=True)
                 
-                if not update_err:
-                    st.cache_data.clear()
-                    st.toast("✅ Berkas terpilih berhasil ditandai selesai!", icon="🎉")
-                    import time
-                    time.sleep(0.8)
-                    st.rerun()
+            if btn_simpan_status:
+                rows_to_finish = edited_df[edited_df['Tandai Selesai'] == True]
+                if not rows_to_finish.empty:
+                    with st.spinner("⏳ Sedang menyimpan perubahan ke database..."):
+                        update_err = False
+                        update_count = 0
+                        for _, row in rows_to_finish.iterrows():
+                            nopel = row['No. Pelayanan']
+                            if USE_MOCK_DATA:
+                                for b in st.session_state.mock_berkas:
+                                    if str(b['nomor_pelayanan']).strip() == str(nopel).strip():
+                                        b['status_survey'] = 'Sudah'
+                                        update_count += 1
+                            else:
+                                try:
+                                    supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(nopel).strip()).execute()
+                                    update_count += 1
+                                except Exception as e:
+                                    st.error(f"Gagal update berkas {nopel}: {e}")
+                                    update_err = True
+                        
+                        if not update_err and update_count > 0:
+                            st.cache_data.clear()
+                            st.success(f"✅ Berhasil memperbarui {update_count} berkas menjadi Selesai!")
+                            import time
+                            time.sleep(1)
+                            st.rerun()
+                else:
+                    st.warning("⚠️ Silakan centang kotak 'Tandai Selesai' pada baris berkas yang ingin diubah terlebih dahulu.")
     else:
         st.info("Pencarian tidak ditemukan. Pastikan Nomor Pelayanan atau NOP sudah diketik dengan benar.")
 
