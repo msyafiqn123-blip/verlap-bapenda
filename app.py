@@ -2104,71 +2104,84 @@ with tab5:
     st.header("🔍 Tracking Verlap Berkas PBB-P2 / BPHTB")
     st.write("Cari dan lacak status berkas verifikasi lapangan secara real-time.")
     
-    sheet_url_hardcoded = "https://docs.google.com/spreadsheets/d/1PXecV5-RbgF9oDmSXtBukikHacqBz5JDIsVI7dS1RpI/export?format=csv&gid=860149025"
+    sheet_url_xlsx = "https://docs.google.com/spreadsheets/d/1PXecV5-RbgF9oDmSXtBukikHacqBz5JDIsVI7dS1RpI/export?format=xlsx"
     col_sync1, col_sync2 = st.columns(2)
     with col_sync1:
         if st.button("🔄 Sinkronisasi STATUS BERKAS PBB", type="primary", use_container_width=True):
-            with st.spinner("⏳ Mengunduh dan mencocokkan data PBB dari Google Sheet..."):
+            with st.spinner("⏳ Mengunduh dan mencocokkan data PBB dari SELURUH lembar (sheets) Google Spreadsheet..."):
                 try:
                     import requests
-                    import csv
+                    import io
+                    import pandas as pd
+                    import re
                     
-                    resp = requests.get(sheet_url_hardcoded, timeout=10)
+                    resp = requests.get(sheet_url_xlsx, timeout=30)
                     resp.raise_for_status()
                     
-                    lines = resp.text.splitlines()
-                    nopel_idx = -1
-                    finished_nopel = []
+                    excel_file = pd.ExcelFile(io.BytesIO(resp.content))
+                    finished_nopel_set = set()
                     
-                    for line in lines:
-                        if not line.strip(): continue
-                        row = next(csv.reader([line]))
-                        if nopel_idx == -1:
-                            for i, col in enumerate(row):
-                                if "NOMOR PELAYANAN" in col.strip().upper():
-                                    nopel_idx = i
-                                    break
-                        else:
-                            if len(row) > nopel_idx:
-                                val = row[nopel_idx].strip()
-                                if val:
-                                    finished_nopel.append(val)
+                    for s_name in excel_file.sheet_names:
+                        try:
+                            df_s = pd.read_excel(excel_file, sheet_name=s_name, header=None)
+                            for c in df_s.columns:
+                                for val in df_s[c].dropna():
+                                    v_str = str(val).strip()
+                                    if not v_str or v_str == 'nan': continue
+                                    finished_nopel_set.add(v_str)
+                                    clean_d = re.sub(r'\D', '', v_str)
+                                    if len(clean_d) >= 6:
+                                        finished_nopel_set.add(clean_d)
+                        except Exception:
+                            continue
                     
-                    if nopel_idx == -1:
-                        st.error("Kolom 'NOMOR PELAYANAN' tidak ditemukan di Google Sheet.")
-                    else:
-                        df_all = fetch_berkas() 
-                        mask_to_update = (df_all['status_survey'] != 'Sudah') & (df_all['nomor_pelayanan'].astype(str).str.strip().isin(finished_nopel))
-                        berkas_to_update = df_all[mask_to_update]
+                    df_all = fetch_berkas()
+                    
+                    def is_finished(row):
+                        np = str(row.get('nomor_pelayanan', '')).strip()
+                        clean_np = re.sub(r'\D', '', np)
                         
-                        if not berkas_to_update.empty:
-                            update_count = 0
-                            update_err = False
-                            for _, b_row in berkas_to_update.iterrows():
-                                nopel = b_row['nomor_pelayanan']
-                                if USE_MOCK_DATA:
-                                    for mb in st.session_state.mock_berkas:
-                                        if str(mb['nomor_pelayanan']).strip() == str(nopel).strip():
-                                            mb['status_survey'] = 'Sudah'
-                                            update_count += 1
-                                else:
-                                    try:
-                                        supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(nopel).strip()).execute()
+                        nop = str(row.get('nomor_nop', '')).strip()
+                        clean_nop = re.sub(r'\D', '', nop)
+                        
+                        return (
+                            (np and np in finished_nopel_set) or
+                            (len(clean_np) >= 6 and clean_np in finished_nopel_set) or
+                            (nop and nop in finished_nopel_set) or
+                            (len(clean_nop) >= 10 and clean_nop in finished_nopel_set)
+                        )
+                        
+                    mask_to_update = (df_all['status_survey'] != 'Sudah') & df_all.apply(is_finished, axis=1)
+                    berkas_to_update = df_all[mask_to_update]
+                    
+                    if not berkas_to_update.empty:
+                        update_count = 0
+                        update_err = False
+                        for _, b_row in berkas_to_update.iterrows():
+                            nopel = b_row['nomor_pelayanan']
+                            if USE_MOCK_DATA:
+                                for mb in st.session_state.mock_berkas:
+                                    if str(mb['nomor_pelayanan']).strip() == str(nopel).strip():
+                                        mb['status_survey'] = 'Sudah'
                                         update_count += 1
-                                    except Exception as e:
-                                        update_err = True
-                                        st.error(f"Gagal update {nopel}: {e}")
-                            
-                            if update_count > 0:
-                                st.cache_data.clear()
-                                st.success(f"✅ Berhasil menandai {update_count} berkas PBB sebagai selesai!")
-                                import time
-                                time.sleep(2)
-                                st.rerun()
-                            elif not update_err:
-                                st.info("Tidak ada berkas yang berhasil diupdate.")
-                        else:
-                            st.info("Semua berkas PBB yang ada di Google Sheet sudah berstatus selesai di sistem.")
+                            else:
+                                try:
+                                    supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(nopel).strip()).execute()
+                                    update_count += 1
+                                except Exception as e:
+                                    update_err = True
+                                    st.error(f"Gagal update {nopel}: {e}")
+                        
+                        if update_count > 0:
+                            st.cache_data.clear()
+                            st.success(f"✅ Berhasil menandai {update_count} berkas PBB sebagai selesai dari {len(excel_file.sheet_names)} lembar (sheet)!")
+                            import time
+                            time.sleep(2)
+                            st.rerun()
+                        elif not update_err:
+                            st.info("Tidak ada berkas yang berhasil diupdate.")
+                    else:
+                        st.info(f"Semua berkas yang ada di {len(excel_file.sheet_names)} lembar Google Spreadsheet sudah berstatus selesai di sistem.")
                 except Exception as e:
                     st.error(f"Gagal sinkronisasi PBB: {e}")
 
