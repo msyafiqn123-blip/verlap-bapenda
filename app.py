@@ -1121,12 +1121,46 @@ with tab0:
                 st.session_state.last_nopel = nopel_baru
                 st.rerun()
                 
-        elif nopel_baru.strip().startswith("0"):
-            st.info("ℹ️ Berkas BPHTB terdeteksi. Silakan input NOP & Nama Pemohon secara manual (Kecamatan/Kelurahan otomatis dari NOP).")
-            if should_sync:
-                st.session_state[f"kat_{fk}"] = "Berkas BPHTB"
-                st.session_state.last_nopel = nopel_baru
-                st.rerun()
+        elif nopel_baru.strip().startswith("0") and (should_sync or cek_btn):
+            st.session_state[f"kat_{fk}"] = "Berkas BPHTB"
+            # Auto-sync direct from SIP-BPHTB
+            try:
+                import requests, re
+                session = requests.Session()
+                login_url = "http://36.66.125.18:1226/bphtb-purwakarta/index.php/site/login"
+                session.get(login_url, timeout=5)
+                session.post(login_url, data={"LoginForm[username]": "syafiqb", "LoginForm[password]": "topikgosip", "yt0": "Login"}, timeout=5)
+                
+                search_url = f"http://36.66.125.18:1226/bphtb-purwakarta/index.php/DataArsip/dataArsip/admin?Daftar%5Bno_daftar%5D={nopel_baru.strip()}"
+                r_search = session.get(search_url, timeout=5)
+                rows = re.findall(r'<tr[^>]*>([\s\S]*?)<\/tr>', r_search.text, re.IGNORECASE)
+                for tr_html in rows:
+                    cells = re.findall(r'<t[dh][^>]*>([\s\S]*?)<\/t[dh]>', tr_html, re.IGNORECASE)
+                    clean_cells = [re.sub(r'<[^>]+>', '', c).strip() for c in cells]
+                    if len(clean_cells) >= 8 and clean_cells[0] == nopel_baru.strip():
+                        raw_nop = clean_cells[2]
+                        st.session_state[f"nop_{fk}"] = format_nop_string(raw_nop)
+                        st.session_state[f"nama_{fk}"] = clean_cells[3]
+                        
+                        clean_target = "".join([c for c in raw_nop if c.isdigit()])
+                        pad18 = clean_target.ljust(18, '0')
+                        alamat_op_dict = fetch_alamat_op_data()
+                        alamat_op_raw = alamat_op_dict.get(pad18, alamat_op_dict.get(clean_target, ""))
+                        
+                        kode_prev = clean_target[4:10] if len(clean_target) >= 10 else ""
+                        ref_nop = load_referensi_nop()
+                        if kode_prev in ref_nop:
+                            kec_txt = ref_nop[kode_prev]['kecamatan']
+                            kel_txt = ref_nop[kode_prev]['kelurahan']
+                            if alamat_op_raw:
+                                st.session_state[f"letak_{fk}"] = f"{kec_txt} - {kel_txt} - {alamat_op_raw}"
+                            else:
+                                st.session_state[f"letak_{fk}"] = f"{kec_txt} - {kel_txt}"
+                        break
+            except Exception:
+                pass
+            st.session_state.last_nopel = nopel_baru
+            st.rerun()
                 
         elif cek_btn:
             st.error("❌ Data Nomor Pelayanan tidak ditemukan")
@@ -1206,23 +1240,19 @@ with tab0:
         if len(nop_clean_preview) >= 10:
             kode_prev = nop_clean_preview[4:10]
             ref_nop = load_referensi_nop()
-            if len(nop_clean_preview) == 18 and not st.session_state.get(f"letak_{fk}"):
+            if len(nop_clean_preview) in [17, 18]:
+                pad18 = nop_clean_preview.ljust(18, '0')
                 alamat_op_dict = fetch_alamat_op_data()
-                matched_letak = alamat_op_dict.get(nop_clean_preview)
-                if not matched_letak:
-                    f_nop = f"{nop_clean_preview[:2]}.{nop_clean_preview[2:4]}.{nop_clean_preview[4:7]}.{nop_clean_preview[7:10]}.{nop_clean_preview[10:13]}.{nop_clean_preview[13:17]}.{nop_clean_preview[17:]}"
-                    matched_letak = alamat_op_dict.get(f_nop)
+                matched_letak = alamat_op_dict.get(pad18, alamat_op_dict.get(nop_clean_preview, ""))
                 
                 if kode_prev in ref_nop:
                     kec_txt = ref_nop[kode_prev]['kecamatan']
                     kel_txt = ref_nop[kode_prev]['kelurahan']
-                    if matched_letak:
-                        st.session_state[f"letak_{fk}"] = f"{kec_txt} - {kel_txt} - {matched_letak}"
-                    else:
-                        st.session_state[f"letak_{fk}"] = f"{kec_txt} - {kel_txt}"
-                elif matched_letak:
-                    st.session_state[f"letak_{fk}"] = matched_letak
-                st.rerun()
+                    expected_letak = f"{kec_txt} - {kel_txt} - {matched_letak}" if matched_letak else f"{kec_txt} - {kel_txt}"
+                    if st.session_state.get(f"last_derived_nop_{fk}") != nop_clean_preview:
+                        st.session_state[f"last_derived_nop_{fk}"] = nop_clean_preview
+                        st.session_state[f"letak_{fk}"] = expected_letak
+                        st.rerun()
 
     with col2:
         pemohon_baru = st.text_input("Nama Pemohon", placeholder="Nama Wajib Pajak", key=f"nama_{fk}")
