@@ -38,14 +38,39 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Sembunyikan menu Streamlit dan tombol Deploy
+# Sembunyikan menu Streamlit dan kunci scrolling horizontal
 hide_streamlit_style = """
 <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 .stDeployButton {display:none !important;}
 [data-testid="stAppCreatorBadge"], [data-testid="viewerBadge"], [data-testid="manage-app-badge"], a[href*="streamlit"], a[href*="msyafiqn123"], a[href*="github"] {display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;}
-[data-testid="stAppViewBlockContainer"] {padding-top: 2rem;}
+
+/* Kunci total agar halaman tidak bisa digeser horizontal / ke samping */
+html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    width: 100vw !important;
+    position: relative !important;
+}
+
+[data-testid="stAppViewContainer"], [data-testid="stApp"] {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+}
+
+[data-testid="stAppViewBlockContainer"], .main .block-container {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    padding-top: 1.5rem !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+}
+
+div[data-testid="column"] {
+    min-width: 0 !important;
+}
 
 /* Modernize Spinner Box */
 [data-testid="stSpinner"] {
