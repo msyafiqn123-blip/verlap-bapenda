@@ -47,6 +47,12 @@ footer {visibility: hidden;}
 [data-testid="stAppCreatorBadge"], [data-testid="viewerBadge"], [data-testid="manage-app-badge"] {display: none !important;}
 [data-testid="stAppViewBlockContainer"] {padding-top: 2rem;}
 
+/* Hide Leaflet Attribution Watermark */
+.leaflet-control-attribution {
+    display: none !important;
+    visibility: hidden !important;
+}
+
 /* Modernize Spinner Box */
 [data-testid="stSpinner"] {
     background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
@@ -1516,7 +1522,7 @@ with tab1:
         zoom_level = 12
 
     # Inisialisasi Peta
-    m = folium.Map(location=center_loc, zoom_start=zoom_level)
+    m = folium.Map(location=center_loc, zoom_start=zoom_level, control_scale=False, attribution_control=False)
 
     # Masker (Hitamkan luar Purwakarta)
     mask_geojson = load_geojson("mask_purwakarta.geojson")
@@ -2160,9 +2166,6 @@ with tab3:
 
 
 with tab5:
-    st.header("🔍 Tracking Verlap Berkas PBB-P2 / BPHTB")
-    st.write("Cari dan lacak status berkas verifikasi lapangan secara real-time.")
-    
     sheet_url_xlsx = "https://docs.google.com/spreadsheets/d/1PXecV5-RbgF9oDmSXtBukikHacqBz5JDIsVI7dS1RpI/export?format=xlsx"
     col_sync1, col_sync2 = st.columns(2)
     with col_sync1:
