@@ -1660,7 +1660,40 @@ with tab1:
                 })
                 
                 st.dataframe(df_display, use_container_width=True, hide_index=True)
-    elif df_berkas.empty:
+    elif not df_berkas.empty:
+        status_label = selected_status if selected_status != "Semua" else "Semua Status"
+        st.markdown(f"### 📋 Daftar Berkas ({len(df_berkas)} Berkas - Status: {status_label})")
+        
+        df_display = df_berkas.copy()
+        cols_to_show = ['nomor_pelayanan', 'nomor_nop', 'nama_pemohon', 'keterangan_berkas', 'kecamatan', 'desa', 'status_survey', 'tanggal_input']
+        available_cols = [c for c in cols_to_show if c in df_display.columns]
+        df_display = df_display[available_cols].copy()
+        
+        if 'nomor_nop' in df_display.columns:
+            df_display['nomor_nop'] = df_display['nomor_nop'].apply(format_nop_string)
+            
+        def format_status_badge(val):
+            if val == 'Belum': return '⏳ Menunggu'
+            if val == 'Dijadwalkan': return '🏃 Sedang Proses'
+            if val == 'Sudah': return '✅ Selesai'
+            return str(val)
+            
+        if 'status_survey' in df_display.columns:
+            df_display['status_survey'] = df_display['status_survey'].apply(format_status_badge)
+            
+        df_display = df_display.rename(columns={
+            'nomor_pelayanan': 'No. Pelayanan',
+            'nomor_nop': 'NOP',
+            'nama_pemohon': 'Nama Pemohon',
+            'keterangan_berkas': 'Kategori',
+            'kecamatan': 'Kecamatan',
+            'desa': 'Kelurahan',
+            'status_survey': 'Status Survei',
+            'tanggal_input': 'Tgl Input'
+        })
+        
+        st.dataframe(df_display, use_container_width=True, hide_index=True)
+    else:
         st.info("Tidak ada data berkas yang sesuai filter.")
 
 # --- TAB 2, 3, 4 SAMA SEPERTI SEBELUMNYA ---
