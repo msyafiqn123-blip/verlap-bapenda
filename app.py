@@ -2347,115 +2347,68 @@ with tab5:
     result_page = result.iloc[start_idx:end_idx]
     
     if not result_page.empty:
-        table_html = """
-        <style>
-        .verlap-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            font-size: 13.5px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-            margin-top: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-        }
-        .verlap-table th {
-            background-color: #f8fafc;
-            color: #475569;
-            font-weight: 700;
-            padding: 11px 12px;
-            text-align: left;
-            border-bottom: 2px solid #e2e8f0;
-            user-select: text !important;
-            -webkit-user-select: text !important;
-        }
-        .verlap-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #f1f5f9;
-            color: #1e293b;
-            user-select: text !important;
-            -webkit-user-select: text !important;
-            vertical-align: middle;
-        }
-        .verlap-table tr:hover {
-            background-color: #f8fafc;
-        }
-        .row-bg-selesai {
-            background-color: #f0fdf4 !important;
-        }
-        .row-bg-proses {
-            background-color: #fefce8 !important;
-        }
-        .code-cell {
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-            font-size: 13px;
-            font-weight: 600;
-            color: #0f172a;
-            user-select: all !important;
-            -webkit-user-select: all !important;
-        }
-        .badge-status {
-            display: inline-block;
-            padding: 3px 9px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        .badge-selesai { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-        .badge-proses { background-color: #fef08a; color: #854d0e; border: 1px solid #fde047; }
-        .badge-tunggu { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
-        </style>
-        <div style="overflow-x: auto;">
-        <table class="verlap-table">
-            <thead>
-                <tr>
-                    <th style="min-width: 120px;">No. Pelayanan</th>
-                    <th style="min-width: 190px;">NOP</th>
-                    <th style="min-width: 150px;">Nama Pemohon</th>
-                    <th style="min-width: 130px;">Kategori</th>
-                    <th style="min-width: 110px;">Kecamatan</th>
-                    <th style="min-width: 110px;">Kelurahan</th>
-                    <th style="min-width: 120px;">Status Survei</th>
-                    <th style="min-width: 95px;">Tgl Input</th>
-                </tr>
-            </thead>
-            <tbody>
-        """
-        for _, r in result_page.iterrows():
-            st_val = str(r.get('status_survey', 'Belum')).strip()
-            if st_val == 'Sudah':
-                row_cls = 'row-bg-selesai'
-                badge_html = '<span class="badge-status badge-selesai">✅ Selesai</span>'
-            elif st_val == 'Dijadwalkan':
-                row_cls = 'row-bg-proses'
-                badge_html = '<span class="badge-status badge-proses">🏃 Sedang Proses</span>'
-            else:
-                row_cls = ''
-                badge_html = '<span class="badge-status badge-tunggu">⏳ Menunggu</span>'
-                
-            nop_formatted = format_nop_string(r.get('nomor_nop', ''))
-            
-            table_html += f"""
-                <tr class="{row_cls}">
-                    <td class="code-cell">{r.get('nomor_pelayanan', '-')}</td>
-                    <td class="code-cell">{nop_formatted}</td>
-                    <td>{r.get('nama_pemohon', '-')}</td>
-                    <td>{r.get('keterangan_berkas', '-')}</td>
-                    <td>{r.get('kecamatan', '-')}</td>
-                    <td>{r.get('desa', '-')}</td>
-                    <td>{badge_html}</td>
-                    <td>{r.get('tanggal_input', '-')}</td>
-                </tr>
-            """
-        table_html += """
-            </tbody>
-        </table>
-        </div>
-        """
-        st.markdown(table_html, unsafe_allow_html=True)
+        df_show = result_page[['nomor_pelayanan', 'nomor_nop', 'nama_pemohon', 'keterangan_berkas', 'kecamatan', 'desa', 'status_survey', 'tanggal_input']].copy()
+        
+        def format_status_badge(val):
+            st_str = str(val).strip()
+            if st_str == 'Sudah':
+                return '<span style="background-color:#d1fae5; color:#065f46; padding:3px 8px; border-radius:12px; font-weight:600; font-size:12px; border:1px solid #a7f3d0; white-space:nowrap;">✅ Selesai</span>'
+            elif st_str == 'Dijadwalkan':
+                return '<span style="background-color:#fef08a; color:#854d0e; padding:3px 8px; border-radius:12px; font-weight:600; font-size:12px; border:1px solid #fde047; white-space:nowrap;">🏃 Sedang Proses</span>'
+            return '<span style="background-color:#f1f5f9; color:#475569; padding:3px 8px; border-radius:12px; font-weight:600; font-size:12px; border:1px solid #e2e8f0; white-space:nowrap;">⏳ Menunggu</span>'
+
+        def format_code_span(val):
+            return f'<span style="font-family:monospace; font-size:13px; font-weight:600; color:#0f172a; user-select:all !important; -webkit-user-select:all !important;">{val}</span>'
+
+        df_display = pd.DataFrame()
+        df_display['No. Pelayanan'] = df_show['nomor_pelayanan'].apply(format_code_span)
+        df_display['NOP'] = df_show['nomor_nop'].apply(lambda x: format_code_span(format_nop_string(x)))
+        df_display['Nama Pemohon'] = df_show['nama_pemohon']
+        df_display['Kategori'] = df_show['keterangan_berkas']
+        df_display['Kecamatan'] = df_show['kecamatan']
+        df_display['Kelurahan'] = df_show['desa']
+        df_display['Status Survei'] = df_show['status_survey'].apply(format_status_badge)
+        df_display['Tgl Input'] = df_show['tanggal_input']
+
+        css_style = """
+<style>
+.verlap-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13.5px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    margin-top: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+.verlap-table th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    padding: 11px 12px;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+}
+.verlap-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    vertical-align: middle;
+}
+.verlap-table tr:hover {
+    background-color: #f8fafc;
+}
+</style>
+"""
+        html_content = css_style + '<div style="overflow-x:auto;">' + df_display.to_html(classes='verlap-table', escape=False, index=False) + '</div>'
+        st.markdown(html_content, unsafe_allow_html=True)
         
         unfinished_on_page = result_page[result_page['status_survey'] != 'Sudah']
         if not unfinished_on_page.empty:
