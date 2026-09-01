@@ -2360,54 +2360,42 @@ with tab5:
             'keterangan_berkas': 'Kategori',
             'kecamatan': 'Kecamatan',
             'desa': 'Kelurahan',
-            'status_survey': 'Status Survei',
+            'status_survey': 'Status',
             'tanggal_input': 'Tgl Input'
         })
         
         def format_status(val):
-            if val == 'Belum': return '⏳ Menunggu Jadwal'
+            if val == 'Belum': return '⏳ Menunggu'
             if val == 'Dijadwalkan': return '🏃 Sedang Proses'
             if val == 'Sudah': return '✅ Selesai'
             return val
             
-        df_show['Status Survei'] = df_show['Status Survei'].apply(format_status)
-        
-        def highlight_status(s):
-            if s['Status Survei'] == '✅ Selesai':
-                return ['background-color: #d1fae5; color: #065f46'] * len(s)
-            elif s['Status Survei'] == '🏃 Sedang Proses':
-                return ['background-color: #fef08a; color: #854d0e'] * len(s)
-            else:
-                return [''] * len(s)
-                
-        df_show['Tandai Selesai'] = False
-        
-        styled_df = df_show.style.apply(highlight_status, axis=1)
+        df_show['Status'] = df_show['Status'].apply(format_status)
+        df_show.insert(0, 'Selesai?', False)
         
         edited_df = st.data_editor(
-            styled_df,
+            df_show,
             column_config={
-                "No. Pelayanan": st.column_config.TextColumn("No. Pelayanan", width="medium"),
-                "NOP": st.column_config.TextColumn("NOP", width="large"),
-                "Nama Pemohon": st.column_config.TextColumn("Nama Pemohon", width="medium"),
-                "Kategori": st.column_config.TextColumn("Kategori", width="small"),
-                "Kecamatan": st.column_config.TextColumn("Kecamatan", width="small"),
-                "Kelurahan": st.column_config.TextColumn("Kelurahan", width="small"),
-                "Status Survei": st.column_config.TextColumn("Status Survei", width="medium"),
-                "Tgl Input": st.column_config.TextColumn("Tgl Input", width="small"),
-                "Tandai Selesai": st.column_config.CheckboxColumn(
-                    "Tandai Selesai",
-                    help="Centang untuk menandai berkas ini telah selesai disurvei",
-                    default=False,
-                    width="small"
-                )
+                "Selesai?": st.column_config.CheckboxColumn(
+                    "Selesai?",
+                    help="Centang untuk menandai berkas ini telah selesai",
+                    default=False
+                ),
+                "No. Pelayanan": st.column_config.TextColumn("No. Pelayanan"),
+                "NOP": st.column_config.TextColumn("NOP"),
+                "Nama Pemohon": st.column_config.TextColumn("Nama Pemohon"),
+                "Kategori": st.column_config.TextColumn("Kategori"),
+                "Kecamatan": st.column_config.TextColumn("Kecamatan"),
+                "Kelurahan": st.column_config.TextColumn("Kelurahan"),
+                "Status": st.column_config.TextColumn("Status"),
+                "Tgl Input": st.column_config.TextColumn("Tgl Input")
             },
-            disabled=["No. Pelayanan", "NOP", "Nama Pemohon", "Kategori", "Kecamatan", "Kelurahan", "Status Survei", "Tgl Input"],
+            disabled=["No. Pelayanan", "NOP", "Nama Pemohon", "Kategori", "Kecamatan", "Kelurahan", "Status", "Tgl Input"],
             use_container_width=True, 
             hide_index=True
         )
         
-        rows_to_finish = edited_df[edited_df['Tandai Selesai'] == True]
+        rows_to_finish = edited_df[edited_df['Selesai?'] == True]
         
         if not rows_to_finish.empty:
             with st.spinner("⏳ Sedang menandai berkas selesai dan memperbarui ke database..."):
