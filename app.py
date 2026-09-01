@@ -857,17 +857,17 @@ def create_dynamic_mask(geom_to_highlight):
 bapenda_logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bapenda.png")
 import os, base64
 
-col_head_title, col_head_btn = st.columns([3.2, 1.8])
+col_head_title, col_head_btn = st.columns([4.2, 1.3])
 with col_head_title:
     if os.path.exists(bapenda_logo_path):
         with open(bapenda_logo_path, "rb") as f:
             img_b64 = base64.b64encode(f.read()).decode()
         st.markdown(f'''
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <img src="data:image/png;base64,{img_b64}" width="50" />
+            <div style="display: flex; align-items: center; gap: 16px; padding: 4px 0;">
+                <img src="data:image/png;base64,{img_b64}" width="65" style="object-fit: contain;" />
                 <div>
-                    <h1 style="margin: 0; padding: 0; font-size: 1.6rem; font-weight: 700;">Sistem Verifikasi Lapangan</h1>
-                    <div style="font-size: 0.85rem; color: #64748b; font-weight: 500;">Subbid PBB & BPHTB - Bapenda Purwakarta</div>
+                    <h1 style="margin: 0; padding: 0; font-size: 2.15rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; line-height: 1.15;">Sistem Verifikasi Lapangan</h1>
+                    <div style="font-size: 0.95rem; color: #475569; font-weight: 600; margin-top: 3px;">Subbid PBB & BPHTB, Bidang Pendataan dan Penilaian - Bapenda Purwakarta</div>
                 </div>
             </div>
         ''', unsafe_allow_html=True)
@@ -880,7 +880,7 @@ with col_head_btn:
     if 'show_update_lapangan' not in st.session_state:
         st.session_state.show_update_lapangan = False
         
-    btn_lbl = "❌ Tutup Form" if st.session_state.show_update_lapangan else "📱 Update Lapangan (Petugas)"
+    btn_lbl = "❌ Tutup Form" if st.session_state.show_update_lapangan else "📱 Update Lapangan"
     btn_tp = "secondary" if st.session_state.show_update_lapangan else "primary"
     if st.button(btn_lbl, type=btn_tp, use_container_width=True, key="btn_toggle_lapangan"):
         st.session_state.show_update_lapangan = not st.session_state.show_update_lapangan
