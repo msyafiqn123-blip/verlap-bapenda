@@ -2350,28 +2350,22 @@ with tab5:
     result_page = result.iloc[start_idx:end_idx]
     
     if not result_page.empty:
-        df_show = result_page[['nomor_pelayanan', 'nomor_nop', 'nama_pemohon', 'keterangan_berkas', 'kecamatan', 'desa', 'status_survey', 'tanggal_input']].copy()
-        
-        df_show['nomor_nop'] = df_show['nomor_nop'].apply(format_nop_string)
-        df_show = df_show.rename(columns={
-            'nomor_pelayanan': 'No. Pelayanan',
-            'nomor_nop': 'NOP',
-            'nama_pemohon': 'Nama Pemohon',
-            'keterangan_berkas': 'Kategori',
-            'kecamatan': 'Kecamatan',
-            'desa': 'Kelurahan',
-            'status_survey': 'Status',
-            'tanggal_input': 'Tgl Input'
-        })
+        df_show = pd.DataFrame()
+        df_show['Selesai?'] = False
+        df_show['No. Pelayanan'] = result_page['nomor_pelayanan'].astype(str)
+        df_show['NOP'] = result_page['nomor_nop'].apply(format_nop_string)
+        df_show['Pemohon'] = result_page['nama_pemohon']
+        df_show['Jenis'] = result_page['keterangan_berkas'].astype(str).str.replace('Berkas ', '', regex=False)
+        df_show['Lokasi'] = result_page.apply(lambda r: f"{r.get('desa', '-')}, {r.get('kecamatan', '-')}", axis=1)
         
         def format_status(val):
             if val == 'Belum': return '⏳ Menunggu'
             if val == 'Dijadwalkan': return '🏃 Sedang Proses'
             if val == 'Sudah': return '✅ Selesai'
-            return val
+            return str(val)
             
-        df_show['Status'] = df_show['Status'].apply(format_status)
-        df_show.insert(0, 'Selesai?', False)
+        df_show['Status'] = result_page['status_survey'].apply(format_status)
+        df_show['Tgl'] = result_page['tanggal_input'].astype(str)
         
         edited_df = st.data_editor(
             df_show,
@@ -2379,18 +2373,18 @@ with tab5:
                 "Selesai?": st.column_config.CheckboxColumn(
                     "Selesai?",
                     help="Centang untuk menandai berkas ini telah selesai",
-                    default=False
+                    default=False,
+                    width="small"
                 ),
                 "No. Pelayanan": st.column_config.TextColumn("No. Pelayanan"),
                 "NOP": st.column_config.TextColumn("NOP"),
-                "Nama Pemohon": st.column_config.TextColumn("Nama Pemohon"),
-                "Kategori": st.column_config.TextColumn("Kategori"),
-                "Kecamatan": st.column_config.TextColumn("Kecamatan"),
-                "Kelurahan": st.column_config.TextColumn("Kelurahan"),
+                "Pemohon": st.column_config.TextColumn("Pemohon"),
+                "Jenis": st.column_config.TextColumn("Jenis"),
+                "Lokasi": st.column_config.TextColumn("Lokasi (Desa, Kec)"),
                 "Status": st.column_config.TextColumn("Status"),
-                "Tgl Input": st.column_config.TextColumn("Tgl Input")
+                "Tgl": st.column_config.TextColumn("Tgl Input")
             },
-            disabled=["No. Pelayanan", "NOP", "Nama Pemohon", "Kategori", "Kecamatan", "Kelurahan", "Status", "Tgl Input"],
+            disabled=["No. Pelayanan", "NOP", "Pemohon", "Jenis", "Lokasi", "Status", "Tgl"],
             use_container_width=True, 
             hide_index=True
         )
