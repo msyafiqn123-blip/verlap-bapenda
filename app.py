@@ -2246,13 +2246,16 @@ with tab5:
     
     df_all = fetch_berkas()
     
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns([1.5, 1, 1, 1])
     with col1:
         search_query = st.text_input("Cari Nomor (Pelayanan/NOP) / Nama:", placeholder="Ketik spesifik...")
     with col2:
+        kat_list = ["Semua"] + sorted([k for k in df_all['keterangan_berkas'].unique() if pd.notna(k)])
+        filter_kat = st.selectbox("Filter Jenis Berkas:", kat_list)
+    with col3:
         kec_list = ["Semua"] + sorted([k for k in df_all['kecamatan'].unique() if pd.notna(k)])
         filter_kec = st.selectbox("Filter Kecamatan:", kec_list)
-    with col3:
+    with col4:
         status_list = ["Semua", "Belum", "Dijadwalkan", "Sudah"]
         filter_status = st.selectbox("Filter Status Survei:", status_list, format_func=lambda x: {
             "Semua": "Semua Status",
@@ -2265,6 +2268,8 @@ with tab5:
     if search_query:
         mask = result['nomor_pelayanan'].astype(str).str.contains(search_query, case=False, na=False) | result['nomor_nop'].astype(str).str.contains(search_query, case=False, na=False) | result['nama_pemohon'].astype(str).str.contains(search_query, case=False, na=False)
         result = result[mask]
+    if filter_kat != "Semua":
+        result = result[result['keterangan_berkas'] == filter_kat]
     if filter_kec != "Semua":
         result = result[result['kecamatan'] == filter_kec]
     if filter_status != "Semua":
