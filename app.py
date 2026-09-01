@@ -847,7 +847,7 @@ else:
     st.title("Sistem Verifikasi Lapangan")
 st.markdown("**Subbid PBB & BPHTB, Bidang Pendataan dan Penilaian - Bapenda Kabupaten Purwakarta**")
 
-tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Input Berkas Baru", "📍 Peta Interaktif & Filter", "👥 Penugasan (Admin)", "📊 Dashboard Workload", "📱 Update Lapangan (Petugas)", "🔍 Cek Status Berkas"])
+tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Input Berkas Baru", "📍 Peta Interaktif & Filter", "📄 Surat Perintah", "📊 Dashboard Workload", "📱 Update Lapangan (Petugas)", "🔍 Cek Status Berkas"])
 
 import streamlit.components.v1 as components
 if 'mobile_tab_switched' not in st.session_state:
