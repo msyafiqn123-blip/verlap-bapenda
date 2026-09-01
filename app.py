@@ -2309,6 +2309,33 @@ with tab5:
     result_page = result.iloc[start_idx:end_idx]
     
     if not result_page.empty:
+        # 1-Click Copy Bar
+        copy_items = []
+        for _, r in result_page.iterrows():
+            np_val = str(r.get('nomor_pelayanan', '')).strip()
+            nop_val = format_nop_string(r.get('nomor_nop', ''))
+            nm_val = str(r.get('nama_pemohon', '')).strip()
+            if np_val and np_val != 'nan':
+                copy_items.append(f"""<button onclick="navigator.clipboard.writeText('{np_val}'); window.parent.postMessage({{type:'streamlit:toast',data:{{message:'Tersalin: {np_val}'}}}},'*');" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; padding:4px 10px; font-family:monospace; font-size:12.5px; font-weight:600; color:#1e293b; cursor:pointer; margin:2px;" title="Klik untuk salin No. Pelayanan">📋 {np_val} <span style="color:#64748b; font-weight:normal;">({nm_val})</span></button>""")
+        
+        if copy_items:
+            st.markdown(f"""
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px;">
+                <div style="font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px;">
+                    📋 <b>Salin Cepat Nomor Pelayanan (Klik nomor untuk menyalin instan):</b>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                    {"".join(copy_items)}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        with st.expander("📝 Salin Teks Bebas (Untuk Blok & Salin Manual / Seleksi Kursor)"):
+            text_lines = []
+            for _, r in result_page.iterrows():
+                text_lines.append(f"No. Pelayanan: {r.get('nomor_pelayanan', '-')} | NOP: {format_nop_string(r.get('nomor_nop', ''))} | Nama: {r.get('nama_pemohon', '-')}")
+            st.code("\n".join(text_lines), language=None)
+
         df_show = result_page[['nomor_pelayanan', 'nomor_nop', 'nama_pemohon', 'keterangan_berkas', 'kecamatan', 'desa', 'status_survey', 'tanggal_input']].copy()
         
         df_show['nomor_nop'] = df_show['nomor_nop'].apply(format_nop_string)
