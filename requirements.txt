@@ -11,3 +11,4 @@ shapely
 openpyxl
 plotly
 requests
+beautifulsoup4

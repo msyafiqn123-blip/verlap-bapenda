@@ -2115,7 +2115,6 @@ with tab5:
                 try:
                     import requests
                     import re
-                    from bs4 import BeautifulSoup
                     
                     session = requests.Session()
                     login_url = "http://36.66.125.18:1226/bphtb-purwakarta/index.php/site/login"
@@ -2145,18 +2144,17 @@ with tab5:
                         for p in range(1, 11):
                             admin_url = f"http://36.66.125.18:1226/bphtb-purwakarta/index.php/DataArsip/dataArsip/admin?DataArsip_page={p}"
                             r_admin = session.get(admin_url, timeout=10)
-                            soup = BeautifulSoup(r_admin.text, 'html.parser')
-                            table = soup.find('table', class_='items') or soup.find('table')
-                            if not table:
+                            
+                            # Standard regex parser for table rows without external bs4 dependency
+                            rows = re.findall(r'<tr[^>]*>([\s\S]*?)<\/tr>', r_admin.text, re.IGNORECASE)
+                            if not rows:
                                 break
-                            rows = table.find_all('tr')
-                            if len(rows) <= 1:
-                                break
-                            for tr in rows[1:]:
-                                tds = [td.get_text(strip=True) for td in tr.find_all(['td', 'th'])]
-                                if len(tds) >= 8:
-                                    no_pend = tds[0]
-                                    status_verif = tds[7]
+                            for tr_html in rows:
+                                cells = re.findall(r'<t[dh][^>]*>([\s\S]*?)<\/t[dh]>', tr_html, re.IGNORECASE)
+                                clean_cells = [re.sub(r'<[^>]+>', '', c).strip() for c in cells]
+                                if len(clean_cells) >= 8:
+                                    no_pend = clean_cells[0]
+                                    status_verif = clean_cells[7]
                                     if "Telah diverifikasi Kabid" in status_verif:
                                         verified_set.add(no_pend)
                                         verified_set.add(re.sub(r'\D', '', no_pend))
