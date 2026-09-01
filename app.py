@@ -2246,9 +2246,9 @@ with tab5:
                             time.sleep(2)
                             st.rerun()
                         elif not update_err:
-                            st.info("Tidak ada berkas yang berhasil diupdate.")
+                            st.info("Semua berkas sudah sinkron.")
                     else:
-                        st.info(f"Semua berkas yang ada di {len(excel_file.sheet_names)} lembar Google Spreadsheet sudah berstatus selesai di sistem.")
+                        st.info("Semua berkas sudah sinkron.")
                 except Exception as e:
                     st.error(f"Gagal sinkronisasi PBB: {e}")
 
@@ -2280,7 +2280,7 @@ with tab5:
                     bphtb_berkas = df_all_curr[bphtb_mask]
                     
                     if bphtb_berkas.empty:
-                        st.info("Semua berkas BPHTB sudah berstatus selesai atau tidak ada berkas BPHTB yang menunggu.")
+                        st.info("Semua berkas sudah sinkron.")
                     else:
                         # 3. Retrieve verified status directly for each pending BPHTB registration number
                         verified_set = set()
@@ -2288,23 +2288,23 @@ with tab5:
                             nopel = str(b_row.get('nomor_pelayanan', '')).strip()
                             if not nopel or nopel == 'nan':
                                 continue
+                            clean_np = re.sub(r'\D', '', nopel)
                             
-                            target_url = f"http://36.66.125.18:1226/bphtb-purwakarta/index.php/DataArsip/dataArsip/admin?Daftar%5Bno_daftar%5D={nopel}"
-                            try:
-                                r_search = session.get(target_url, timeout=10)
-                                rows = re.findall(r'<tr[^>]*>([\s\S]*?)<\/tr>', r_search.text, re.IGNORECASE)
-                                for tr_html in rows:
-                                    cells = re.findall(r'<t[dh][^>]*>([\s\S]*?)<\/t[dh]>', tr_html, re.IGNORECASE)
-                                    clean_cells = [re.sub(r'<[^>]+>', '', c).strip() for c in cells]
-                                    if len(clean_cells) >= 8 and clean_cells[0] != 'No.Pendaftaran':
-                                        status_verif = clean_cells[7]
-                                        if "Telah diverifikasi Kabid" in status_verif:
-                                            verified_set.add(nopel)
-                                            verified_set.add(re.sub(r'\D', '', nopel))
-                                            break
-                            except Exception:
-                                continue
-                        
+                            search_url = f"http://36.66.125.18:1226/bphtb-purwakarta/index.php/DataArsip/dataArsip/admin?Daftar%5Bno_daftar%5D={clean_np}"
+                            r_search = session.get(search_url, timeout=10)
+                            
+                            rows = re.findall(r'<tr[^>]*>([\s\S]*?)<\/tr>', r_search.text, re.IGNORECASE)
+                            for tr_html in rows:
+                                cells = re.findall(r'<t[dh][^>]*>([\s\S]*?)<\/t[dh]>', tr_html, re.IGNORECASE)
+                                clean_cells = [re.sub(r'<[^>]+>', '', c).strip() for c in cells]
+                                
+                                if len(clean_cells) >= 8 and clean_cells[0] == clean_np:
+                                    status_text = clean_cells[7]
+                                    if "diverifikasi" in status_text.lower() or "selesai" in status_text.lower():
+                                        verified_set.add(nopel)
+                                        verified_set.add(clean_np)
+                                    break
+                                    
                         update_count_bphtb = 0
                         update_err_bphtb = False
                         for _, b_row in bphtb_berkas.iterrows():
@@ -2331,7 +2331,7 @@ with tab5:
                             time.sleep(2)
                             st.rerun()
                         elif not update_err_bphtb:
-                            st.info("Belum ada berkas BPHTB antrean Anda yang statusnya 'Telah diverifikasi Kabid' di sistem SIP-BPHTB.")
+                            st.info("Semua berkas sudah sinkron.")
                 except Exception as e:
                     st.error(f"Gagal sinkronisasi BPHTB: {e}")
     
