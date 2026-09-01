@@ -895,7 +895,14 @@ if st.session_state.get('show_update_lapangan', False):
         </div>
         """, unsafe_allow_html=True)
         
-        df_berkas_jadwal = fetch_berkas(status="Dijadwalkan")
+        df_all_curr = fetch_berkas()
+        if not df_all_curr.empty:
+            df_berkas_jadwal = df_all_curr[
+                df_all_curr['status_survey'].astype(str).str.strip().str.lower() == 'dijadwalkan'
+            ].copy()
+        else:
+            df_berkas_jadwal = pd.DataFrame()
+            
         if not df_berkas_jadwal.empty:
             with st.form("form_lapangan_header"):
                 lapangan_options = df_berkas_jadwal['id'].tolist()
