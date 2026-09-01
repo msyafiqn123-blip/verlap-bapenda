@@ -63,12 +63,20 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 
 def format_nop_string(val):
-    if not val:
+    if not val or pd.isna(val):
         return ""
-    v = str(val).replace(".", "").replace("-", "").strip()
+    v = "".join([c for c in str(val) if c.isdigit()])
     if len(v) == 18:
         return f"{v[0:2]}.{v[2:4]}.{v[4:7]}.{v[7:10]}.{v[10:13]}.{v[13:17]}.{v[17:]}"
-    return val
+    elif len(v) == 17:
+        return f"{v[0:2]}.{v[2:4]}.{v[4:7]}.{v[7:10]}.{v[10:13]}.{v[13:17]}.0"
+    elif len(v) > 18:
+        v18 = v[:18]
+        return f"{v18[0:2]}.{v18[2:4]}.{v18[4:7]}.{v18[7:10]}.{v18[10:13]}.{v18[13:17]}.{v18[17:]}"
+    elif len(v) >= 10:
+        v_pad = v.ljust(18, '0')
+        return f"{v_pad[0:2]}.{v_pad[2:4]}.{v_pad[4:7]}.{v_pad[7:10]}.{v_pad[10:13]}.{v_pad[13:17]}.{v_pad[17:]}"
+    return str(val).strip()
 
 BAPENDA_COORD = [-6.5459027, 107.445524]
 
