@@ -1070,7 +1070,19 @@ with tab0:
                 
                 clean_target = "".join([c for c in nop_val if c.isdigit()])
                 alamat_op_dict = fetch_alamat_op_data()
-                st.session_state[f"letak_{fk}"] = alamat_op_dict.get(clean_target, alamat_op_dict.get(nop_val, ""))
+                alamat_op_raw = alamat_op_dict.get(clean_target, alamat_op_dict.get(nop_val, ""))
+                
+                kode_prev = clean_target[4:10] if len(clean_target) >= 10 else ""
+                ref_nop = load_referensi_nop()
+                if kode_prev in ref_nop:
+                    kec_txt = ref_nop[kode_prev]['kecamatan']
+                    kel_txt = ref_nop[kode_prev]['kelurahan']
+                    if alamat_op_raw:
+                        st.session_state[f"letak_{fk}"] = f"{kec_txt} - {kel_txt} - {alamat_op_raw}"
+                    else:
+                        st.session_state[f"letak_{fk}"] = f"{kec_txt} - {kel_txt}"
+                else:
+                    st.session_state[f"letak_{fk}"] = alamat_op_raw
                 
                 jp = str(matched_row[5]).strip().upper() if not pd.isna(matched_row[5]) else ""
                 
@@ -1166,30 +1178,32 @@ with tab0:
         )
         
         nop_clean_preview = re.sub(r'\D', '', nop_baru if nop_baru else "")
-        
-        # 2. Tampilkan Lokasi
-
         if len(nop_clean_preview) >= 10:
+            kode_prev = nop_clean_preview[4:10]
+            ref_nop = load_referensi_nop()
             if len(nop_clean_preview) == 18 and not st.session_state.get(f"letak_{fk}"):
                 alamat_op_dict = fetch_alamat_op_data()
                 matched_letak = alamat_op_dict.get(nop_clean_preview)
                 if not matched_letak:
                     f_nop = f"{nop_clean_preview[:2]}.{nop_clean_preview[2:4]}.{nop_clean_preview[4:7]}.{nop_clean_preview[7:10]}.{nop_clean_preview[10:13]}.{nop_clean_preview[13:17]}.{nop_clean_preview[17:]}"
                     matched_letak = alamat_op_dict.get(f_nop)
-                if matched_letak:
+                
+                if kode_prev in ref_nop:
+                    kec_txt = ref_nop[kode_prev]['kecamatan']
+                    kel_txt = ref_nop[kode_prev]['kelurahan']
+                    if matched_letak:
+                        st.session_state[f"letak_{fk}"] = f"{kec_txt} - {kel_txt} - {matched_letak}"
+                    else:
+                        st.session_state[f"letak_{fk}"] = f"{kec_txt} - {kel_txt}"
+                elif matched_letak:
                     st.session_state[f"letak_{fk}"] = matched_letak
-                    st.rerun()
+                st.rerun()
 
-            kode_prev = nop_clean_preview[4:10]
-            ref_nop = load_referensi_nop()
-            if kode_prev in ref_nop:
-                st.success(f"📍 {ref_nop[kode_prev]['kecamatan']} - {ref_nop[kode_prev]['kelurahan']}")
-            elif len(nop_clean_preview) >= 18:
-                st.warning("⚠️ Kode Kecamatan/Kelurahan pada NOP tidak valid (Bukan wilayah Purwakarta)")
     with col2:
         pemohon_baru = st.text_input("Nama Pemohon", placeholder="Nama Wajib Pajak", key=f"nama_{fk}")
-        letak_tanah_baru = st.text_input("Letak Tanah (Alamat OP)", placeholder="Contoh: KP BOJONG", key=f"letak_{fk}")
-        urgensi_baru = st.checkbox("🔥 Tandai sebagai MENDESAK (Prioritas Utama)", key=f"urgensi_{fk}")
+        
+    letak_tanah_baru = st.text_input("Letak Tanah (Kecamatan - Desa - Alamat OP)", placeholder="Contoh: BABAKAN CIKAO - CICADAS - BLOK CIASEM", key=f"letak_{fk}")
+    urgensi_baru = st.checkbox("🔥 Tandai sebagai MENDESAK (Prioritas Utama)", key=f"urgensi_{fk}")
         
     st.info("💡 Kecamatan dan Kelurahan akan terisi otomatis berdasarkan 18 digit Nomor NOP. Pastikan NOP terisi dan valid (Misal: 32.16.080.014...).")
     st.markdown("**Titik Koordinat Geografis** (Opsional)")
