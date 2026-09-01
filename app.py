@@ -2352,89 +2352,73 @@ with tab5:
     if not result_page.empty:
         df_show = result_page[['nomor_pelayanan', 'nomor_nop', 'nama_pemohon', 'keterangan_berkas', 'kecamatan', 'desa', 'status_survey', 'tanggal_input']].copy()
         
-        def format_status_badge(val):
-            st_str = str(val).strip()
-            if st_str == 'Sudah':
-                return '<span style="background-color:#d1fae5; color:#065f46; padding:3px 8px; border-radius:12px; font-weight:600; font-size:12px; border:1px solid #a7f3d0; white-space:nowrap;">✅ Selesai</span>'
-            elif st_str == 'Dijadwalkan':
-                return '<span style="background-color:#fef08a; color:#854d0e; padding:3px 8px; border-radius:12px; font-weight:600; font-size:12px; border:1px solid #fde047; white-space:nowrap;">🏃 Sedang Proses</span>'
-            return '<span style="background-color:#f1f5f9; color:#475569; padding:3px 8px; border-radius:12px; font-weight:600; font-size:12px; border:1px solid #e2e8f0; white-space:nowrap;">⏳ Menunggu</span>'
-
-        def format_code_span(val):
-            return f'<span style="font-family:monospace; font-size:13px; font-weight:600; color:#0f172a; user-select:all !important; -webkit-user-select:all !important;">{val}</span>'
-
-        df_display = pd.DataFrame()
-        df_display['No. Pelayanan'] = df_show['nomor_pelayanan'].apply(format_code_span)
-        df_display['NOP'] = df_show['nomor_nop'].apply(lambda x: format_code_span(format_nop_string(x)))
-        df_display['Nama Pemohon'] = df_show['nama_pemohon']
-        df_display['Kategori'] = df_show['keterangan_berkas']
-        df_display['Kecamatan'] = df_show['kecamatan']
-        df_display['Kelurahan'] = df_show['desa']
-        df_display['Status Survei'] = df_show['status_survey'].apply(format_status_badge)
-        df_display['Tgl Input'] = df_show['tanggal_input']
-
-        css_style = """
-<style>
-.verlap-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 13.5px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid #e2e8f0;
-    margin-top: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-}
-.verlap-table th {
-    background-color: #f8fafc;
-    color: #475569;
-    font-weight: 700;
-    padding: 11px 12px;
-    text-align: left;
-    border-bottom: 2px solid #e2e8f0;
-    user-select: text !important;
-    -webkit-user-select: text !important;
-}
-.verlap-table td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #f1f5f9;
-    color: #1e293b;
-    user-select: text !important;
-    -webkit-user-select: text !important;
-    vertical-align: middle;
-}
-.verlap-table tr:hover {
-    background-color: #f8fafc;
-}
-</style>
-"""
-        html_content = css_style + '<div style="overflow-x:auto;">' + df_display.to_html(classes='verlap-table', escape=False, index=False) + '</div>'
-        st.markdown(html_content, unsafe_allow_html=True)
+        df_show['nomor_nop'] = df_show['nomor_nop'].apply(format_nop_string)
+        df_show = df_show.rename(columns={
+            'nomor_pelayanan': 'No. Pelayanan',
+            'nomor_nop': 'NOP',
+            'nama_pemohon': 'Nama Pemohon',
+            'keterangan_berkas': 'Kategori',
+            'kecamatan': 'Kecamatan',
+            'desa': 'Kelurahan',
+            'status_survey': 'Status Survei',
+            'tanggal_input': 'Tgl Input'
+        })
         
-        unfinished_on_page = result_page[result_page['status_survey'] != 'Sudah']
-        if not unfinished_on_page.empty:
-            st.write("")
-            col_act1, col_act2 = st.columns([3, 1])
-            with col_act1:
-                sel_finish_nop = st.selectbox(
-                    "Tandai Berkas Selesai Survei:", 
-                    options=unfinished_on_page['nomor_pelayanan'].tolist(),
-                    format_func=lambda x: f"{x} - {unfinished_on_page[unfinished_on_page['nomor_pelayanan']==x].iloc[0]['nama_pemohon']} ({format_nop_string(unfinished_on_page[unfinished_on_page['nomor_pelayanan']==x].iloc[0]['nomor_nop'])})"
+        def format_status(val):
+            if val == 'Belum': return '⏳ Menunggu Jadwal'
+            if val == 'Dijadwalkan': return '🏃 Sedang Proses'
+            if val == 'Sudah': return '✅ Selesai'
+            return val
+            
+        df_show['Status Survei'] = df_show['Status Survei'].apply(format_status)
+        
+        def highlight_status(s):
+            if s['Status Survei'] == '✅ Selesai':
+                return ['background-color: #d1fae5; color: #065f46'] * len(s)
+            elif s['Status Survei'] == '🏃 Sedang Proses':
+                return ['background-color: #fef08a; color: #854d0e'] * len(s)
+            else:
+                return [''] * len(s)
+                
+        df_show['Tandai Selesai'] = False
+        
+        styled_df = df_show.style.apply(highlight_status, axis=1)
+        
+        edited_df = st.data_editor(
+            styled_df,
+            column_config={
+                "Tandai Selesai": st.column_config.CheckboxColumn(
+                    "Tandai Selesai",
+                    help="Centang untuk menandai berkas ini telah selesai disurvei",
+                    default=False,
                 )
-            with col_act2:
-                st.write("")
-                st.write("")
-                if st.button("✅ Simpan Selesai", type="primary", use_container_width=True):
+            },
+            disabled=["No. Pelayanan", "NOP", "Nama Pemohon", "Kategori", "Kecamatan", "Kelurahan", "Status Survei", "Tgl Input"],
+            use_container_width=True, 
+            hide_index=True
+        )
+        
+        rows_to_finish = edited_df[edited_df['Tandai Selesai'] == True]
+        
+        if not rows_to_finish.empty:
+            with st.spinner("⏳ Sedang menandai berkas selesai dan memperbarui ke database..."):
+                update_err = False
+                for _, row in rows_to_finish.iterrows():
+                    nopel = row['No. Pelayanan']
                     if USE_MOCK_DATA:
                         for b in st.session_state.mock_berkas:
-                            if str(b['nomor_pelayanan']).strip() == str(sel_finish_nop).strip():
+                            if str(b['nomor_pelayanan']).strip() == str(nopel).strip():
                                 b['status_survey'] = 'Sudah'
                     else:
-                        supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(sel_finish_nop).strip()).execute()
+                        try:
+                            supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(nopel).strip()).execute()
+                        except Exception as e:
+                            st.error(f"Gagal update berkas {nopel}: {e}")
+                            update_err = True
+                
+                if not update_err:
                     st.cache_data.clear()
-                    st.toast("✅ Berkas berhasil ditandai selesai!", icon="🎉")
+                    st.toast("✅ Berkas terpilih berhasil ditandai selesai!", icon="🎉")
                     import time
                     time.sleep(0.8)
                     st.rerun()
