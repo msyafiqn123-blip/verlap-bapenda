@@ -2125,7 +2125,7 @@ with tab5:
     col_sync1, col_sync2 = st.columns(2)
     with col_sync1:
         if st.button("🔄 Sinkronisasi STATUS BERKAS PBB", type="primary", use_container_width=True):
-            with st.spinner("⏳ Mengunduh dan mencocokkan data PBB dari SELURUH lembar (sheets) Google Spreadsheet..."):
+            with st.spinner("⏳ Sinkronisasi ke Sistem PBB..."):
                 try:
                     import requests
                     import io
