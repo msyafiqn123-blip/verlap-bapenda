@@ -513,10 +513,24 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
         pdf.cell(5, 5, ":", 0, 0)
         pdf.cell(0, 5, format_nop_string(b['nomor_nop']), ln=True)
         
+        lt_val = str(b.get('letak_tanah') or '').strip()
+        if not lt_val or lt_val == 'None' or lt_val == 'nan':
+            clean_nop_d = "".join([c for c in str(b.get('nomor_nop', '')) if c.isdigit()])
+            try:
+                alamat_dict = fetch_alamat_op_data()
+                lt_val = alamat_dict.get(clean_nop_d, "")
+            except:
+                lt_val = ""
+                
+        if not lt_val or lt_val == 'None' or lt_val == 'nan':
+            lt_val = f"Kel/Desa {b.get('desa', '-').upper()} Kecamatan {b.get('kecamatan', '-').upper()}"
+        else:
+            lt_val = lt_val.upper()
+
         pdf.set_x(x)
         pdf.cell(30, 5, "Letak Tanah", 0, 0)
         pdf.cell(5, 5, ":", 0, 0)
-        pdf.cell(0, 5, f"Kel/Desa {b.get('desa', '-').upper()} Kecamatan {b.get('kecamatan', '-').upper()}", ln=True)
+        pdf.cell(0, 5, lt_val, ln=True)
         
         pdf.set_x(x)
         pdf.cell(30, 5, "Desa", 0, 0)
