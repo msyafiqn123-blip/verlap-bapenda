@@ -1821,8 +1821,6 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                     ns_str = str(b_dict.get('nomor_surat') or '340')
                     if ns_str == 'nan' or ns_str == 'None': ns_str = '340'
                     
-                    st.write(f"**Nomor Surat:** {ns_str}")
-                    
                     try:
                         import datetime
                         try:
@@ -1832,15 +1830,18 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                     except:
                         tgl_s = None
                         
-                    ec1, ec2 = st.columns([3, 1])
+                    ec1, ec2, ec3 = st.columns([2, 2, 1.2])
                     with ec1:
-                        new_tgl = st.date_input("Tanggal Survei (Edit)", value=tgl_s, key=f"edit_tgl_{b_dict['id']}")
+                        new_ns = st.text_input("Nomor Surat (Edit)", value=ns_str, key=f"edit_ns_{b_dict['id']}")
                     with ec2:
+                        new_tgl = st.date_input("Tanggal Survei (Edit)", value=tgl_s, key=f"edit_tgl_{b_dict['id']}")
+                    with ec3:
                         st.write("")
                         st.write("")
-                        if st.button("Simpan Tanggal", key=f"btn_save_tgl_{b_dict['id']}", use_container_width=True):
+                        if st.button("Simpan SP", key=f"btn_save_tgl_{b_dict['id']}", use_container_width=True):
+                            clean_new_ns = str(new_ns).strip() if new_ns else "340"
                             if not USE_MOCK_DATA:
-                                update_data = {"tgl_survei": str(new_tgl)}
+                                update_data = {"tgl_survei": str(new_tgl), "nomor_surat": clean_new_ns}
                                 try:
                                     res = supabase.table("berkas").update(update_data).eq("id", b_dict['id']).execute()
                                     if hasattr(res, 'error') and res.error:
@@ -1849,7 +1850,7 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                                     # Fallback
                                     petugas_str = b_dict['petugas_survey_raw'].split('|')[0]
                                     fallback_data = {
-                                        "petugas_survey": f"{petugas_str}|{new_tgl}|{ns_str}"
+                                        "petugas_survey": f"{petugas_str}|{new_tgl}|{clean_new_ns}"
                                     }
                                     try:
                                         supabase.table("berkas").update(fallback_data).eq("id", b_dict['id']).execute()
@@ -1859,6 +1860,7 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
                                 for mb in st.session_state.mock_berkas:
                                     if mb['id'] == b_dict['id']:
                                         mb['tgl_survei'] = str(new_tgl)
+                                        mb['nomor_surat'] = clean_new_ns
                             st.cache_data.clear()
                             st.rerun()
                     
