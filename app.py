@@ -1257,7 +1257,13 @@ with tab0:
     with col2:
         pemohon_baru = st.text_input("Nama Pemohon", placeholder="Nama Wajib Pajak", key=f"nama_{fk}")
         
-    letak_tanah_baru = st.text_input("Letak Tanah (Kecamatan - Desa - Alamat OP)", placeholder="Contoh: BABAKAN CIKAO - CICADAS - BLOK CIASEM", key=f"letak_{fk}")
+    current_letak = st.session_state.get(f"letak_{fk}", "").strip()
+    if current_letak:
+        st.success(f"📍 {current_letak}")
+    else:
+        st.info("📍 Letak Tanah (Kecamatan - Desa - Alamat OP) otomatis terisi dari NOP")
+    letak_tanah_baru = current_letak
+    
     urgensi_baru = st.checkbox("🔥 Tandai sebagai MENDESAK (Prioritas Utama)", key=f"urgensi_{fk}")
         
     st.info("💡 Kecamatan dan Kelurahan akan terisi otomatis berdasarkan 18 digit Nomor NOP. Pastikan NOP terisi dan valid (Misal: 32.16.080.014...).")
