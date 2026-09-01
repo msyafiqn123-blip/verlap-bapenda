@@ -856,37 +856,95 @@ def create_dynamic_mask(geom_to_highlight):
 # --- UI COMPONENTS ---
 bapenda_logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bapenda.png")
 import os, base64
-if os.path.exists(bapenda_logo_path):
-    with open(bapenda_logo_path, "rb") as f:
-        img_b64 = base64.b64encode(f.read()).decode()
-    st.markdown(f'''
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <img src="data:image/png;base64,{img_b64}" width="55" />
-            <h1 style="margin: 0; padding: 0;">Sistem Verifikasi Lapangan</h1>
+
+col_head_title, col_head_btn = st.columns([3.2, 1.8])
+with col_head_title:
+    if os.path.exists(bapenda_logo_path):
+        with open(bapenda_logo_path, "rb") as f:
+            img_b64 = base64.b64encode(f.read()).decode()
+        st.markdown(f'''
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <img src="data:image/png;base64,{img_b64}" width="50" />
+                <div>
+                    <h1 style="margin: 0; padding: 0; font-size: 1.6rem; font-weight: 700;">Sistem Verifikasi Lapangan</h1>
+                    <div style="font-size: 0.85rem; color: #64748b; font-weight: 500;">Subbid PBB & BPHTB - Bapenda Purwakarta</div>
+                </div>
+            </div>
+        ''', unsafe_allow_html=True)
+    else:
+        st.title("Sistem Verifikasi Lapangan")
+        st.markdown("**Subbid PBB & BPHTB, Bidang Pendataan dan Penilaian - Bapenda Kabupaten Purwakarta**")
+
+with col_head_btn:
+    st.write("")
+    if 'show_update_lapangan' not in st.session_state:
+        st.session_state.show_update_lapangan = False
+        
+    btn_lbl = "❌ Tutup Form" if st.session_state.show_update_lapangan else "📱 Update Lapangan (Petugas)"
+    btn_tp = "secondary" if st.session_state.show_update_lapangan else "primary"
+    if st.button(btn_lbl, type=btn_tp, use_container_width=True, key="btn_toggle_lapangan"):
+        st.session_state.show_update_lapangan = not st.session_state.show_update_lapangan
+        st.rerun()
+
+if st.session_state.get('show_update_lapangan', False):
+    with st.container():
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%); border: 2px solid #3b82f6; border-radius: 12px; padding: 18px 20px; margin: 12px 0 20px 0;">
+            <h3 style="margin-top: 0; color: #1e3a8a; display: flex; align-items: center; gap: 8px;">📱 Form Update Lapangan (Petugas)</h3>
+            <p style="color: #475569; font-size: 14px; margin-bottom: 12px;">Pilih berkas terjadwal, masukkan catatan riil kondisi lapangan, dan rekam koordinat GPS.</p>
         </div>
-    ''', unsafe_allow_html=True)
-else:
-    st.title("Sistem Verifikasi Lapangan")
-st.markdown("**Subbid PBB & BPHTB, Bidang Pendataan dan Penilaian - Bapenda Kabupaten Purwakarta**")
+        """, unsafe_allow_html=True)
+        
+        df_berkas_jadwal = fetch_berkas(status="Dijadwalkan")
+        if not df_berkas_jadwal.empty:
+            with st.form("form_lapangan_header"):
+                lapangan_options = df_berkas_jadwal['id'].tolist()
+                lapangan_labels = {row['id']: f"{row.get('nomor_pelayanan', '-')} / {format_nop_string(row['nomor_nop'])} - {row['nama_pemohon']} ({row.get('keterangan_berkas', '-')})" for _, row in df_berkas_jadwal.iterrows()}
+                
+                selected_lapangan = st.selectbox(
+                    "Pilih Berkas", 
+                    options=lapangan_options,
+                    format_func=lambda x: lapangan_labels[x],
+                    index=None,
+                    placeholder="🔍 Ketik NOP, No. Pelayanan, atau Nama untuk mencari..."
+                )
+                
+                catatan = st.text_area("Catatan Kondisi Riil Lapangan")
+                st.markdown("**Titik Koordinat (GPS)**")
+                st.write("Silakan klik tombol di bawah untuk merekam koordinat lokasi survei Anda.")
+                location = streamlit_geolocation()
+                
+                if location and location.get('latitude'):
+                    st.success(f"📍 Koordinat Tersimpan: {location['latitude']}, {location['longitude']}")
+                
+                submit_lapangan = st.form_submit_button("✅ Selesaikan Survei", type="primary", use_container_width=True)
+                if submit_lapangan:
+                    if not selected_lapangan:
+                        st.error("Mohon pilih berkas terlebih dahulu!")
+                    else:
+                        with st.spinner("⏳ Sedang menyimpan laporan ke database..."):
+                            try:
+                                update_data = {'status_survey': 'Sudah'}
+                                if catatan:
+                                    update_data['catatan_petugas'] = catatan
+                                if location and location.get('latitude'):
+                                    update_data['lat_petugas'] = location['latitude']
+                                    update_data['lon_petugas'] = location['longitude']
+                                    
+                                supabase.table('berkas').update(update_data).eq('id', selected_lapangan).execute()
+                                st.cache_data.clear()
+                                st.success("✅ Laporan lapangan berhasil disubmit dan tersimpan di database!")
+                                st.session_state.show_update_lapangan = False
+                                import time
+                                time.sleep(1.5)
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Gagal menyimpan laporan: {e}")
+        else:
+            st.info("Tidak ada berkas yang berstatus 'Dijadwalkan'.")
+        st.write("---")
 
-tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Input Berkas Baru", "📍 Peta Interaktif & Filter", "📄 Surat Perintah", "📊 Dashboard Workload", "📱 Update Lapangan (Petugas)", "🔍 Cek Status Berkas"])
-
-import streamlit.components.v1 as components
-if 'mobile_tab_switched' not in st.session_state:
-    st.session_state.mobile_tab_switched = True
-    components.html("""
-    <script>
-    const isMobile = window.innerWidth <= 768;
-    if (isMobile) {
-        setTimeout(() => {
-            const tabs = window.parent.document.querySelectorAll('button[data-baseweb="tab"]');
-            if (tabs.length >= 5) {
-                tabs[4].click();
-            }
-        }, 500);
-    }
-    </script>
-    """, height=0, width=0)
+tab0, tab1, tab2, tab3, tab5 = st.tabs(["📝 Input Berkas Baru", "📍 Peta Interaktif & Filter", "📄 Surat Perintah", "📊 Dashboard Workload", "🔍 Cek Status Berkas"])
 
 
 # --- TAB 0: INPUT BERKAS BARU ---
@@ -2050,55 +2108,7 @@ with tab3:
     
     st.dataframe(df_workload, use_container_width=True, hide_index=True)
 
-with tab4:
-    st.header("📱 Laporan Verifikasi Lapangan")
-    df_berkas_jadwal = fetch_berkas(status="Dijadwalkan")
-    
-    if not df_berkas_jadwal.empty:
-        with st.form("form_lapangan"):
-            lapangan_options = df_berkas_jadwal['id'].tolist()
-            lapangan_labels = {row['id']: f"{row.get('nomor_pelayanan', '-')} / {format_nop_string(row['nomor_nop'])} - {row['nama_pemohon']} ({row.get('keterangan_berkas', '-')})" for _, row in df_berkas_jadwal.iterrows()}
-            
-            selected_lapangan = st.selectbox(
-                "Pilih Berkas", 
-                options=lapangan_options,
-                format_func=lambda x: lapangan_labels[x],
-                index=None,
-                placeholder="🔍 Ketik NOP, No. Pelayanan, atau Nama untuk mencari..."
-            )
-            
-            catatan = st.text_area("Catatan Kondisi Riil Lapangan")
-            st.markdown("**Titik Koordinat (GPS)**")
-            st.write("Silakan klik tombol di bawah untuk merekam koordinat lokasi survei Anda.")
-            location = streamlit_geolocation()
-            
-            if location and location.get('latitude'):
-                st.success(f"📍 Tersimpan: {location['latitude']}, {location['longitude']}")
-            
-            submit_lapangan = st.form_submit_button("Selesaikan Survei")
-            if submit_lapangan:
-                if not selected_lapangan:
-                    st.error("Mohon pilih berkas terlebih dahulu!")
-                else:
-                    with st.spinner("⏳ Sedang menyimpan laporan ke database..."):
-                        try:
-                            update_data = {'status_survey': 'Sudah'}
-                            if catatan:
-                                update_data['catatan_petugas'] = catatan
-                            if location and location.get('latitude'):
-                                update_data['lat_petugas'] = location['latitude']
-                                update_data['lon_petugas'] = location['longitude']
-                                
-                            supabase.table('berkas').update(update_data).eq('id', selected_lapangan).execute()
-                            st.cache_data.clear()
-                            st.success("✅ Laporan lapangan berhasil disubmit dan tersimpan di database!")
-                            import time
-                            time.sleep(1.5)
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"Gagal menyimpan laporan: {e}")
-    else:
-        st.info("Tidak ada berkas yang berstatus 'Dijadwalkan'.")
+
 
 with tab5:
     st.header("🔍 Tracking Verlap Berkas PBB-P2 / BPHTB")
