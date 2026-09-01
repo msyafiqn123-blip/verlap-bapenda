@@ -2347,75 +2347,138 @@ with tab5:
     result_page = result.iloc[start_idx:end_idx]
     
     if not result_page.empty:
-        df_show = result_page[['nomor_pelayanan', 'nomor_nop', 'nama_pemohon', 'keterangan_berkas', 'kecamatan', 'desa', 'status_survey', 'tanggal_input']].copy()
-        
-        df_show['nomor_nop'] = df_show['nomor_nop'].apply(format_nop_string)
-        df_show = df_show.rename(columns={
-            'nomor_pelayanan': 'No. Pelayanan',
-            'nomor_nop': 'NOP',
-            'nama_pemohon': 'Nama Pemohon',
-            'keterangan_berkas': 'Kategori',
-            'kecamatan': 'Kecamatan',
-            'desa': 'Kelurahan',
-            'status_survey': 'Status Survei',
-            'tanggal_input': 'Tgl Input'
-        })
-        
-        def format_status(val):
-            if val == 'Belum': return '⏳ Menunggu Jadwal'
-            if val == 'Dijadwalkan': return '🏃 Sedang Proses'
-            if val == 'Sudah': return '✅ Selesai'
-            return val
-            
-        df_show['Status Survei'] = df_show['Status Survei'].apply(format_status)
-        
-        def highlight_status(s):
-            if s['Status Survei'] == '✅ Selesai':
-                return ['background-color: #d1fae5; color: #065f46'] * len(s)
-            elif s['Status Survei'] == '🏃 Sedang Proses':
-                return ['background-color: #fef08a; color: #854d0e'] * len(s)
+        table_html = """
+        <style>
+        .verlap-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 13.5px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            margin-top: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .verlap-table th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            padding: 11px 12px;
+            text-align: left;
+            border-bottom: 2px solid #e2e8f0;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+        .verlap-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+            vertical-align: middle;
+        }
+        .verlap-table tr:hover {
+            background-color: #f8fafc;
+        }
+        .row-bg-selesai {
+            background-color: #f0fdf4 !important;
+        }
+        .row-bg-proses {
+            background-color: #fefce8 !important;
+        }
+        .code-cell {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: #0f172a;
+            user-select: all !important;
+            -webkit-user-select: all !important;
+        }
+        .badge-status {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .badge-selesai { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .badge-proses { background-color: #fef08a; color: #854d0e; border: 1px solid #fde047; }
+        .badge-tunggu { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        </style>
+        <div style="overflow-x: auto;">
+        <table class="verlap-table">
+            <thead>
+                <tr>
+                    <th style="min-width: 120px;">No. Pelayanan</th>
+                    <th style="min-width: 190px;">NOP</th>
+                    <th style="min-width: 150px;">Nama Pemohon</th>
+                    <th style="min-width: 130px;">Kategori</th>
+                    <th style="min-width: 110px;">Kecamatan</th>
+                    <th style="min-width: 110px;">Kelurahan</th>
+                    <th style="min-width: 120px;">Status Survei</th>
+                    <th style="min-width: 95px;">Tgl Input</th>
+                </tr>
+            </thead>
+            <tbody>
+        """
+        for _, r in result_page.iterrows():
+            st_val = str(r.get('status_survey', 'Belum')).strip()
+            if st_val == 'Sudah':
+                row_cls = 'row-bg-selesai'
+                badge_html = '<span class="badge-status badge-selesai">✅ Selesai</span>'
+            elif st_val == 'Dijadwalkan':
+                row_cls = 'row-bg-proses'
+                badge_html = '<span class="badge-status badge-proses">🏃 Sedang Proses</span>'
             else:
-                return [''] * len(s)
+                row_cls = ''
+                badge_html = '<span class="badge-status badge-tunggu">⏳ Menunggu</span>'
                 
-        df_show['Tandai Selesai'] = False
+            nop_formatted = format_nop_string(r.get('nomor_nop', ''))
+            
+            table_html += f"""
+                <tr class="{row_cls}">
+                    <td class="code-cell">{r.get('nomor_pelayanan', '-')}</td>
+                    <td class="code-cell">{nop_formatted}</td>
+                    <td>{r.get('nama_pemohon', '-')}</td>
+                    <td>{r.get('keterangan_berkas', '-')}</td>
+                    <td>{r.get('kecamatan', '-')}</td>
+                    <td>{r.get('desa', '-')}</td>
+                    <td>{badge_html}</td>
+                    <td>{r.get('tanggal_input', '-')}</td>
+                </tr>
+            """
+        table_html += """
+            </tbody>
+        </table>
+        </div>
+        """
+        st.markdown(table_html, unsafe_allow_html=True)
         
-        styled_df = df_show.style.apply(highlight_status, axis=1)
-        
-        edited_df = st.data_editor(
-            styled_df,
-            column_config={
-                "Tandai Selesai": st.column_config.CheckboxColumn(
-                    "Tandai Selesai",
-                    help="Centang untuk menandai berkas ini telah selesai disurvei",
-                    default=False,
+        unfinished_on_page = result_page[result_page['status_survey'] != 'Sudah']
+        if not unfinished_on_page.empty:
+            st.write("")
+            col_act1, col_act2 = st.columns([3, 1])
+            with col_act1:
+                sel_finish_nop = st.selectbox(
+                    "Tandai Berkas Selesai Survei:", 
+                    options=unfinished_on_page['nomor_pelayanan'].tolist(),
+                    format_func=lambda x: f"{x} - {unfinished_on_page[unfinished_on_page['nomor_pelayanan']==x].iloc[0]['nama_pemohon']} ({format_nop_string(unfinished_on_page[unfinished_on_page['nomor_pelayanan']==x].iloc[0]['nomor_nop'])})"
                 )
-            },
-            disabled=["No. Pelayanan", "NOP", "Nama Pemohon", "Kategori", "Kecamatan", "Kelurahan", "Status Survei", "Tgl Input"],
-            use_container_width=True, 
-            hide_index=True
-        )
-        
-        rows_to_finish = edited_df[edited_df['Tandai Selesai'] == True]
-        
-        if not rows_to_finish.empty:
-            with st.spinner("⏳ Sedang menandai berkas selesai dan memperbarui ke database..."):
-                update_err = False
-                for _, row in rows_to_finish.iterrows():
-                    nopel = row['No. Pelayanan']
+            with col_act2:
+                st.write("")
+                st.write("")
+                if st.button("✅ Simpan Selesai", type="primary", use_container_width=True):
                     if USE_MOCK_DATA:
                         for b in st.session_state.mock_berkas:
-                            if str(b['nomor_pelayanan']).strip() == str(nopel).strip():
+                            if str(b['nomor_pelayanan']).strip() == str(sel_finish_nop).strip():
                                 b['status_survey'] = 'Sudah'
                     else:
-                        try:
-                            supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(nopel).strip()).execute()
-                        except Exception as e:
-                            st.error(f"Gagal update berkas {nopel}: {e}")
-                            update_err = True
-                
-                if not update_err:
+                        supabase.table('berkas').update({'status_survey': 'Sudah'}).eq('no_pelayanan', str(sel_finish_nop).strip()).execute()
                     st.cache_data.clear()
-                    st.toast("✅ Berkas terpilih berhasil ditandai selesai!", icon="🎉")
+                    st.toast("✅ Berkas berhasil ditandai selesai!", icon="🎉")
                     import time
                     time.sleep(0.8)
                     st.rerun()
