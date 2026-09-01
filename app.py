@@ -892,8 +892,17 @@ with tab0:
 
     df_sheet = fetch_spreadsheet_data()
     
-    @st.cache_data(ttl=600, show_spinner=False)
+    @st.cache_resource(show_spinner=False)
     def fetch_alamat_op_data():
+        import json, os
+        local_map_file = os.path.join(BASE_DIR, "alamat_op_map.json")
+        if os.path.exists(local_map_file):
+            try:
+                with open(local_map_file, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                pass
+                
         import pandas as pd
         url = "https://docs.google.com/spreadsheets/d/1JSnGLEJiDttobYaxSeyvWxn02lzOkO4Gj0f71R-QsW8/export?format=csv&gid=1099214973"
         try:
