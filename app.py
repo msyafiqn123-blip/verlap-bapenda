@@ -290,33 +290,72 @@ def get_compass_direction(bearing):
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-@st.cache_data(show_spinner="🗺️ Memuat data wilayah...")
+@st.cache_resource(show_spinner=False)
 def load_referensi():
-    # cache bust v2
     filepath = os.path.join(BASE_DIR, "referensi_wilayah.json")
     if os.path.exists(filepath):
         with open(filepath, "r", encoding="utf-8") as f:
             return json.load(f)
     return {}
 
-@st.cache_data(show_spinner="🗺️ Memuat peta batas desa...")
+@st.cache_resource(show_spinner=False)
 def load_geojson(filename):
-    # cache bust v2
     filepath = os.path.join(BASE_DIR, filename)
     if os.path.exists(filepath):
         with open(filepath, "r", encoding="utf-8") as f:
             return json.load(f)
     return None
 
-@st.cache_data(show_spinner="🔍 Memuat kamus NOP...")
+@st.cache_resource(show_spinner=False)
 def load_referensi_nop():
-    # cache bust v2
     filepath = os.path.join(BASE_DIR, "referensi_nop.json")
     if os.path.exists(filepath):
-        import json
         with open(filepath, "r", encoding="utf-8") as f:
             return json.load(f)
     return {}
+
+@st.cache_resource(show_spinner=False)
+def fetch_alamat_op_data():
+    local_map_file = os.path.join(BASE_DIR, "alamat_op_map.json")
+    if os.path.exists(local_map_file):
+        try:
+            with open(local_map_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+@st.cache_data(ttl=600, show_spinner=False)
+def fetch_spreadsheet_data():
+    import pandas as pd
+    url = "https://docs.google.com/spreadsheets/d/1mrbqAXbRDK7MR-rjlMsVxFzzo6jlhxHpbtHAT5W55RQ/export?format=xlsx"
+    try:
+        dfs = pd.read_excel(url, sheet_name=None, header=None, skiprows=3)
+        return pd.concat(dfs.values(), ignore_index=True)
+    except:
+        return pd.DataFrame()
+
+@st.cache_data(ttl=300, show_spinner=False)
+def fetch_gdrive_tte_files():
+    import requests
+    import re
+    url = "https://drive.google.com/drive/folders/1vwT9x3I992FNC8ek05f4c31M3fCgH0ZH"
+    try:
+        resp = requests.get(url, timeout=5)
+        html = resp.text
+        regex = r'(?:\\x22|")([a-zA-Z0-9_-]{25,})(?:\\x22|"),\s*(?:\\x5b|\[)(?:\\x22|")1vwT9x3I992FNC8ek05f4c31M3fCgH0ZH(?:\\x22|")(?:\\x5d|\]),\s*(?:\\x22|")([^"\\]+?\.pdf)(?:\\x22|")'
+        matches = re.findall(regex, html)
+        
+        file_map = {}
+        for file_id, filename in matches:
+            direct_link = f"https://drive.google.com/file/d/{file_id}/view"
+            digits = re.sub(r'\D', '', filename)
+            if digits:
+                file_map[digits] = direct_link
+            file_map[filename] = direct_link
+        return file_map
+    except Exception:
+        return {}
 
 def init_mock_data():
     if 'mock_berkas' not in st.session_state:
@@ -586,7 +625,7 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
     return bytes(pdf.output(dest='S'))
 
 
-@st.cache_data(ttl=15)
+@st.cache_data(ttl=60, show_spinner=False)
 def fetch_berkas(kecamatan=None, status=None, only_urgent=False):
     global USE_MOCK_DATA
     df = pd.DataFrame()
@@ -966,68 +1005,7 @@ with tab0:
         st.session_state.success_msg = None
         
     fk = st.session_state.form_key
-    
-    @st.cache_data(ttl=300, show_spinner="🔄 Proses sinkronisasi data...")
-    def fetch_spreadsheet_data():
-        import pandas as pd
-        url = "https://docs.google.com/spreadsheets/d/1mrbqAXbRDK7MR-rjlMsVxFzzo6jlhxHpbtHAT5W55RQ/export?format=xlsx"
-        try:
-            dfs = pd.read_excel(url, sheet_name=None, header=None, skiprows=3)
-            return pd.concat(dfs.values(), ignore_index=True)
-        except:
-            return pd.DataFrame()
-
     df_sheet = fetch_spreadsheet_data()
-    
-    @st.cache_resource(show_spinner=False)
-    def fetch_alamat_op_data():
-        import json, os
-        local_map_file = os.path.join(BASE_DIR, "alamat_op_map.json")
-        if os.path.exists(local_map_file):
-            try:
-                with open(local_map_file, "r", encoding="utf-8") as f:
-                    return json.load(f)
-            except Exception:
-                pass
-                
-        import pandas as pd
-        url = "https://docs.google.com/spreadsheets/d/1JSnGLEJiDttobYaxSeyvWxn02lzOkO4Gj0f71R-QsW8/export?format=csv&gid=1099214973"
-        try:
-            df = pd.read_csv(url, header=2)
-            df = df.dropna(subset=['nop'])
-            res = {}
-            for _, r in df.iterrows():
-                alamat = str(r['alamat_op']).strip()
-                raw_nop = str(r['nop']).strip()
-                clean_nop_key = "".join([c for c in raw_nop if c.isdigit()])
-                if alamat and alamat != 'nan':
-                    res[raw_nop] = alamat
-                    res[clean_nop_key] = alamat
-            return res
-        except Exception:
-            return {}
-            
-    @st.cache_data(ttl=120, show_spinner=False)
-    def fetch_gdrive_tte_files():
-        import requests
-        import re
-        url = "https://drive.google.com/drive/folders/1vwT9x3I992FNC8ek05f4c31M3fCgH0ZH"
-        try:
-            resp = requests.get(url, timeout=10)
-            html = resp.text
-            regex = r'(?:\\x22|")([a-zA-Z0-9_-]{25,})(?:\\x22|"),\s*(?:\\x5b|\[)(?:\\x22|")1vwT9x3I992FNC8ek05f4c31M3fCgH0ZH(?:\\x22|")(?:\\x5d|\]),\s*(?:\\x22|")([^"\\]+?\.pdf)(?:\\x22|")'
-            matches = re.findall(regex, html)
-            
-            file_map = {}
-            for file_id, filename in matches:
-                direct_link = f"https://drive.google.com/file/d/{file_id}/view"
-                digits = re.sub(r'\D', '', filename)
-                if digits:
-                    file_map[digits] = direct_link
-                file_map[filename] = direct_link
-            return file_map
-        except Exception:
-            return {}
     
     col_nopel, col_btn = st.columns([4, 1])
     with col_nopel:
