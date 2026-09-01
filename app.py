@@ -2204,7 +2204,7 @@ with tab5:
 
     with col_sync2:
         if st.button("🔄 Sinkronisasi STATUS BERKAS BPHTB", type="primary", use_container_width=True):
-            with st.spinner("⏳ Menghubungi sistem SIP-BPHTB dan mengecek status verifikasi Kabid..."):
+            with st.spinner("⏳ Sinkronisasi ke Sistem BPHTB..."):
                 try:
                     import requests
                     import re
