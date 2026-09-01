@@ -1877,7 +1877,21 @@ Daftar Objek Pajak (No. Pelayanan / NOP):
     st.header("🖨️ Riwayat Penugasan (Cetak Ulang)")
     df_berkas_riwayat = fetch_berkas(status=["Dijadwalkan", "Sudah"])
     if not df_berkas_riwayat.empty:
-        st.write("Berikut adalah daftar berkas yang sudah dijadwalkan / disurvei. Anda dapat mengunduh ulang PDF Surat Tugasnya kapan saja.")
+        col_hdr_riw1, col_hdr_riw2 = st.columns([3.2, 1.8])
+        with col_hdr_riw1:
+            st.write("Berikut adalah daftar berkas yang sudah dijadwalkan / disurvei. Anda dapat mengunduh ulang PDF Surat Tugasnya kapan saja.")
+        with col_hdr_riw2:
+            if st.button("🔄 Sinkronisasi SP", type="primary", use_container_width=True, key="btn_sync_sp_gdrive"):
+                with st.spinner("⏳ Sinkronisasi berkas SP ke Google Drive..."):
+                    fetch_gdrive_tte_files.clear()
+                    tte_files = fetch_gdrive_tte_files()
+                    if tte_files:
+                        st.success(f"✅ Berhasil menyinkronkan {len(tte_files)} file SP dari Google Drive!")
+                    else:
+                        st.info("Semua berkas sudah sinkron.")
+                    import time
+                    time.sleep(1)
+                    st.rerun()
         
         if 'tanggal_input' in df_berkas_riwayat.columns:
             df_berkas_riwayat['tanggal_input_dt'] = pd.to_datetime(df_berkas_riwayat['tanggal_input'], errors='coerce')
