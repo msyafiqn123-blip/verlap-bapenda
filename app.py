@@ -2425,6 +2425,42 @@ with tab5:
     
     df_all = fetch_berkas()
     
+    # --- DASHBOARD SUMMARY STATUS BERKAS ---
+    total_count = len(df_all)
+    count_belum = len(df_all[df_all['status_survey'] == 'Belum']) if not df_all.empty else 0
+    count_proses = len(df_all[df_all['status_survey'] == 'Dijadwalkan']) if not df_all.empty else 0
+    count_selesai = len(df_all[df_all['status_survey'] == 'Sudah']) if not df_all.empty else 0
+    
+    m1, m2, m3, m4 = st.columns(4)
+    with m1:
+        st.markdown(f'''
+        <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 14px 18px; border-radius: 12px; border: 1px solid #e2e8f0; border-left: 5px solid #3b82f6; box-shadow: 0 2px 4px rgba(0,0,0,0.04); margin-bottom: 12px;">
+            <div style="font-size: 0.78rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">📊 Total Berkas</div>
+            <div style="font-size: 1.6rem; font-weight: 700; color: #1e293b; margin-top: 4px;">{total_count} <span style="font-size: 0.85rem; font-weight: 500; color: #64748b;">Berkas</span></div>
+        </div>
+        ''', unsafe_allow_html=True)
+    with m2:
+        st.markdown(f'''
+        <div style="background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%); padding: 14px 18px; border-radius: 12px; border: 1px solid #fef08a; border-left: 5px solid #eab308; box-shadow: 0 2px 4px rgba(0,0,0,0.04); margin-bottom: 12px;">
+            <div style="font-size: 0.78rem; color: #854d0e; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">⏳ Menunggu Jadwal</div>
+            <div style="font-size: 1.6rem; font-weight: 700; color: #a16207; margin-top: 4px;">{count_belum} <span style="font-size: 0.85rem; font-weight: 500; color: #854d0e;">Berkas</span></div>
+        </div>
+        ''', unsafe_allow_html=True)
+    with m3:
+        st.markdown(f'''
+        <div style="background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); padding: 14px 18px; border-radius: 12px; border: 1px solid #fed7aa; border-left: 5px solid #f97316; box-shadow: 0 2px 4px rgba(0,0,0,0.04); margin-bottom: 12px;">
+            <div style="font-size: 0.78rem; color: #9a3412; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">🏃 Sedang Proses</div>
+            <div style="font-size: 1.6rem; font-weight: 700; color: #c2410c; margin-top: 4px;">{count_proses} <span style="font-size: 0.85rem; font-weight: 500; color: #9a3412;">Berkas</span></div>
+        </div>
+        ''', unsafe_allow_html=True)
+    with m4:
+        st.markdown(f'''
+        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 14px 18px; border-radius: 12px; border: 1px solid #bbf7d0; border-left: 5px solid #22c55e; box-shadow: 0 2px 4px rgba(0,0,0,0.04); margin-bottom: 12px;">
+            <div style="font-size: 0.78rem; color: #166534; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">✅ Sudah Selesai</div>
+            <div style="font-size: 1.6rem; font-weight: 700; color: #15803d; margin-top: 4px;">{count_selesai} <span style="font-size: 0.85rem; font-weight: 500; color: #166534;">Berkas</span></div>
+        </div>
+        ''', unsafe_allow_html=True)
+        
     col1, col2, col3, col4 = st.columns([1.5, 1, 1, 1])
     with col1:
         search_query = st.text_input("Cari Nomor (Pelayanan/NOP) / Nama:", placeholder="Ketik spesifik...")
