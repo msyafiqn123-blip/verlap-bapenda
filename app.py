@@ -708,6 +708,30 @@ def fetch_berkas(kecamatan=None, status=None, only_urgent=False):
                 
                 if 'tanggal_input' not in df.columns:
                     df['tanggal_input'] = '-'
+                    
+                # Reconcile coordinates for duplicate desa names across kecamatans (e.g. CITALANG in PURWAKARTA vs TEGALWARU)
+                try:
+                    kd_file = os.path.join(BASE_DIR, 'koordinat_desa.json')
+                    if os.path.exists(kd_file):
+                        with open(kd_file, 'r', encoding='utf-8') as f:
+                            kd = json.load(f)
+                        for i, r in df.iterrows():
+                            kec_i = str(r.get('kecamatan', '')).upper().strip()
+                            des_i = str(r.get('desa', '')).upper().strip()
+                            k_key = f"{kec_i}_{des_i}"
+                            k_key2 = f"{kec_i}_{des_i}".replace(" ", "_")
+                            target_coord = kd.get(k_key, kd.get(k_key2))
+                            if target_coord:
+                                curr_lat = float(r.get('lat', 0) or 0)
+                                curr_lon = float(r.get('lon', 0) or 0)
+                                if kec_i == 'PURWAKARTA' and des_i == 'CITALANG' and curr_lat < -6.6:
+                                    df.at[i, 'lat'] = target_coord['lat']
+                                    df.at[i, 'lon'] = target_coord['lon']
+                                elif curr_lat == 0 or curr_lon == 0 or pd.isna(curr_lat):
+                                    df.at[i, 'lat'] = target_coord['lat']
+                                    df.at[i, 'lon'] = target_coord['lon']
+                except Exception:
+                    pass
         except Exception as e:
             st.error(f"Gagal mengambil data dari Supabase: {e}")
             
@@ -892,11 +916,17 @@ def optimize_multiple_routes(df):
         
     return routes_dict
 
-def get_feature_by_name(geojson_data, name_value, key='name'):
+def get_feature_by_name(geojson_data, name_value, key='name', kec_value=None):
     if not geojson_data:
         return None
     for feature in geojson_data.get('features', []):
-        if str(feature['properties'].get(key, '')).upper() == str(name_value).upper():
+        props = feature.get('properties', {})
+        f_name = str(props.get(key, props.get('DESA', props.get('NAMOBJ', '')))).upper()
+        if f_name == str(name_value).upper():
+            if kec_value and kec_value != "Semua":
+                f_kec = str(props.get('kecamatan', props.get('KECAMATAN', props.get('WADMKC', '')))).upper()
+                if f_kec and f_kec != str(kec_value).upper():
+                    continue
             return feature
     return None
 
@@ -1384,13 +1414,16 @@ with tab0:
             if lat_val is None or lon_val is None:
                 import os, json
                 try:
-                    if os.path.exists('koordinat_desa.json'):
-                        with open('koordinat_desa.json', 'r') as f:
+                    kd_file = os.path.join(BASE_DIR, 'koordinat_desa.json')
+                    if os.path.exists(kd_file):
+                        with open(kd_file, 'r', encoding='utf-8') as f:
                             kd = json.load(f)
-                        k = f"{kecamatan_baru}_{kelurahan_baru}"
-                        if k in kd:
-                            lat_val = kd[k]['lat']
-                            lon_val = kd[k]['lon']
+                        k1 = f"{kecamatan_baru.upper()}_{kelurahan_baru.upper()}"
+                        k2 = f"{kecamatan_baru.upper()}_{kelurahan_baru.upper()}".replace(" ", "_")
+                        target_c = kd.get(k1, kd.get(k2))
+                        if target_c:
+                            lat_val = target_c['lat']
+                            lon_val = target_c['lon']
                 except Exception:
                     pass
                 
@@ -1510,7 +1543,7 @@ with tab1:
     desa_geojson = load_geojson("kelurahan_purwakarta.geojson")
     
     if selected_desa != "Semua" and desa_geojson and HAS_SHAPELY:
-        feature = get_feature_by_name(desa_geojson, selected_desa)
+        feature = get_feature_by_name(desa_geojson, selected_desa, kec_value=selected_kec)
         if feature:
             geom_to_highlight = shape(feature['geometry'])
             bounds_to_fit = get_bounds_from_geom(geom_to_highlight)
