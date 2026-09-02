@@ -567,16 +567,36 @@ def generate_surat_perintah(berkas_list, pegawai_list, tanggal_survei, nomor_sur
         pdf.cell(0, 5, format_nop_string(b['nomor_nop']), ln=True)
         
         lt_val = str(b.get('letak_tanah') or '').strip()
-        if not lt_val or lt_val == 'None' or lt_val == 'nan':
+        if not lt_val or lt_val in ['None', 'nan', ''] or lt_val.startswith('Kel/Desa'):
             clean_nop_d = "".join([c for c in str(b.get('nomor_nop', '')) if c.isdigit()])
             try:
                 alamat_dict = fetch_alamat_op_data()
-                lt_val = alamat_dict.get(clean_nop_d, "")
-            except:
-                lt_val = ""
+                matched_alamat = alamat_dict.get(clean_nop_d)
+                if not matched_alamat:
+                    matched_alamat = alamat_dict.get(clean_nop_d.ljust(18, '0'))
+                if not matched_alamat and len(clean_nop_d) >= 14:
+                    block_p = clean_nop_d[:14]
+                    for k, v in alamat_dict.items():
+                        if k.startswith(block_p):
+                            matched_alamat = v
+                            break
+                if not matched_alamat and len(clean_nop_d) >= 10:
+                    desa_p = clean_nop_d[:10]
+                    for k, v in alamat_dict.items():
+                        if k.startswith(desa_p):
+                            matched_alamat = v
+                            break
                 
-        if not lt_val or lt_val == 'None' or lt_val == 'nan':
-            lt_val = f"Kel/Desa {b.get('desa', '-').upper()} Kecamatan {b.get('kecamatan', '-').upper()}"
+                kec_t = str(b.get('kecamatan', '')).upper()
+                des_t = str(b.get('desa', '')).upper()
+                if matched_alamat:
+                    lt_val = f"{kec_t} - {des_t} - {matched_alamat.upper()}"
+                elif kec_t and des_t:
+                    lt_val = f"{kec_t} - {des_t}"
+                else:
+                    lt_val = "TIDAK DIKETAHUI"
+            except Exception:
+                lt_val = f"{b.get('kecamatan', '').upper()} - {b.get('desa', '').upper()}"
         else:
             lt_val = lt_val.upper()
 
