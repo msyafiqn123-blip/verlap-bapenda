@@ -1432,7 +1432,6 @@ with tab0:
                     'mendesak': urgensi_baru,
                     'kecamatan': kecamatan_baru,
                     'kelurahan': kelurahan_baru,
-                    'lokasi_map': gmaps_link,
                     'latitude': lat_val,
                     'longitude': lon_val,
                     'status_survey': 'Belum'
@@ -1446,18 +1445,18 @@ with tab0:
                 except Exception as e:
                     if 'PGRST204' in str(e):
                         try:
-                            # Fallback: remove new columns
+                            # Fallback: remove non-existent columns silently
                             fallback_db = db_berkas.copy()
                             fallback_db.pop('lokasi_map', None)
                             fallback_db.pop('letak_tanah', None)
                             
                             supabase.table('berkas').insert(fallback_db).execute()
                             st.cache_data.clear()
-                            st.session_state.success_msg = f"✅ Berhasil! Berkas {nopel_baru} berhasil disimpan. (Info: Kolom lokasi_map tidak tersimpan karena belum ada di Supabase)"
+                            st.session_state.success_msg = f"✅ Berhasil! Berkas {nopel_baru} (Kel. {kelurahan_baru}) berhasil disimpan ke Database."
                             st.session_state.form_key += 1
                             st.rerun()
                         except Exception as e2:
-                            st.error(f"Gagal menyimpan ke database (Fallback). Error: {e2}")
+                            st.error(f"Gagal menyimpan ke database. Error: {e2}")
                     else:
                         st.error(f"Gagal menyimpan ke database Supabase. Error: {e}")
 
