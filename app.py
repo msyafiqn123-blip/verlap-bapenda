@@ -38,14 +38,22 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Sembunyikan menu Streamlit dan tombol Deploy
+# Sembunyikan menu Streamlit, tombol Deploy, dan tombol Fork GitHub
 hide_streamlit_style = """
 <style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-.stDeployButton {display:none !important;}
+#MainMenu {visibility: hidden !important; display: none !important;}
+footer {visibility: hidden !important; display: none !important;}
+header {visibility: hidden !important; display: none !important;}
+.stDeployButton {display: none !important;}
 [data-testid="stAppCreatorBadge"], [data-testid="viewerBadge"], [data-testid="manage-app-badge"] {display: none !important;}
-[data-testid="stAppViewBlockContainer"] {padding-top: 2rem;}
+[data-testid="stToolbar"] {display: none !important; visibility: hidden !important;}
+[data-testid="stDecoration"] {display: none !important;}
+[data-testid="stHeader"] {display: none !important;}
+.stForkRibbon, [data-testid="stForkRibbon"], div[data-testid="stToolbarActions"], button[title*="Fork"], a[href*="fork"] {
+    display: none !important;
+    visibility: hidden !important;
+}
+[data-testid="stAppViewBlockContainer"] {padding-top: 1.5rem;}
 
 /* Hide Leaflet Attribution Watermark */
 .leaflet-control-attribution {
