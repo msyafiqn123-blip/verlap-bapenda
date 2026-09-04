@@ -2329,9 +2329,9 @@ with tab5:
                         
                         if update_count > 0:
                             st.cache_data.clear()
-                            st.success(f"✅ Berhasil menandai {update_count} berkas PBB sebagai selesai dari {len(excel_file.sheet_names)} lembar (sheet)!")
+                            st.success(f"✅ Berhasil menandai {update_count} berkas selesai.")
                             import time
-                            time.sleep(2)
+                            time.sleep(1.5)
                             st.rerun()
                         elif not update_err:
                             st.info("Semua berkas sudah sinkron.")
@@ -2414,9 +2414,9 @@ with tab5:
                                         
                         if update_count_bphtb > 0:
                             st.cache_data.clear()
-                            st.success(f"✅ Berhasil menandai {update_count_bphtb} berkas BPHTB (Telah diverifikasi Kabid) sebagai selesai!")
+                            st.success(f"✅ Berhasil menandai {update_count_bphtb} berkas selesai.")
                             import time
-                            time.sleep(2)
+                            time.sleep(1.5)
                             st.rerun()
                         elif not update_err_bphtb:
                             st.info("Semua berkas sudah sinkron.")
